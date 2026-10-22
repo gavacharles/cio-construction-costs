@@ -348,8 +348,7 @@
   /* ---------- bid escalation calculator ---------- */
   const cf = $("#calcform");
   if (cf) {
-    const out = $("#calcout"), months = DATA.months.filter(v => v[0] === "M").map(v => v.slice(2));
-    const now = new Date().toISOString().slice(0, 7), all = [now, ...months];
+    const out = $("#calcout"), all = nextMonths(24), now = all[0];          /* every month, not only those in the forecast picker */
     const PRESET = { building: { Cement: 30, Rebar: 25, "Reinforcement steel": 25, Sand: 10, Labour: 20, Diesel: 10,
                                  "Building cost index": 100, "Ready-mix concrete": 20, "Reinforcing steel": 25, "Construction stone and sand": 10 },
                      road: { Diesel: 35, Sand: 10, Cement: 15, Labour: 20, Rebar: 10, "Reinforcement steel": 10,
@@ -362,7 +361,7 @@
     cf.elements.end.innerHTML = all.slice(1).map(m => `<option value=${m}>${label(m)}</option>`).join("");
     cf.elements.end.value = all[Math.min(9, all.length - 1)];
     function mixInputs() { const c = DATA.countries[cf.elements.country.value], pr = PRESET[cf.elements.preset.value] || {};
-      const series = Object.keys(c.paths); let w = series.map(s => pr[s] || 0); if (!w.some(Boolean)) w = series.map((_, i) => i === 0 ? 100 : 0);
+      const series = Object.keys(c.paths).filter(n => !(c.trend || []).includes(n)); let w = series.map(s => pr[s] || 0); if (!w.some(Boolean)) w = series.map((_, i) => i === 0 ? 100 : 0);
       $("#mix").innerHTML = `<legend>${tr("calc.mix")}</legend>` + series.map((s, i) => `<label class=mixrow><span>${T.mat(s)}</span><input type=number min=0 max=100 name="mix:${s}" value=${w[i]}></label>`).join("");
       $$("[data-ccy]").forEach(x => x.textContent = c.currency); calc(); }
     function calc() {
@@ -382,6 +381,105 @@
         <a class=btn href="countries/${cf.elements.country.value}/index.html">${tr("gm.see", { c: cname(c) })}</a></div>`; }
     cf.elements.country.onchange = mixInputs; cf.elements.preset.onchange = mixInputs; cf.oninput = ev => { if (!["country", "preset"].includes(ev.target.name)) calc(); };
     mixInputs();
+  }
+
+  /* ---------- consecutive months from this month (calculators work month by month) ---------- */
+  function nextMonths(n) { const d = new Date(), out = [];          /* declarations: also used by the calculator above */
+    for (let i = 0; i <= n; i++) { const x = new Date(d.getFullYear(), d.getMonth() + i, 1); out.push(`${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, "0")}`); }
+    return out; }
+  function esc(s) { return String(s ?? "").replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch])); }
+  /* average change from today over the work period (spending spread evenly), with the likely range */
+  function overPeriod(pth, span) { if (!pth || !span.length) return [0, 0, 0]; const base = at(pth, "M:" + nextMonths(0)[0]).q;
+    let e = 0, l = 0, h = 0; span.forEach(m => { const q = at(pth, "M:" + m).q; e += q.median - base.median; l += q.lo - base.median; h += q.hi - base.median; });
+    return [e / span.length, l / span.length, h / span.length]; }
+
+  /* ---------- bill of quantities escalation (free: up to 10 lines; kept in this browser) ---------- */
+  const bf = $("#boqform");
+  if (bf) {
+    const fld = n => bf.querySelector(`[name=${n}]`), body = $("#boqrows"), MAX = 10, ML = nextMonths(24);
+    fld("country").innerHTML = Object.entries(DATA.countries).map(([k, c]) => `<option value=${k}>${c.flag} ${cname(c)}</option>`).join("");
+    const k0 = store.get("cio-country", null); fld("country").value = DATA.countries[k0] ? k0 : (DATA.countries.uganda ? "uganda" : fld("country").value);
+    fld("start").innerHTML = ML.slice(0, -1).map(m => `<option value=${m}>${label(m)}</option>`).join("");
+    fld("end").innerHTML = ML.slice(1).map(m => `<option value=${m}>${label(m)}</option>`).join(""); fld("end").value = ML[6];
+    const C = () => DATA.countries[fld("country").value];
+    const opts = c => Object.keys(c.paths).map(n => `<option value="${esc(n)}">${T.mat(n)}${(c.trend || []).includes(n) ? " · " + tr("trend") : ""}</option>`).join("")
+      + `<option value="">${tr("boq.fixed")}</option>`;
+    const guess = (c, desc) => { const w = words(desc).filter(t => t.length >= 3);
+      return Object.keys(c.paths).find(n => { const nw = words(n + " " + T.mat(n)); return w.some(t => nw.some(x => x.startsWith(t) || t.startsWith(x) || (SYN[t] || []).some(y => x.startsWith(y)))); }) ?? c.head; };
+    const fmt = v => Math.round(v).toLocaleString(T.loc || undefined);
+    function addRow(v = {}) {
+      if (body.children.length >= MAX) return;
+      const row = document.createElement("tr"), c = C();
+      row.innerHTML = `<td><input data-k=desc value="${esc(v.desc)}" placeholder="${esc(tr("boq.descph"))}" aria-label="${esc(tr("boq.desc"))}"></td>
+        <td><input data-k=qty type=number min=0 step=any value="${esc(v.qty)}" aria-label="${esc(tr("boq.qty"))}"></td>
+        <td><input data-k=unit value="${esc(v.unit)}" aria-label="${esc(tr("rep.unit"))}"></td>
+        <td><input data-k=rate type=number min=0 step=any value="${esc(v.rate)}" aria-label="${esc(tr("boq.rate"))}"></td>
+        <td><select data-k=series aria-label="${esc(tr("boq.series"))}">${opts(c)}</select></td><td data-o=today></td><td data-o=exp></td>
+        <td><button type=button class=boq-del aria-label="${esc(tr("boq.del"))}">✕</button></td>`;
+      body.appendChild(row);
+      const sel = $("[data-k=series]", row); sel.value = v.series != null && (v.series === "" || c.paths[v.series]) ? v.series : guess(c, v.desc || "");
+      if (v.manual) row.dataset.manual = 1;
+      $("[data-k=desc]", row).addEventListener("change", () => { if (!row.dataset.manual) sel.value = guess(C(), $("[data-k=desc]", row).value); compute(); });
+      sel.addEventListener("change", () => { row.dataset.manual = 1; compute(); });
+      $(".boq-del", row).onclick = () => { row.remove(); compute(); };
+      compute(); }
+    function rows() { return $$("tr", body).map(r => ({ desc: $("[data-k=desc]", r).value, qty: $("[data-k=qty]", r).value, unit: $("[data-k=unit]", r).value,
+      rate: $("[data-k=rate]", r).value, series: $("[data-k=series]", r).value, manual: !!r.dataset.manual, el: r })); }
+    let last = [];
+    function compute() {
+      const c = C(), span = ML.filter(m => m >= fld("start").value && m <= fld("end").value);
+      $$("[data-boq-ccy]").forEach(x => x.textContent = c.currency);
+      let T0 = 0, T1 = 0, TL = 0, TH = 0; last = [];
+      rows().forEach(r => { const amt = (+r.qty || 0) * (+r.rate || 0), [e, l, h] = r.series ? overPeriod(c.paths[r.series], span) : [0, 0, 0];
+        const ex = amt * (1 + e / 100); T0 += amt; T1 += ex; TL += amt * (1 + l / 100); TH += amt * (1 + h / 100);
+        $("[data-o=today]", r.el).textContent = amt ? fmt(amt) : "–";
+        $("[data-o=exp]", r.el).innerHTML = amt ? `${fmt(ex)} <small>${apct(e)}</small>` : "–";
+        last.push([r.desc, r.qty, r.unit, r.rate, r.series || tr("boq.fixed"), Math.round(amt), Math.round(ex), e.toFixed(2)]); });
+      $("[data-boq-t0]").textContent = T0 ? fmt(T0) : "–"; $("[data-boq-t1]").textContent = T1 ? fmt(T1) : "–";
+      $("[data-boq-sum]").innerHTML = T0 ? tr("boq.sum", { v: `<b>${fmt(T1)} ${c.currency}</b>`, d: pct((T1 / T0 - 1) * 100), lo: fmt(TL), hi: fmt(TH) + " " + c.currency,
+        from: label(fld("start").value), to: label(fld("end").value) }) : tr("boq.empty");
+      $("[data-boq-add]").disabled = body.children.length >= MAX;
+      store.set("cio-boq", { country: fld("country").value, rows: rows().map(({ el, ...r }) => r) }); }
+    fld("country").onchange = () => { const c = C(); $$("tr", body).forEach(r => { const sel = $("[data-k=series]", r), was = sel.value; sel.innerHTML = opts(c);
+      sel.value = r.dataset.manual && c.paths[was] ? was : guess(c, $("[data-k=desc]", r).value); }); compute(); };
+    fld("start").onchange = fld("end").onchange = compute; body.addEventListener("input", compute);
+    $("[data-boq-add]").onclick = () => addRow();
+    const pb = $("[data-boq-paste]", bf), box = $("[data-boq-pastebox]", bf);
+    pb.onclick = () => { box.hidden = !box.hidden; if (!box.hidden) box.focus(); };
+    box.addEventListener("change", () => { box.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean).forEach(l => {
+      const p = l.includes("\t") ? l.split("\t") : l.split(/[;,](?=\s*[\d.])/); const num = x => String(x || "").replace(/[^\d.\-]/g, "");
+      addRow({ desc: (p[0] || "").trim(), qty: num(p[1]), unit: (p[2] || "").trim(), rate: num(p[3]) }); }); box.value = ""; box.hidden = true; });
+    $("[data-boq-csv]", bf).onclick = () => { const head = ["description", "quantity", "unit", "rate_today", "price_follows", "amount_today", "amount_expected", "change_pct"];
+      const csv = [head, ...last].map(r => r.map(x => `"${String(x ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "cio-boq-escalation.csv"; a.click(); };
+    const saved = store.get("cio-boq", null);
+    if (saved && DATA.countries[saved.country] && saved.rows && saved.rows.length) { fld("country").value = saved.country; saved.rows.slice(0, MAX).forEach(r => addRow(r)); }
+    else [{ desc: tr("boq.ex1"), unit: tr("boq.ex1u"), qty: 400 }, { desc: tr("boq.ex2"), unit: "t", qty: 3 }, { desc: tr("boq.ex3"), unit: tr("boq.ex3u"), qty: 10 }].forEach(r => addRow(r));
+    compute();
+  }
+
+  /* ---------- price adjustment index for contracts ---------- */
+  const cis = $("#ci-country");
+  if (cis && DATA.cindex) {
+    const want = (location.hash || "").slice(1), k0 = store.get("cio-country", null);
+    cis.value = DATA.cindex[want] ? want : (DATA.cindex[k0] ? k0 : cis.value);
+    const f = $("#ci-form"), out = $("[data-ci-out]");
+    function ciCalc() { const X = DATA.cindex[cis.value], g = m => X.rows.find(r => r.m === m), b = g(f.elements.base.value), v = g(f.elements.val.value);
+      if (!b || !v) return; const a = Math.min(100, Math.max(0, +f.elements.fixed.value || 0)) / 100, amt = +f.elements.amount.value || 0;
+      const factor = a + (1 - a) * v.v / b.v, adj = amt * factor;
+      out.innerHTML = `<p class=pct>${apct((factor - 1) * 100)}</p><p class=pct-l>${tr("ci.res", { i0: b.v.toFixed(2), i1: v.v.toFixed(2) })}</p>
+        <p class=calcmoney>${tr("ci.adj", { v: `<b>${Math.round(adj).toLocaleString(T.loc || undefined)} ${X.currency}</b>`, d: Math.round(adj - amt).toLocaleString(T.loc || undefined) })}</p>
+        ${b.s === "provisional" || v.s === "provisional" ? `<p class=fineprint>${tr("ci.prov")}</p>` : ""}`; }
+    function ciShow() { const X = DATA.cindex[cis.value], rows = X.rows;
+      $("[data-ci-what]").innerHTML = X.official ? tr("ci.what.off", { o: esc(X.office) }) : tr("ci.what.est");
+      $("#ci-rows").innerHTML = rows.slice().reverse().map((r, i, arr) => { const p = arr[i + 1], ch = p ? (r.v / p.v - 1) * 100 : null;
+        return `<tr><td>${qlabel(r.m, X.step)}</td><td>${r.v.toFixed(2)}</td><td>${ch == null ? "–" : apct(ch)}</td><td><span class="cist ${r.s}">${tr("ci.st." + r.s)}</span></td></tr>`; }).join("");
+      $("[data-ci-csv]").href = rel + `data/contract_index_${cis.value}.csv`; $("[data-ci-csv]").setAttribute("download", `contract_index_${cis.value}.csv`);
+      $("[data-ci-ccy]").textContent = X.currency;
+      const o = rows.map(r => `<option value=${r.m}>${qlabel(r.m, X.step)}${r.s === "provisional" ? " *" : ""}</option>`).join("");
+      f.elements.base.innerHTML = o; f.elements.val.innerHTML = o;
+      f.elements.base.value = rows[Math.max(0, rows.length - (X.step === "quarter" ? 5 : 13))].m; f.elements.val.value = rows[rows.length - 1].m; ciCalc(); }
+    cis.onchange = ciShow; f.oninput = ciCalc; ciShow();
   }
 
   /* ---------- embed widget ---------- */

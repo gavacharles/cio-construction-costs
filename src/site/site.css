@@ -440,3 +440,14 @@ footer{border-top:1px solid var(--rule)}.footlinks{font-size:12px}
 .dv .up{color:var(--up);font-weight:600}.dv .down{color:var(--down);font-weight:600}
 @media (max-width:860px){.dv-grid{grid-template-columns:1fr 1fr}.dv:nth-child(2n){border-right:0}.dv:nth-child(-n+2){border-bottom:1px solid var(--line)}}
 .trendtag{font:600 11px var(--mono);letter-spacing:.04em;color:var(--ink-3);border:1px solid var(--line);padding:1px 5px;margin-left:4px;cursor:help}
+/* bill of quantities + contract index */
+.boq{margin-top:34px}.boq-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.boq-table input,.boq-table select{width:100%;min-width:70px;height:38px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 8px;font:14px var(--text)}
+.boq-table td:first-child input{min-width:180px}.boq-table td{vertical-align:middle;white-space:nowrap}.boq-table td small{color:var(--ink-3);margin-left:4px}
+.boq-table tfoot th{font-weight:700;border-top:1px solid var(--rule)}.boq-del{border:0;background:none;color:var(--ink-3);cursor:pointer;font-size:15px}
+.boq textarea{width:100%;margin-top:10px;font:13px var(--mono);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px}
+.boq-sum{font-size:16px;margin:12px 0 4px}
+.cist{font-size:12.5px;padding:2px 6px;border:1px solid var(--line)}.cist.official{color:var(--teal);border-color:var(--teal)}
+.cist.provisional{color:var(--accent);border-color:var(--accent-fill);border-style:dashed}.ci-what{font-size:14.5px;color:var(--ink-2)}
+@media (max-width:760px){.boq-top{grid-template-columns:1fr}}
+@media print{.boq .actions,.boq textarea,.boq-del{display:none!important}}

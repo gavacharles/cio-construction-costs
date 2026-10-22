@@ -191,7 +191,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
 </div></header>
 <main class=wrap>{body}</main>
 <nav class=bottombar aria-label=Main>{bottom}</nav>
-<footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
+<footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="{rel}contract-index.html" data-i18n=ci.short>Contract index</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
 {f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else ""}</p><span data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
 value. Official data: UBOS, KNBS, Stats SA; benchmarks: US BLS, Statistics Austria (Eurostat), PSA Philippines, FGV Brazil; oil and exchange rates from public
 market sources. Updated {e(data.get('updated', ''))}.</span></footer>
@@ -657,6 +657,82 @@ range — a starting point for contingencies and price-adjustment clauses.</p></
  <aside class=panel id=calcout aria-live=polite></aside></section>
 <p class=muted>Assumes spending spread evenly over the contract and prices measured from today. Estimates with ranges, not
 advice. Uses the same forecasts as the country pages, refreshed every few hours.</p>
+
+<section class=boq id=boq><div class=section-h><div><p class=eyebrow data-i18n=boq.eyebrow>Free during the pilot · up to 10 lines</p>
+<h2 data-i18n=boq.h>Bill of quantities escalation</h2>
+<p class=muted data-i18n=boq.d>Enter your lines at today's rates. Each line is matched to the forecast for that material, and you get the expected
+cost over the work period, with a likely range. Paste straight from Excel: description, quantity, unit, rate.</p></div></div>
+<form id=boqform class=panel>
+ <div class=boq-top><label><span data-i18n=th.country>Country</span><select name=country></select></label>
+ <label><span data-i18n=calc.start>Work starts</span><select name=start></select></label>
+ <label><span data-i18n=calc.end>Work ends</span><select name=end></select></label></div>
+ <div class=tablewrap><table class="glance boq-table"><thead><tr><th data-i18n=boq.desc>Description</th><th data-i18n=boq.qty>Quantity</th>
+ <th data-i18n=rep.unit>Unit</th><th><span data-i18n=boq.rate>Rate today</span> (<span data-boq-ccy></span>)</th><th data-i18n=boq.series>Price follows</th>
+ <th data-i18n=boq.today>Amount today</th><th data-i18n=boq.exp>Expected</th><th><span class=sr-only>Remove</span></th></tr></thead><tbody id=boqrows></tbody>
+ <tfoot><tr><th colspan=5 data-i18n=boq.total>Total</th><th data-boq-t0></th><th data-boq-t1></th><th></th></tr></tfoot></table></div>
+ <div class=actions><button class=btn type=button data-boq-add data-i18n=boq.add>Add a line</button>
+ <button class=btn type=button data-boq-paste data-i18n=boq.paste>Paste from Excel</button>
+ <button class=btn type=button data-boq-csv data-i18n=boq.csv>Download CSV</button>
+ <button class='btn primary' type=button onclick="window.print()" data-i18n=calc.print>Print or save as PDF</button></div>
+ <textarea data-boq-pastebox hidden rows=5 placeholder="Cement 50 kg bag	400	bag	35000"></textarea>
+ <p class=boq-sum aria-live=polite data-boq-sum></p>
+ <p class=fineprint data-boq-limit data-i18n=boq.limit>Up to 10 lines free during the pilot. Larger bills, saved projects and branded PDFs are planned for CiO Costs Pro.</p>
+</form></section>
+<p class=moreline><a href=contract-index.html data-i18n=ci.link>Price adjustment index for contracts →</a></p>
+"""
+
+
+def contract_series(c: dict) -> list[dict]:
+    """The headline index month by month: official prints, then provisional values (our forecast's central value,
+    replaced when the official figure is published) up to the current month. Estimate-only countries: the import-cost index."""
+    sp = c.get("spark") or {}
+    rows = [{"m": d, "v": round(float(v), 2), "s": "official" if c["official"] else "estimate"}
+            for d, v in zip(sp.get("dates") or [], sp.get("values") or [])]
+    if not rows:
+        return rows
+    last, now = rows[-1], date.today().strftime("%Y-%m")
+    step = 3 if c["step"] == "quarter" else 1
+    seen = {r["m"] for r in rows}
+    for q in c["paths"][c["head"]]:
+        m = q["month"]
+        if m > now or m in seen or c["kind"] == "pressure":
+            continue
+        if step == 3 and (int(m[5:7]) - int(last["m"][5:7])) % 3:
+            continue
+        rows.append({"m": m, "v": round(last["v"] * (1 + q["median"] / 100), 2), "s": "provisional"})
+        seen.add(m)
+    return rows
+
+
+def page_contract_index(cs: list[dict]) -> str:
+    opts = country_options([c for c in cs if not c.get("bench")])
+    return f"""
+<section class=prose><p class=eyebrow data-i18n=ci.eyebrow>Free during the pilot</p><h1 data-i18n=ci.h1>A price adjustment index for contracts</h1>
+<p class=lede data-i18n=ci.lede>Many construction contracts adjust payments when input prices move (price adjustment or fluctuation clauses).
+They need an index both sides can look up. Here is one for each pilot country, month by month, with a calculator.</p></section>
+<section class=reportgrid><div class=panel>
+ <label><span data-i18n=th.country>Country</span><select id=ci-country>{opts}</select></label>
+ <p class=ci-what data-ci-what></p>
+ <div class=tablewrap><table class=glance><thead><tr><th data-i18n=ci.month>Month</th><th data-i18n=ci.index>Index</th><th data-i18n=ci.chg>Change</th>
+ <th data-i18n=ci.status>Status</th></tr></thead><tbody id=ci-rows></tbody></table></div>
+ <p><a class=btn data-ci-csv download data-i18n=boq.csv>Download CSV</a></p></div>
+<aside class=panel><h2 data-i18n=ci.calc>Adjust a payment</h2>
+ <form id=ci-form>
+ <label><span data-i18n=ci.amount>Amount to adjust</span> (<span data-ci-ccy></span>)<input name=amount type=number min=0 step=any value=100000000 inputmode=decimal></label>
+ <div class=row2><label><span data-i18n=ci.base>Base month (tender)</span><select name=base></select></label>
+ <label><span data-i18n=ci.val>Valuation month</span><select name=val></select></label></div>
+ <label><span data-i18n=ci.fixed>Fixed part, not adjusted (%)</span><input name=fixed type=number min=0 max=100 value=15></label>
+ </form>
+ <div data-ci-out aria-live=polite></div>
+ <p class=fineprint data-i18n=ci.formula>Formula: adjusted amount = amount × (a + b × I₁ / I₀), where a is the fixed part, b = 1 − a, I₀ the index in the
+ base month and I₁ in the valuation month — the one-index form of standard price adjustment clauses.</p></aside></section>
+<section class=prose><h2 data-i18n=ci.how>How to use it — and its limits</h2><ul class=plain>
+<li data-i18n=ci.l1>Official months come straight from the statistics office (UBOS, KNBS, Stats SA). Provisional months are our forecast, used only until
+the official figure is published; agree in the contract that provisional values are replaced.</li>
+<li data-i18n=ci.l2>Countries without an official construction index (Nigeria, Rwanda, Tanzania, Zambia) show our import-cost index from oil and the
+exchange rate. It does not cover local materials or labour, so use it with care and say so in the contract.</li>
+<li data-i18n=ci.l3>This is free during the pilot. Indices by material and city, long history, monthly certificates and a data feed are planned for
+CiO Costs Pro.</li></ul></section>
 """
 
 
@@ -821,6 +897,16 @@ def build() -> Path:
     (OUT / "calculator.html").write_text(shell("Bid escalation calculator — CiO Costs", page_calc(), base, page="calc",
                                                desc="Expected input-cost escalation over your contract, with a range."),
                                          encoding="utf-8")
+    cindex = {c["key"]: {"country": c["country"], "flag": c["flag"], "cc": slim[c["key"]]["cc"], "currency": c["currency"],
+                         "official": c["official"], "office": load_country(c["key"])["settlement"].get("statistics_office", ""),
+                         "step": c["step"], "rows": contract_series(c)} for c in cs if not c.get("bench")}
+    (OUT / "data").mkdir(exist_ok=True)
+    for k, v in cindex.items():                       # free CSV downloads
+        (OUT / "data" / f"contract_index_{k}.csv").write_text(
+            "month,index,status\n" + "".join(f"{r['m']},{r['v']},{r['s']}\n" for r in v["rows"]), encoding="utf-8")
+    (OUT / "contract-index.html").write_text(shell("Price adjustment index — CiO Costs", page_contract_index(cs), dict(base, cindex=cindex),
+                                                   page="cindex", desc="A monthly index for construction price adjustment clauses."),
+                                             encoding="utf-8")
     (OUT / "embed.html").write_text(
         "<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
         "<title>CiO Costs</title><base target=_blank><link rel=stylesheet href='assets/cio.css'></head><body class=embed-body>" + page_embed()

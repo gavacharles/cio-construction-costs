@@ -6,6 +6,7 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "boq.eyebrow": "Bure wakati wa majaribio · hadi mistari 10", "boq.h": "Ongezeko la gharama kwa jedwali la kiasi (BoQ)", "boq.d": "Weka mistari yako kwa bei za leo. Kila mstari unaunganishwa na utabiri wa kifaa hicho, na unapata gharama inayotarajiwa katika kipindi cha kazi, pamoja na kiwango. Bandika moja kwa moja kutoka Excel: maelezo, kiasi, kipimo, bei.", "boq.desc": "Maelezo", "boq.qty": "Kiasi", "boq.rate": "Bei ya leo", "boq.series": "Bei inafuata", "boq.today": "Kiasi leo", "boq.exp": "Inayotarajiwa", "boq.total": "Jumla", "boq.add": "Ongeza mstari", "boq.paste": "Bandika kutoka Excel", "boq.csv": "Pakua CSV", "boq.del": "Ondoa mstari", "boq.limit": "Hadi mistari 10 bure wakati wa majaribio. Majedwali makubwa, miradi iliyohifadhiwa na PDF zenye nembo zimepangwa kwa CiO Costs Pro.", "boq.fixed": "Bei isiyobadilika", "boq.descph": "mf. Saruji, mfuko wa kilo 50", "boq.sum": "Inayotarajiwa {from} – {to}: {v} ({d} juu ya bei za leo). Kiwango {lo} hadi {hi}.", "boq.empty": "Ongeza kiasi na bei za leo kuona gharama inayotarajiwa.", "boq.ex1": "Saruji, mfuko wa kilo 50", "boq.ex1u": "mfuko", "boq.ex2": "Nondo, Y12", "boq.ex3": "Mchanga, kwa safari", "boq.ex3u": "safari", "ci.link": "Fahirisi ya marekebisho ya bei kwa mikataba →", "ci.short": "Fahirisi ya mikataba", "ci.eyebrow": "Bure wakati wa majaribio", "ci.h1": "Fahirisi ya marekebisho ya bei kwa mikataba", "ci.lede": "Mikataba mingi ya ujenzi hurekebisha malipo bei za vifaa zinapobadilika (vifungu vya marekebisho ya bei). Vinahitaji fahirisi ambayo pande zote mbili zinaweza kuiona. Hii hapa moja kwa kila nchi ya majaribio, mwezi kwa mwezi, pamoja na kikokotoo.", "ci.month": "Mwezi", "ci.index": "Fahirisi", "ci.chg": "Mabadiliko", "ci.status": "Hali", "ci.calc": "Rekebisha malipo", "ci.amount": "Kiasi cha kurekebisha", "ci.base": "Mwezi wa msingi (zabuni)", "ci.val": "Mwezi wa tathmini", "ci.fixed": "Sehemu isiyorekebishwa (%)", "ci.formula": "Kanuni: kiasi kilichorekebishwa = kiasi × (a + b × I₁ / I₀), ambapo a ni sehemu isiyobadilika, b = 1 − a, I₀ fahirisi ya mwezi wa msingi na I₁ ya mwezi wa tathmini.", "ci.how": "Jinsi ya kuitumia — na mipaka yake", "ci.l1": "Miezi rasmi inatoka moja kwa moja kwa ofisi ya takwimu (UBOS, KNBS, Stats SA). Miezi ya muda ni utabiri wetu, hadi takwimu rasmi itakapotoka; kubalini katika mkataba kwamba itabadilishwa.", "ci.l2": "Nchi zisizo na fahirisi rasmi ya ujenzi (Nigeria, Rwanda, Tanzania, Zambia) zinaonyesha fahirisi yetu ya gharama za uagizaji kutoka mafuta na sarafu. Haijumuishi vifaa vya ndani wala kazi; itumieni kwa uangalifu.", "ci.l3": "Ni bure wakati wa majaribio. Fahirisi kwa kifaa na mji, historia ndefu, vyeti vya kila mwezi na mtiririko wa data zimepangwa kwa CiO Costs Pro.", "ci.what.off": "Fahirisi rasmi ya bei za vifaa vya ujenzi kutoka {o}, ikiongezwa miezi ya muda hadi toleo rasmi lijalo.", "ci.what.est": "Bado hakuna fahirisi rasmi ya ujenzi: fahirisi ya CiO ya gharama za uagizaji (mafuta na sarafu). Vifaa vya ndani na kazi havijajumuishwa.", "ci.st.official": "Rasmi", "ci.st.provisional": "Ya muda (CiO)", "ci.st.estimate": "Makadirio ya CiO", "ci.res": "mabadiliko ya sehemu inayorekebishwa: fahirisi {i0} → {i1}", "ci.adj": "Kiasi kilichorekebishwa: {v} (tofauti {d})", "ci.prov": "* Inatumia mwezi wa muda: hesabu tena takwimu rasmi zikitoka.",
       "trend": "mwenendo", "trend.tip": "Utabiri kutoka historia ya bei ya kifaa hiki pekee (bila modeli ya mafuta, sarafu au hali ya hewa): mwongozo wa jumla zaidi.",
       "dv.h": "Kinachosukuma gharama", "dv.oil": "Mafuta ya dunia (Brent)", "dv.off": "Takwimu rasmi za karibuni", "dv.upd": "Utabiri ulisasishwa", "dv.every": "Husasishwa kila saa 3 mafuta na sarafu zinapobadilika", "dv.up3": "katika miezi 3 — mafuta, usafiri, lami na plastiki zinagharimu zaidi", "dv.down3": "katika miezi 3 — mafuta na usafiri vinagharimu kidogo", "dv.fx": "{ccy} kwa dola moja ya Marekani", "dv.weaker": "imedhoofika katika miezi 3 — nondo, malighafi ya saruji na vifaa vya kuagiza vinagharimu zaidi", "dv.stronger": "imeimarika katika miezi 3 — bidhaa za kuagiza zinagharimu kidogo", "dv.usd": "Bei hapa ni kwa dola za Marekani: hakuna athari ya sarafu", "dv.none": "Bado hakuna fahirisi rasmi", "dv.est": "Makadirio kutoka mabadiliko ya mafuta na sarafu", "dv.now": "Sasa hivi", "dv.hago": "saa {h} zilizopita",
       "bm.q": "CiO Costs inatabiri vipi bei za ujenzi mahali takwimu rasmi ni nzuri?", "bm.latest": "ya karibuni", "bm.in1": "ndani ya kiwango, mwezi 1 mbele", "bm.in3": "ndani ya kiwango, miezi 3 mbele", "bm.miss": "wastani wa kukosea (pointi), yetu / “hakuna mabadiliko”", "bm.beat": "Bora kuliko “hakuna mabadiliko”", "bm.nobeat": "Bado si bora kuliko “hakuna mabadiliko”", "bm.months": "miezi iliyojaribiwa, kila mmoja kwa takwimu zilizojulikana wakati huo", "bm.aim": "Lengo ni 80%: mabadiliko halisi yawe ndani ya kiwango mara 8 kati ya 10. Juu sana maana kiwango ni cha tahadhari mno; chini sana, cha ujasiri mno.", "bm.vs": "Utabiri dhidi ya kilichotokea", "bm.t1": "mwezi 1 mbele", "bm.t3": "miezi 3 mbele", "bm.lg.rng": "kiwango chetu", "bm.lg.mid": "utabiri wetu wa kati", "bm.lg.hit": "matokeo rasmi, ndani", "bm.lg.miss": "matokeo rasmi, nje", "bm.next": "Tunachotarajia baadaye", "bm.idx": "Fahirisi rasmi", "bm.how": "Jaribio hili linavyofanya kazi", "bm.how1": "Kila mwezi katika miaka minne iliyopita, tulitabiri kwa kutumia takwimu zilizochapishwa hadi wakati huo tu.", "bm.how2": "Tulilinganisha na takwimu rasmi iliyotoka baadaye: je, ilikuwa ndani ya kiwango chetu?", "bm.how3": "Pia tunalinganisha na kanuni rahisi kabisa — “bei zinabaki zilipo” — kuona kama utabiri unaongeza kitu.", "bm.source": "Chanzo rasmi", "bm.back": "Nchi saba za majaribio",
@@ -95,6 +96,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "boq.eyebrow": "Gratuit pendant le pilote · jusqu'à 10 lignes", "boq.h": "Révision d'un devis quantitatif (BoQ)", "boq.d": "Saisissez vos lignes aux prix d'aujourd'hui. Chaque ligne est reliée à la prévision du matériau, et vous obtenez le coût attendu sur la période des travaux, avec une fourchette. Collez directement depuis Excel : description, quantité, unité, prix.", "boq.desc": "Description", "boq.qty": "Quantité", "boq.rate": "Prix aujourd'hui", "boq.series": "Le prix suit", "boq.today": "Montant aujourd'hui", "boq.exp": "Attendu", "boq.total": "Total", "boq.add": "Ajouter une ligne", "boq.paste": "Coller depuis Excel", "boq.csv": "Télécharger CSV", "boq.del": "Supprimer la ligne", "boq.limit": "Jusqu'à 10 lignes gratuites pendant le pilote. Grands devis, projets enregistrés et PDF à votre marque sont prévus pour CiO Costs Pro.", "boq.fixed": "Prix fixe (sans changement)", "boq.descph": "ex. Ciment, sac de 50 kg", "boq.sum": "Attendu sur {from} – {to} : {v} ({d} par rapport aux prix d'aujourd'hui). Fourchette {lo} à {hi}.", "boq.empty": "Ajoutez quantités et prix d'aujourd'hui pour voir le coût attendu.", "boq.ex1": "Ciment, sac de 50 kg", "boq.ex1u": "sac", "boq.ex2": "Acier d'armature, HA12", "boq.ex3": "Sable, par voyage", "boq.ex3u": "voyage", "ci.link": "Indice de révision des prix pour les contrats →", "ci.short": "Indice des contrats", "ci.eyebrow": "Gratuit pendant le pilote", "ci.h1": "Un indice de révision des prix pour les contrats", "ci.lede": "Beaucoup de contrats de construction révisent les paiements quand les prix des intrants bougent (clauses de révision des prix). Il faut un indice que les deux parties peuvent consulter. En voici un par pays pilote, mois par mois, avec un calculateur.", "ci.month": "Mois", "ci.index": "Indice", "ci.chg": "Variation", "ci.status": "Statut", "ci.calc": "Réviser un paiement", "ci.amount": "Montant à réviser", "ci.base": "Mois de base (offre)", "ci.val": "Mois de valorisation", "ci.fixed": "Partie fixe, non révisée (%)", "ci.formula": "Formule : montant révisé = montant × (a + b × I₁ / I₀), où a est la partie fixe, b = 1 − a, I₀ l'indice du mois de base et I₁ celui du mois de valorisation.", "ci.how": "Mode d'emploi — et limites", "ci.l1": "Les mois officiels viennent directement de l'office statistique (UBOS, KNBS, Stats SA). Les mois provisoires sont notre prévision, jusqu'à la publication officielle ; prévoyez au contrat leur remplacement.", "ci.l2": "Les pays sans indice officiel de la construction (Nigeria, Rwanda, Tanzanie, Zambie) affichent notre indice des coûts d'importation (pétrole et change). Il ne couvre ni matériaux locaux ni main-d'œuvre : à utiliser avec prudence.", "ci.l3": "Gratuit pendant le pilote. Indices par matériau et par ville, long historique, certificats mensuels et flux de données sont prévus pour CiO Costs Pro.", "ci.what.off": "Indice officiel des prix des intrants de construction de {o}, prolongé par des mois provisoires jusqu'à la prochaine publication.", "ci.what.est": "Pas encore d'indice officiel : indice CiO des coûts d'importation (pétrole et change). Matériaux locaux et main-d'œuvre non inclus.", "ci.st.official": "Officiel", "ci.st.provisional": "Provisoire (CiO)", "ci.st.estimate": "Estimation CiO", "ci.res": "variation de la partie révisable : indice {i0} → {i1}", "ci.adj": "Montant révisé : {v} (écart {d})", "ci.prov": "* Utilise un mois provisoire : recalculez à la publication officielle.",
       "trend": "tendance", "trend.tip": "Prévision tirée du seul historique de prix de ce matériau (sans modèle pétrole, devise ou météo) : un repère plus approximatif.",
       "dv.h": "Ce qui fait bouger les coûts", "dv.oil": "Pétrole mondial (Brent)", "dv.off": "Derniers chiffres officiels", "dv.upd": "Prévision mise à jour", "dv.every": "Actualisée toutes les 3 heures selon le pétrole et les devises", "dv.up3": "en 3 mois — carburant, transport, bitume et plastiques plus chers", "dv.down3": "en 3 mois — carburant et transport moins chers", "dv.fx": "{ccy} par dollar US", "dv.weaker": "plus faible en 3 mois — acier, intrants du ciment et équipements importés plus chers", "dv.stronger": "plus fort en 3 mois — importations un peu moins chères", "dv.usd": "Prix en dollars US : pas d'effet de change", "dv.none": "Pas encore d'indice officiel", "dv.est": "Estimation à partir du pétrole et des devises", "dv.now": "À l'instant", "dv.hago": "il y a {h} h",
       "bm.q": "CiO Costs prévoit-il bien les prix de la construction là où les données officielles sont bonnes ?", "bm.latest": "dernier", "bm.in1": "dans la fourchette, à 1 mois", "bm.in3": "dans la fourchette, à 3 mois", "bm.miss": "erreur moyenne (points), la nôtre / « pas de changement »", "bm.beat": "Bat « pas de changement »", "bm.nobeat": "Ne bat pas encore « pas de changement »", "bm.months": "mois testés, chacun avec les seules données connues à l'époque", "bm.aim": "L'objectif est 80 % : la variation réelle doit tomber dans la fourchette 8 fois sur 10. Bien plus : fourchette trop prudente ; bien moins : trop audacieuse.", "bm.vs": "Prévision vs réalité", "bm.t1": "à 1 mois", "bm.t3": "à 3 mois", "bm.lg.rng": "notre fourchette", "bm.lg.mid": "notre prévision centrale", "bm.lg.hit": "résultat officiel, dedans", "bm.lg.miss": "résultat officiel, dehors", "bm.next": "Ce que nous attendons", "bm.idx": "L'indice officiel", "bm.how": "Comment fonctionne ce test", "bm.how1": "Chaque mois des quatre dernières années, nous avons prévu en n'utilisant que les chiffres publiés à ce moment-là.", "bm.how2": "Nous l'avons comparée au chiffre officiel publié ensuite : tombait-il dans notre fourchette ?", "bm.how3": "Nous comparons aussi à la règle la plus simple — « les prix restent où ils sont » — pour voir si la prévision apporte quelque chose.", "bm.source": "Source officielle", "bm.back": "Les sept pays pilotes",
@@ -184,6 +186,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "boq.eyebrow": "Free during the pilot · up to 10 lines", "boq.h": "Bill of quantities escalation", "boq.d": "Enter your lines at today's rates. Each line is matched to the forecast for that material, and you get the expected cost over the work period, with a likely range. Paste straight from Excel: description, quantity, unit, rate.", "boq.desc": "Description", "boq.qty": "Quantity", "boq.rate": "Rate today", "boq.series": "Price follows", "boq.today": "Amount today", "boq.exp": "Expected", "boq.total": "Total", "boq.add": "Add a line", "boq.paste": "Paste from Excel", "boq.csv": "Download CSV", "boq.del": "Remove line", "boq.limit": "Up to 10 lines free during the pilot. Larger bills, saved projects and branded PDFs are planned for CiO Costs Pro.", "boq.fixed": "Fixed price (no change)", "boq.descph": "e.g. Cement, 50 kg bag", "boq.sum": "Expected over {from} – {to}: {v} ({d} on today's rates). Likely range {lo} to {hi}.", "boq.empty": "Add quantities and today's rates to see the expected cost.", "boq.ex1": "Cement, 50 kg bag", "boq.ex1u": "bag", "boq.ex2": "Reinforcement steel, Y12", "boq.ex3": "Sand, per trip", "boq.ex3u": "trip", "ci.link": "Price adjustment index for contracts →", "ci.short": "Contract index", "ci.eyebrow": "Free during the pilot", "ci.h1": "A price adjustment index for contracts", "ci.lede": "Many construction contracts adjust payments when input prices move (price adjustment or fluctuation clauses). They need an index both sides can look up. Here is one for each pilot country, month by month, with a calculator.", "ci.month": "Month", "ci.index": "Index", "ci.chg": "Change", "ci.status": "Status", "ci.calc": "Adjust a payment", "ci.amount": "Amount to adjust", "ci.base": "Base month (tender)", "ci.val": "Valuation month", "ci.fixed": "Fixed part, not adjusted (%)", "ci.formula": "Formula: adjusted amount = amount × (a + b × I₁ / I₀), where a is the fixed part, b = 1 − a, I₀ the index in the base month and I₁ in the valuation month — the one-index form of standard price adjustment clauses.", "ci.how": "How to use it — and its limits", "ci.l1": "Official months come straight from the statistics office (UBOS, KNBS, Stats SA). Provisional months are our forecast, used only until the official figure is published; agree in the contract that provisional values are replaced.", "ci.l2": "Countries without an official construction index (Nigeria, Rwanda, Tanzania, Zambia) show our import-cost index from oil and the exchange rate. It does not cover local materials or labour, so use it with care and say so in the contract.", "ci.l3": "This is free during the pilot. Indices by material and city, long history, monthly certificates and a data feed are planned for CiO Costs Pro.", "ci.what.off": "Official construction input price index from {o}, extended with provisional months until the next official release.", "ci.what.est": "No official construction index yet: CiO import-cost index (oil and exchange rate). Local materials and labour are not included.", "ci.st.official": "Official", "ci.st.provisional": "Provisional (CiO)", "ci.st.estimate": "CiO estimate", "ci.res": "change in the adjustable part's value: index {i0} → {i1}", "ci.adj": "Adjusted amount: {v} (difference {d})", "ci.prov": "* Uses a provisional month: recalculate when the official figure is published.",
       "trend": "trend", "trend.tip": "Forecast from this material's own price history only (no oil, currency or weather model): a rougher guide.",
       "dv.h": "What is moving costs", "dv.oil": "World oil (Brent)", "dv.off": "Latest official figures", "dv.upd": "Forecast updated", "dv.every": "Refreshed every 3 hours as oil and currencies move", "dv.up3": "in 3 months — fuel, transport, asphalt and plastics cost more", "dv.down3": "in 3 months — fuel and transport cost less", "dv.fx": "{ccy} per US dollar", "dv.weaker": "weaker in 3 months — imported steel, cement inputs and fittings cost more", "dv.stronger": "stronger in 3 months — imports cost a little less", "dv.usd": "Prices here are in US dollars: no currency effect", "dv.none": "No official index yet", "dv.est": "Estimate from oil and currency moves", "dv.now": "Just now", "dv.hago": "{h} h ago",
       "bm.q": "How well does CiO Costs forecast construction prices where the official data is good?", "bm.latest": "latest", "bm.in1": "inside the likely range, 1 month ahead", "bm.in3": "inside the likely range, 3 months ahead", "bm.miss": "average miss (points), ours / “no change”", "bm.beat": "Beats “no change”", "bm.nobeat": "Does not beat “no change” yet", "bm.months": "months tested, each with only the data known at the time", "bm.aim": "The aim is 80%: the real change should land inside our likely range 8 times in 10. Much higher means the range is too cautious; much lower, too bold.", "bm.vs": "Forecast vs what happened", "bm.t1": "1 month ahead", "bm.t3": "3 months ahead", "bm.lg.rng": "our likely range", "bm.lg.mid": "our central forecast", "bm.lg.hit": "official result, inside", "bm.lg.miss": "official result, outside", "bm.next": "What we expect next", "bm.idx": "The official index", "bm.how": "How this test works", "bm.how1": "Every month in the past four years, we made a forecast using only the figures that were published by then.", "bm.how2": "We compared it with the official figure that came out later: did it land inside our likely range?", "bm.how3": "We also compare with the simplest rule — “prices stay where they are” — to see whether the forecast adds anything.", "bm.source": "Official source", "bm.back": "The seven pilot countries",
@@ -630,8 +633,7 @@ window.I18N = (function () {
   /* ---------- bid escalation calculator ---------- */
   const cf = $("#calcform");
   if (cf) {
-    const out = $("#calcout"), months = DATA.months.filter(v => v[0] === "M").map(v => v.slice(2));
-    const now = new Date().toISOString().slice(0, 7), all = [now, ...months];
+    const out = $("#calcout"), all = nextMonths(24), now = all[0];          /* every month, not only those in the forecast picker */
     const PRESET = { building: { Cement: 30, Rebar: 25, "Reinforcement steel": 25, Sand: 10, Labour: 20, Diesel: 10,
                                  "Building cost index": 100, "Ready-mix concrete": 20, "Reinforcing steel": 25, "Construction stone and sand": 10 },
                      road: { Diesel: 35, Sand: 10, Cement: 15, Labour: 20, Rebar: 10, "Reinforcement steel": 10,
@@ -644,7 +646,7 @@ window.I18N = (function () {
     cf.elements.end.innerHTML = all.slice(1).map(m => `<option value=${m}>${label(m)}</option>`).join("");
     cf.elements.end.value = all[Math.min(9, all.length - 1)];
     function mixInputs() { const c = DATA.countries[cf.elements.country.value], pr = PRESET[cf.elements.preset.value] || {};
-      const series = Object.keys(c.paths); let w = series.map(s => pr[s] || 0); if (!w.some(Boolean)) w = series.map((_, i) => i === 0 ? 100 : 0);
+      const series = Object.keys(c.paths).filter(n => !(c.trend || []).includes(n)); let w = series.map(s => pr[s] || 0); if (!w.some(Boolean)) w = series.map((_, i) => i === 0 ? 100 : 0);
       $("#mix").innerHTML = `<legend>${tr("calc.mix")}</legend>` + series.map((s, i) => `<label class=mixrow><span>${T.mat(s)}</span><input type=number min=0 max=100 name="mix:${s}" value=${w[i]}></label>`).join("");
       $$("[data-ccy]").forEach(x => x.textContent = c.currency); calc(); }
     function calc() {
@@ -664,6 +666,105 @@ window.I18N = (function () {
         <a class=btn href="countries/${cf.elements.country.value}/index.html">${tr("gm.see", { c: cname(c) })}</a></div>`; }
     cf.elements.country.onchange = mixInputs; cf.elements.preset.onchange = mixInputs; cf.oninput = ev => { if (!["country", "preset"].includes(ev.target.name)) calc(); };
     mixInputs();
+  }
+
+  /* ---------- consecutive months from this month (calculators work month by month) ---------- */
+  function nextMonths(n) { const d = new Date(), out = [];          /* declarations: also used by the calculator above */
+    for (let i = 0; i <= n; i++) { const x = new Date(d.getFullYear(), d.getMonth() + i, 1); out.push(`${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, "0")}`); }
+    return out; }
+  function esc(s) { return String(s ?? "").replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch])); }
+  /* average change from today over the work period (spending spread evenly), with the likely range */
+  function overPeriod(pth, span) { if (!pth || !span.length) return [0, 0, 0]; const base = at(pth, "M:" + nextMonths(0)[0]).q;
+    let e = 0, l = 0, h = 0; span.forEach(m => { const q = at(pth, "M:" + m).q; e += q.median - base.median; l += q.lo - base.median; h += q.hi - base.median; });
+    return [e / span.length, l / span.length, h / span.length]; }
+
+  /* ---------- bill of quantities escalation (free: up to 10 lines; kept in this browser) ---------- */
+  const bf = $("#boqform");
+  if (bf) {
+    const fld = n => bf.querySelector(`[name=${n}]`), body = $("#boqrows"), MAX = 10, ML = nextMonths(24);
+    fld("country").innerHTML = Object.entries(DATA.countries).map(([k, c]) => `<option value=${k}>${c.flag} ${cname(c)}</option>`).join("");
+    const k0 = store.get("cio-country", null); fld("country").value = DATA.countries[k0] ? k0 : (DATA.countries.uganda ? "uganda" : fld("country").value);
+    fld("start").innerHTML = ML.slice(0, -1).map(m => `<option value=${m}>${label(m)}</option>`).join("");
+    fld("end").innerHTML = ML.slice(1).map(m => `<option value=${m}>${label(m)}</option>`).join(""); fld("end").value = ML[6];
+    const C = () => DATA.countries[fld("country").value];
+    const opts = c => Object.keys(c.paths).map(n => `<option value="${esc(n)}">${T.mat(n)}${(c.trend || []).includes(n) ? " · " + tr("trend") : ""}</option>`).join("")
+      + `<option value="">${tr("boq.fixed")}</option>`;
+    const guess = (c, desc) => { const w = words(desc).filter(t => t.length >= 3);
+      return Object.keys(c.paths).find(n => { const nw = words(n + " " + T.mat(n)); return w.some(t => nw.some(x => x.startsWith(t) || t.startsWith(x) || (SYN[t] || []).some(y => x.startsWith(y)))); }) ?? c.head; };
+    const fmt = v => Math.round(v).toLocaleString(T.loc || undefined);
+    function addRow(v = {}) {
+      if (body.children.length >= MAX) return;
+      const row = document.createElement("tr"), c = C();
+      row.innerHTML = `<td><input data-k=desc value="${esc(v.desc)}" placeholder="${esc(tr("boq.descph"))}" aria-label="${esc(tr("boq.desc"))}"></td>
+        <td><input data-k=qty type=number min=0 step=any value="${esc(v.qty)}" aria-label="${esc(tr("boq.qty"))}"></td>
+        <td><input data-k=unit value="${esc(v.unit)}" aria-label="${esc(tr("rep.unit"))}"></td>
+        <td><input data-k=rate type=number min=0 step=any value="${esc(v.rate)}" aria-label="${esc(tr("boq.rate"))}"></td>
+        <td><select data-k=series aria-label="${esc(tr("boq.series"))}">${opts(c)}</select></td><td data-o=today></td><td data-o=exp></td>
+        <td><button type=button class=boq-del aria-label="${esc(tr("boq.del"))}">✕</button></td>`;
+      body.appendChild(row);
+      const sel = $("[data-k=series]", row); sel.value = v.series != null && (v.series === "" || c.paths[v.series]) ? v.series : guess(c, v.desc || "");
+      if (v.manual) row.dataset.manual = 1;
+      $("[data-k=desc]", row).addEventListener("change", () => { if (!row.dataset.manual) sel.value = guess(C(), $("[data-k=desc]", row).value); compute(); });
+      sel.addEventListener("change", () => { row.dataset.manual = 1; compute(); });
+      $(".boq-del", row).onclick = () => { row.remove(); compute(); };
+      compute(); }
+    function rows() { return $$("tr", body).map(r => ({ desc: $("[data-k=desc]", r).value, qty: $("[data-k=qty]", r).value, unit: $("[data-k=unit]", r).value,
+      rate: $("[data-k=rate]", r).value, series: $("[data-k=series]", r).value, manual: !!r.dataset.manual, el: r })); }
+    let last = [];
+    function compute() {
+      const c = C(), span = ML.filter(m => m >= fld("start").value && m <= fld("end").value);
+      $$("[data-boq-ccy]").forEach(x => x.textContent = c.currency);
+      let T0 = 0, T1 = 0, TL = 0, TH = 0; last = [];
+      rows().forEach(r => { const amt = (+r.qty || 0) * (+r.rate || 0), [e, l, h] = r.series ? overPeriod(c.paths[r.series], span) : [0, 0, 0];
+        const ex = amt * (1 + e / 100); T0 += amt; T1 += ex; TL += amt * (1 + l / 100); TH += amt * (1 + h / 100);
+        $("[data-o=today]", r.el).textContent = amt ? fmt(amt) : "–";
+        $("[data-o=exp]", r.el).innerHTML = amt ? `${fmt(ex)} <small>${apct(e)}</small>` : "–";
+        last.push([r.desc, r.qty, r.unit, r.rate, r.series || tr("boq.fixed"), Math.round(amt), Math.round(ex), e.toFixed(2)]); });
+      $("[data-boq-t0]").textContent = T0 ? fmt(T0) : "–"; $("[data-boq-t1]").textContent = T1 ? fmt(T1) : "–";
+      $("[data-boq-sum]").innerHTML = T0 ? tr("boq.sum", { v: `<b>${fmt(T1)} ${c.currency}</b>`, d: pct((T1 / T0 - 1) * 100), lo: fmt(TL), hi: fmt(TH) + " " + c.currency,
+        from: label(fld("start").value), to: label(fld("end").value) }) : tr("boq.empty");
+      $("[data-boq-add]").disabled = body.children.length >= MAX;
+      store.set("cio-boq", { country: fld("country").value, rows: rows().map(({ el, ...r }) => r) }); }
+    fld("country").onchange = () => { const c = C(); $$("tr", body).forEach(r => { const sel = $("[data-k=series]", r), was = sel.value; sel.innerHTML = opts(c);
+      sel.value = r.dataset.manual && c.paths[was] ? was : guess(c, $("[data-k=desc]", r).value); }); compute(); };
+    fld("start").onchange = fld("end").onchange = compute; body.addEventListener("input", compute);
+    $("[data-boq-add]").onclick = () => addRow();
+    const pb = $("[data-boq-paste]", bf), box = $("[data-boq-pastebox]", bf);
+    pb.onclick = () => { box.hidden = !box.hidden; if (!box.hidden) box.focus(); };
+    box.addEventListener("change", () => { box.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean).forEach(l => {
+      const p = l.includes("\t") ? l.split("\t") : l.split(/[;,](?=\s*[\d.])/); const num = x => String(x || "").replace(/[^\d.\-]/g, "");
+      addRow({ desc: (p[0] || "").trim(), qty: num(p[1]), unit: (p[2] || "").trim(), rate: num(p[3]) }); }); box.value = ""; box.hidden = true; });
+    $("[data-boq-csv]", bf).onclick = () => { const head = ["description", "quantity", "unit", "rate_today", "price_follows", "amount_today", "amount_expected", "change_pct"];
+      const csv = [head, ...last].map(r => r.map(x => `"${String(x ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "cio-boq-escalation.csv"; a.click(); };
+    const saved = store.get("cio-boq", null);
+    if (saved && DATA.countries[saved.country] && saved.rows && saved.rows.length) { fld("country").value = saved.country; saved.rows.slice(0, MAX).forEach(r => addRow(r)); }
+    else [{ desc: tr("boq.ex1"), unit: tr("boq.ex1u"), qty: 400 }, { desc: tr("boq.ex2"), unit: "t", qty: 3 }, { desc: tr("boq.ex3"), unit: tr("boq.ex3u"), qty: 10 }].forEach(r => addRow(r));
+    compute();
+  }
+
+  /* ---------- price adjustment index for contracts ---------- */
+  const cis = $("#ci-country");
+  if (cis && DATA.cindex) {
+    const want = (location.hash || "").slice(1), k0 = store.get("cio-country", null);
+    cis.value = DATA.cindex[want] ? want : (DATA.cindex[k0] ? k0 : cis.value);
+    const f = $("#ci-form"), out = $("[data-ci-out]");
+    function ciCalc() { const X = DATA.cindex[cis.value], g = m => X.rows.find(r => r.m === m), b = g(f.elements.base.value), v = g(f.elements.val.value);
+      if (!b || !v) return; const a = Math.min(100, Math.max(0, +f.elements.fixed.value || 0)) / 100, amt = +f.elements.amount.value || 0;
+      const factor = a + (1 - a) * v.v / b.v, adj = amt * factor;
+      out.innerHTML = `<p class=pct>${apct((factor - 1) * 100)}</p><p class=pct-l>${tr("ci.res", { i0: b.v.toFixed(2), i1: v.v.toFixed(2) })}</p>
+        <p class=calcmoney>${tr("ci.adj", { v: `<b>${Math.round(adj).toLocaleString(T.loc || undefined)} ${X.currency}</b>`, d: Math.round(adj - amt).toLocaleString(T.loc || undefined) })}</p>
+        ${b.s === "provisional" || v.s === "provisional" ? `<p class=fineprint>${tr("ci.prov")}</p>` : ""}`; }
+    function ciShow() { const X = DATA.cindex[cis.value], rows = X.rows;
+      $("[data-ci-what]").innerHTML = X.official ? tr("ci.what.off", { o: esc(X.office) }) : tr("ci.what.est");
+      $("#ci-rows").innerHTML = rows.slice().reverse().map((r, i, arr) => { const p = arr[i + 1], ch = p ? (r.v / p.v - 1) * 100 : null;
+        return `<tr><td>${qlabel(r.m, X.step)}</td><td>${r.v.toFixed(2)}</td><td>${ch == null ? "–" : apct(ch)}</td><td><span class="cist ${r.s}">${tr("ci.st." + r.s)}</span></td></tr>`; }).join("");
+      $("[data-ci-csv]").href = rel + `data/contract_index_${cis.value}.csv`; $("[data-ci-csv]").setAttribute("download", `contract_index_${cis.value}.csv`);
+      $("[data-ci-ccy]").textContent = X.currency;
+      const o = rows.map(r => `<option value=${r.m}>${qlabel(r.m, X.step)}${r.s === "provisional" ? " *" : ""}</option>`).join("");
+      f.elements.base.innerHTML = o; f.elements.val.innerHTML = o;
+      f.elements.base.value = rows[Math.max(0, rows.length - (X.step === "quarter" ? 5 : 13))].m; f.elements.val.value = rows[rows.length - 1].m; ciCalc(); }
+    cis.onchange = ciShow; f.oninput = ciCalc; ciShow();
   }
 
   /* ---------- embed widget ---------- */
