@@ -95,16 +95,25 @@ reports must not settle contracts, because participants could move it.
 
 ## Pilot (first 3 months)
 
-Pilot countries are set in `config/site.yaml` (`pilot_countries`): Uganda, South Africa, Kenya, Rwanda, Zambia,
-Tanzania and Nigeria. They come first in every country list, invites default to them, and the monthly pilot report
-covers them. Forecasts and price reporting stay open for all 18 countries.
+Forecasting and price collection only (the play-money market is switched off; its code stays in `src/market/`).
+Live countries are set in `config/site.yaml`: `pilot_countries` (Uganda, South Africa, Kenya, Rwanda, Zambia,
+Tanzania, Nigeria) plus `benchmark_countries` (United States). Only these appear on the site and the public API;
+add the others to `pilot_countries` when expanding.
 
-The pilot report scores four goals: main items with 3+ reports every week in the capital, members active each week
-(>50%), forecasts inside the likely range (~80%), and site visits. Site visits come from `/api/public/hit`
-(`src/market/usage.py`): no cookies, no IP addresses, a visitor counted once per day, nothing sent when the browser
-asks not to be tracked.
+Anyone can view the site and report prices: no accounts or invites (`/app` redirects to the site). People can report
+what they paid up to 6 months back, whenever they have a moment; typical prices pool the last 8 weeks and publish from
+3 different people (`src/market/reports.py`).
 
-## Before inviting participants
+Benchmark: the United States' BLS construction input price index (FRED, `src/ingest/pull_fred.py`, daily) runs through
+the same kind of forecast, with a 48-month walk-forward test written to
+`countries/united_states/outputs/forecast/backtest_errors.csv` and shown on the site as the track record.
+
+The monthly pilot report (`/admin/pilot-report`) scores: main items with a typical price in the capital, contributors
+and returning contributors, forecasts inside the likely range, the benchmark, and site visits. Site visits come from
+`/api/public/hit` (`src/market/usage.py`): no cookies, no IP addresses, a visitor counted once per day, nothing sent when
+the browser asks not to be tracked.
+
+## Before going live
 
 - Legal: play money only (`regulation.mode` is enforced). Get a one-page opinion per country
   before any prize or cash element.

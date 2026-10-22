@@ -22,13 +22,11 @@ ITEMS = [{"code": "cement_50kg", "name": "Cement", "unit": "bag"}]
 
 def test_crowd_summary_uses_one_median_per_reporter():
     db = Participants(":memory:")
-    for name in ("a", "b"):
-        db.invite(name, "", "uganda")
-    old, now = date.today() - timedelta(weeks=4), date.today()
+    old, now = date.today() - timedelta(weeks=10), date.today()             # 10 weeks ago: outside the 8-week window
     db.add_report("a", "uganda", "cement_50kg", 30000, "Kampala", on=old)
     for p in (33000, 33000, 99000, 99000, 99000):          # one person spamming high prices
         db.add_report("a", "uganda", "cement_50kg", p, "Kampala", on=now)
-    db.add_report("b", "uganda", "cement_50kg", 33000, "Jinja", on=now)
+    db.add_report("b", "uganda", "cement_50kg", 33000, "Jinja", on=now - timedelta(weeks=5))   # earlier, still in the window
     s = db.crowd_summary("uganda", ITEMS).iloc[0]
     assert not s.published and s["median"] is None and s.pending == 2    # 2 people < the minimum of 3
     s = db.crowd_summary("uganda", ITEMS, min_reporters=2).iloc[0]
@@ -39,7 +37,7 @@ def test_crowd_summary_uses_one_median_per_reporter():
         db.add_report("a", "uganda", "steel", 5, "Kampala", items=["cement_50kg"])
 
 
-def test_app_flow(tmp_path, monkeypatch):
+def test_open_site_and_organiser_pages(tmp_path, monkeypatch):
     monkeypatch.setenv("CIO_DB", str(tmp_path / "x.sqlite"))
     monkeypatch.setenv("CIO_ADMIN_KEY", "k")
     monkeypatch.setenv("CIO_SECURE_COOKIES", "0")       # the test client speaks plain http
@@ -47,33 +45,21 @@ def test_app_flow(tmp_path, monkeypatch):
     import app as webapp
     importlib.reload(webapp)
     from fastapi.testclient import TestClient
-    from ledger import Exchange
     c = TestClient(webapp.app)
-    assert c.post("/admin/invite", data={"name": "x", "country": "uganda"}).status_code == 403
+    r = c.get("/app", follow_redirects=False)                       # members area retired: anyone uses the public site
+    assert r.status_code == 301 and r.headers["location"] == "/"
+    assert c.post("/admin/invite", data={"name": "x", "country": "uganda"}).status_code in (404, 405)
+    assert c.get("/home").status_code == 404 and c.get("/leaderboard").status_code == 404
     assert "Wrong password" in c.post("/admin/login", data={"key": "wrong"}).text
     c.post("/admin/login", data={"key": "k"})
-    r = c.post("/admin/invite", data={"name": "Jane Okello", "org": "Okello Builders", "country": "uganda"},
-               follow_redirects=False)
-    assert "key=" not in r.headers["location"]
-    code = r.headers["location"].split("made=")[1]
-    mid = Exchange(tmp_path / "x.sqlite").create_market(
-        "uganda", "CEM", "cement", "Cement", "2099-01", [0.0], ["down", "up"], [0.5, 0.5], 100,
-        "2099-02-01T00:00:00Z", "2099-06-01T00:00:00Z")
-    assert c.post("/login", data={"code": "WRONG"}, follow_redirects=False).headers["location"].startswith("/app?err")
-    assert c.post("/login", data={"code": code}, follow_redirects=False).status_code == 303
-    assert "Cement" in c.get("/home").text
-    assert c.get(f"/api/quote?m={mid}&o=1&s=10").json()["cost"] > 0
-    assert "Done" in c.post(f"/m/{mid}/trade", data={"outcome": 1, "shares": 10}).text
-    r = c.post("/prices", data={"item": "cement_50kg", "price": 34500, "location": "Kampala"})
-    assert "recorded" in r.text and "needs 3 people (1 so far)" in r.text
-    assert "Jane Okello" in c.get("/leaderboard").text
-    c.get("/logout")
-    assert c.get("/home", follow_redirects=False).status_code == 303
-    assert r.headers.get("x-frame-options") == "DENY" or c.get("/").headers["x-frame-options"] == "DENY"
+    page = c.get("/admin").text
+    assert "Uganda" in page and "Nigeria" in page and "Ghana" not in page and "pilot-report" in page
+    assert c.get("/").headers["x-frame-options"] == "DENY"
 
 
-def test_login_rate_limit(tmp_path, monkeypatch):
+def test_admin_login_rate_limit(tmp_path, monkeypatch):
     monkeypatch.setenv("CIO_DB", str(tmp_path / "y.sqlite"))
+    monkeypatch.setenv("CIO_ADMIN_KEY", "k")
     monkeypatch.setenv("CIO_SECURE_COOKIES", "0")
     import importlib
     import app as webapp
@@ -81,8 +67,8 @@ def test_login_rate_limit(tmp_path, monkeypatch):
     from fastapi.testclient import TestClient
     c = TestClient(webapp.app)
     for _ in range(10):
-        assert "not+recognised" in c.post("/login", data={"code": "BAD"}, follow_redirects=False).headers["location"]
-    assert "Too+many" in c.post("/login", data={"code": "BAD"}, follow_redirects=False).headers["location"]
+        assert "Wrong" in c.post("/admin/login", data={"key": "BAD"}, follow_redirects=False).headers["location"]
+    assert "Too+many" in c.post("/admin/login", data={"key": "BAD"}, follow_redirects=False).headers["location"]
 
 
 KNBS = ROOT / "countries" / "kenya" / "raw" / "Construction-Input-Price-Indices-for-Fourth-Quarter-2024.pdf"
@@ -167,7 +153,7 @@ def test_all_country_configs_and_generic_note(tmp_path, monkeypatch):
     from country import load_country, list_countries
     cs = list_countries()
     assert {"south_africa", "nigeria", "ghana", "zimbabwe"} <= set(cs)
-    assert all(load_country(c)["fx_code"] and load_country(c).get("price_items") for c in cs)
+    assert all(load_country(c)["fx_code"] and (load_country(c).get("price_items") or load_country(c).get("benchmark")) for c in cs)
     if not (ROOT / "data" / "shared" / "weekly_drivers.csv").exists():
         pytest.skip("no weekly drivers")
     import weekly_note
@@ -187,23 +173,20 @@ def test_cost_pressure_indicator():
     assert 0 < W_FUEL < W_IMPORT < 1
 
 
-def test_forecast_page(tmp_path, monkeypatch):
-    if not (ROOT / "countries" / "uganda" / "outputs" / "forecast_latest.json").exists():
-        pytest.skip("no forecast_latest.json yet (run weekly_note.py)")
-    monkeypatch.setenv("CIO_DB", str(tmp_path / "f.sqlite"))
-    monkeypatch.setenv("CIO_ADMIN_KEY", "k")
-    monkeypatch.setenv("CIO_SECURE_COOKIES", "0")
-    import importlib
-    import app as webapp
-    importlib.reload(webapp)
-    from fastapi.testclient import TestClient
-    c = TestClient(webapp.app)
-    c.post("/admin/login", data={"key": "k"})
-    code = c.post("/admin/invite", data={"name": "A", "org": "", "country": "uganda"},
-                  follow_redirects=False).headers["location"].split("made=")[1]
-    c.post("/login", data={"code": code})
-    html = c.get("/forecast").text
-    assert "Forecast — Uganda" in html and "<svg" in html and "Overall construction inputs" in html
+def test_benchmark_walk_forward_has_no_lookahead():
+    import numpy as np
+    import pandas as pd
+    import weekly_note
+    idx = pd.date_range("2010-01-01", periods=200, freq="MS")
+    lv = pd.Series(100 * np.exp(np.cumsum(np.random.default_rng(1).normal(0.2, 0.6, 200) / 100)), index=idx)
+    a = weekly_note.walk_forward(lv, months=24)
+    lv2 = lv.copy()
+    lv2.iloc[-3:] *= 1.5                                    # change only the last 3 months
+    b = weekly_note.walk_forward(lv2, months=24)
+    first = a.origin < str(idx[-4].date())                  # forecasts made before those months ...
+    assert np.allclose(a[first].structural, b[first].structural)       # ... cannot see them
+    inside = ((a.actual >= a.lo) & (a.actual <= a.hi)).mean()
+    assert 0.5 < inside <= 1.0 and set(a.h) == {1, 3}
 
 
 def test_cycle_follows_app_database(monkeypatch):
@@ -219,9 +202,12 @@ def test_front_page_builds():
     import build_index
     build_index.build()
     idx = (ROOT / "public" / "index.html").read_text()
-    assert idx.count("<article class=card") == 18 and "[hidden]" in (ROOT / "public" / "assets" / "cio.css").read_text()
+    live = build_index.LIVE
+    assert idx.count("<article class=card") == len(live) == 8 and "[hidden]" in (ROOT / "public" / "assets" / "cio.css").read_text()
+    assert not (ROOT / "public" / "countries" / "ghana").exists()          # not live yet: no public page
+    assert "Join the pilot" not in idx and "united_states" in idx
     assert ".md" not in idx and "docs/" not in idx                        # no internal documents linked
-    for page in ("play.html", "method.html", "countries/uganda/index.html", "countries/ghana/index.html"):
+    for page in ("play.html", "method.html", "countries/uganda/index.html", "countries/united_states/index.html"):
         t = (ROOT / "public" / page).read_text()
         assert "cio-data" in t and ".md'" not in t and '.md"' not in t
 
@@ -312,3 +298,21 @@ def test_visit_counting_and_pilot_report(tmp_path, monkeypatch):
     c.post("/admin/login", data={"key": "k"})
     page = c.get("/admin/pilot-report").text
     assert "pilot report" in page and "Uganda" in page and "Nigeria" in page and "Scorecard" in page
+
+
+
+def test_prices_can_be_reported_months_later(tmp_path, monkeypatch):
+    monkeypatch.setenv("CIO_DB", str(tmp_path / "b.sqlite"))
+    import importlib
+    import app as webapp
+    importlib.reload(webapp)
+    from fastapi.testclient import TestClient
+    from reports import Participants, week_of
+    c = TestClient(webapp.app)
+    body = {"country": "kenya", "item": "cement_50kg", "price": 780, "location": "Nairobi", "area": "capital"}
+    assert c.post("/api/public/price", json=dict(body, months_ago=3)).json()["ok"]
+    assert c.post("/api/public/price", json=dict(body, months_ago=7)).status_code == 400        # 6 months at most
+    assert c.post("/api/public/price", json=dict(body, country="ghana")).status_code == 400    # not live yet
+    with Participants(tmp_path / "b.sqlite") as p:
+        wk = p.reports("kenya", since_weeks=30)["week"].iloc[0]
+        assert wk == week_of(date.today() - timedelta(days=90))

@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS alerts (
 
 
 MIN_REPORTERS = 3          # an item's median is published only once this many different people reported it
+WINDOW_WEEKS = 8           # typical prices pool the last 8 weeks: people report when they can, not every week
+BACKFILL_MONTHS = 6        # people may also report what they paid up to 6 months ago
 CHECK_FACTOR = 3           # a price more than 3x above or below the usual one is queried before it is saved
 CAPITALS = {"uganda": "Kampala", "kenya": "Nairobi", "rwanda": "Kigali", "tanzania": "Dar es Salaam", "ethiopia": "Addis Ababa",
             "south_africa": "Johannesburg", "zambia": "Lusaka", "botswana": "Gaborone", "malawi": "Lilongwe", "zimbabwe": "Harare",
@@ -159,7 +161,7 @@ class Participants:
         return pd.read_sql_query("SELECT * FROM price_reports WHERE country=? AND week>=? ORDER BY ts",
                                  self.db, params=(country, since))
 
-    def usual_price(self, country: str, item: str, weeks: int = 12, min_reporters: int = MIN_REPORTERS) -> float | None:
+    def usual_price(self, country: str, item: str, weeks: int = 30, min_reporters: int = MIN_REPORTERS) -> float | None:
         """The usual price of an item: median of each person's median over recent weeks, once enough people reported."""
         df = self.reports(country, since_weeks=weeks)
         g = df[df["item"] == item]
@@ -175,36 +177,30 @@ class Participants:
             return usual
         return None
 
-    def crowd_summary(self, country: str, items: list[dict], weeks_back: int = 4,
+    def crowd_summary(self, country: str, items: list[dict], weeks_back: int = None,
                       min_reporters: int = MIN_REPORTERS) -> pd.DataFrame:
-        """Per item: the median of the latest week with at least `min_reporters` different
-        reporters (`published`), its reporter count, the % change against the published median
-        `weeks_back` weeks earlier, and how many reporters the current week has so far
-        (`pending`). Below the minimum nothing is published, so one or two people cannot set
-        a public price. Each reporter counts once per item-week (their own median)."""
-        df = self.reports(country, since_weeks=weeks_back + 8)
+        """Per item, over a rolling window of the last WINDOW_WEEKS weeks (people report when they can, not every
+        week): the median of each person's own median (`median`, published only from `min_reporters` different
+        people), how many people and reports it rests on, the % change against the window before it, and the
+        same median for the capital and for elsewhere (each published from `min_reporters` people)."""
+        w = weeks_back or WINDOW_WEEKS
+        df = self.reports(country, since_weeks=2 * w + 2)
+        cut, cut2 = week_of(date.today() - timedelta(weeks=w - 1)), week_of(date.today() - timedelta(weeks=2 * w - 1))
         rows = []
         for it in items:
             g = df[df["item"] == it["code"]]
-            row = {"item": it["code"], "name": it["name"], "unit": it["unit"], "week": None, "median": None,
-                   "reports": int(len(g)), "reporters": 0, "change_pct": None, "published": False, "pending": 0,
-                   "capital": None, "other": None, "capital_n": 0, "other_n": 0}
-            if not g.empty:
-                per = g.groupby(["week", "handle"])["price"].median().groupby("week")
-                med, n_rep = per.median(), per.size()
-                row["pending"] = int(n_rep[n_rep.index.max()])
-                ok = med[n_rep >= min_reporters]
-                if len(ok):
-                    last = ok.index.max()
-                    prior = ok[ok.index <= week_of(date.fromisoformat(last) - timedelta(weeks=weeks_back))]
-                    row.update(week=last, median=float(ok[last]), reporters=int(n_rep[last]), published=True,
-                               change_pct=(float(ok[last] / prior.iloc[-1] - 1) * 100) if len(prior) else None)
-                # by area: the last `weeks_back` weeks pooled, each person once, published from MIN_REPORTERS people
-                recent = g[g["week"] >= week_of(date.today() - timedelta(weeks=weeks_back))]
-                if "area" in recent:
-                    for a in AREAS:
-                        per_a = recent[recent["area"] == a].groupby("handle")["price"].median()
-                        row[a] = float(per_a.median()) if len(per_a) >= min_reporters else None
-                        row[a + "_n"] = int(len(per_a))
+            cur, prev = g[g["week"] >= cut], g[(g["week"] >= cut2) & (g["week"] < cut)]
+            per, per_prev = cur.groupby("handle")["price"].median(), prev.groupby("handle")["price"].median()
+            pub = len(per) >= min_reporters
+            row = {"item": it["code"], "name": it["name"], "unit": it["unit"], "week": cur["week"].max() if len(cur) else None,
+                   "median": float(per.median()) if pub else None, "reports": int(len(cur)), "reporters": int(len(per)),
+                   "change_pct": (float(per.median() / per_prev.median() - 1) * 100) if pub and len(per_prev) >= min_reporters else None,
+                   "published": pub, "pending": int(len(per)), "window_weeks": w}
+            for a in AREAS:
+                per_a = cur[cur["area"] == a].groupby("handle")["price"].median() if "area" in cur else pd.Series(dtype=float)
+                row[a] = float(per_a.median()) if len(per_a) >= min_reporters else None
+                row[a + "_n"] = int(len(per_a))
             rows.append(row)
-        return pd.DataFrame(rows)
+        cols = ["item", "name", "unit", "week", "median", "reports", "reporters", "change_pct", "published", "pending",
+                "window_weeks", *AREAS, *(a + "_n" for a in AREAS)]
+        return pd.DataFrame(rows, columns=cols)

@@ -37,15 +37,17 @@ WA = str(SITE_CFG.get("whatsapp_number") or "").strip().lstrip("+")
 FEATURED = SITE_CFG.get("glance_featured") or ["uganda", "kenya", "south_africa", "nigeria", "ghana"]
 CHANNEL = str(SITE_CFG.get("whatsapp_channel_url") or "").strip()
 PILOT = list(SITE_CFG.get("pilot_countries") or [])
+BENCH = list(SITE_CFG.get("benchmark_countries") or [])
+LIVE = PILOT + BENCH                               # only these appear on the site; the others wait for expansion
 
 
 def country_options(cs: list[dict]) -> str:
     """Pilot countries first, then the rest, each alphabetical (with optgroup labels the page translates)."""
     opt = lambda grp: "".join(f"<option value={c['key']}>{c['flag']} {e(c['country'])}</option>" for c in sorted(grp, key=lambda c: c["country"]))
-    pil, rest = [c for c in cs if c["key"] in PILOT], [c for c in cs if c["key"] not in PILOT]
-    if not pil:
-        return opt(cs)
-    return f"<optgroup label='Pilot countries' data-grp=pilot>{opt(pil)}</optgroup><optgroup label='More countries' data-grp=more>{opt(rest)}</optgroup>"
+    pil, bench = [c for c in cs if c["key"] not in BENCH], [c for c in cs if c["key"] in BENCH]
+    if not bench:
+        return opt(pil)
+    return f"<optgroup label='Pilot countries' data-grp=pilot>{opt(pil)}</optgroup><optgroup label='Benchmark' data-grp=bench>{opt(bench)}</optgroup>"
 SITE_URL = (os.environ.get("CIO_SITE_URL") or str(SITE_CFG.get("site_url") or "")).strip().rstrip("/")
 ALERTS_WA = bool(SITE_CFG.get("alerts_whatsapp"))
 TIP_OFFICIAL = "Built from the country's official construction price statistics, updated with this week's oil and currency moves."
@@ -64,8 +66,8 @@ REGION = {"uganda": "east", "kenya": "east", "rwanda": "east", "tanzania": "east
           "south_africa": "south", "zambia": "south", "botswana": "south", "malawi": "south", "zimbabwe": "south",
           "namibia": "south", "mozambique": "south", "mauritius": "south",
           "ghana": "west", "nigeria": "west", "senegal": "west", "egypt": "north", "morocco": "north"}
-REGION_NAME = {"east": "East Africa", "south": "Southern Africa", "west": "West Africa", "north": "North Africa"}
-ISO2 = {"UGA": "UG", "KEN": "KE", "RWA": "RW", "TZA": "TZ", "ETH": "ET", "ZAF": "ZA", "ZMB": "ZM", "BWA": "BW",
+REGION_NAME = {"east": "East Africa", "south": "Southern Africa", "west": "West Africa", "north": "North Africa", "bench": "Benchmark"}
+ISO2 = {"USA": "US", "UGA": "UG", "KEN": "KE", "RWA": "RW", "TZA": "TZ", "ETH": "ET", "ZAF": "ZA", "ZMB": "ZM", "BWA": "BW",
         "MWI": "MW", "ZWE": "ZW", "NAM": "NA", "MOZ": "MZ", "MUS": "MU", "GHA": "GH", "NGA": "NG", "SEN": "SN",
         "EGY": "EG", "MAR": "MA"}
 SOURCE = {"uganda": "Uganda Bureau of Statistics (UBOS)", "kenya": "Kenya National Bureau of Statistics (KNBS)",
@@ -96,7 +98,7 @@ def country_data(key: str) -> dict | None:
     off = cfg.get("official_reading")
     return {
         "key": key, "country": cfg["country"], "flag": flag(cfg["iso3"]), "currency": cfg["currency"],
-        "region": REGION.get(key, ""), "kind": d.get("kind"), "official": d.get("kind") != "pressure",
+        "region": "bench" if key in BENCH else REGION.get(key, ""), "bench": key in BENCH, "bstats": d.get("benchmark"), "kind": d.get("kind"), "official": d.get("kind") != "pressure",
         "base": d.get("base", ""), "head": head, "paths": paths, "spark": d.get("spark"),
         "materials": (d.get("materials") or {}).get("items", []), "step": (d.get("materials") or {}).get("step", "month"),
         "drivers": d.get("drivers", {}), "generated": d.get("generated", ""),
@@ -172,13 +174,13 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
     payload = json.dumps(data, separators=(",", ":")).replace("</", "<\\/")
     return f"""<!doctype html>
 <html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
-<title>{e(title)}</title><meta name=description content="{e(desc or 'Construction cost forecasts for 18 African countries.')}">
+<title>{e(title)}</title><meta name=description content="{e(desc or 'Construction cost forecasts and prices people pay, in seven African countries.')}">
 <link rel=stylesheet href="{rel}assets/cio.css"><link rel=stylesheet href="{rel}assets/fonts.css" media=print onload="this.media='all'"></head><body data-page="{page}" data-rel="{rel}">
 <header class=topbar><div class=wrap>
  <a class=mark href="{rel}index.html">{LOGO}CiO <span>Costs</span></a>
  <nav class=nav aria-label=Main>{links}</nav>
  {f"<a class='btn wa cta-wa' href='https://wa.me/{WA}' target=_blank rel=noopener aria-label='Chat with us on WhatsApp'>{WA_ICON}</a>" if WA else ""}
- <a class="btn primary cta" href="{rel}method.html#join" data-i18n=cta.join>Join the pilot</a>
+ <a class="btn primary cta" href="{rel}report.html" data-i18n=cta.report>Report a price</a>
  <select class=lang id=lang aria-label="Language"><option value=en>EN</option><option value=sw>Kiswahili</option><option value=fr>Français</option></select>
  <button class=theme id=theme type=button aria-label=Theme>◐</button>
 </div></header>
@@ -186,7 +188,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
 <nav class=bottombar aria-label=Main>{bottom}</nav>
 <footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
 {f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else ""}</p><span data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
-value. Official data: UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD, Statistics Mauritius; oil and exchange rates from public
+value. Official data: UBOS, KNBS, Stats SA; benchmark: US Bureau of Labor Statistics; oil and exchange rates from public
 market sources. Updated {e(data.get('updated', ''))}.</span></footer>
 <script id=cio-data type="application/json">{payload}</script>
 <script src="{rel}assets/cio.js"></script></body></html>
@@ -208,7 +210,7 @@ def picker(months: list[str], default: str) -> str:
 def page_index(cs: list[dict], months: list[str], default: str) -> str:
     feat = next((c for c in cs if c["key"] == "uganda"), cs[0])      # replaced in the browser by the visitor's country
     tabs = [("all", "All"), ("east", "East Africa"), ("south", "Southern Africa"), ("west", "West Africa"),
-            ("north", "North Africa"), ("official", "Official data"), ("indicator", "Estimates"),
+            ("bench", "Benchmark"), ("official", "Official data"), ("indicator", "Estimates"),
             ("rising", "Rising"), ("easing", "Easing")]
     tab_html = "".join(f"<button type=button data-tab={k} data-i18n=tab.{k} aria-pressed={'true' if k == 'all' else 'false'}>{v}</button>"
                        for k, v in tabs)
@@ -222,7 +224,7 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
  <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/{c['key']}/index.html"><span data-i18n=btn.seecosts data-c="{e(c['country'])}">See costs in {e(c['country'])}</span> <span aria-hidden=true>→</span></a>
- <a class=link href="play.html#{c['key']}" data-i18n=link.makecall>Make your call</a></div></article>""" for c in cs)
+ <a class=link href="play.html#{c['key']}" data-i18n=link.makecall>Play today's game</a></div></article>""" for c in cs)
     return _home(cs, months, default, feat, tab_html, cards)
 
 
@@ -242,8 +244,16 @@ def page_glance(cs: list[dict], months: list[str], default: str) -> str:
 
 
 def _home(cs, months, default, feat, tab_html, cards):
+    bc = next((c for c in cs if c.get("bench") and c.get("bstats")), None)
+    BENCH_STRIP = "" if not bc else (
+        f"<section class=bench><div><p class=eyebrow data-i18n=bench.eyebrow>How good are the forecasts?</p>"
+        f"<h2>{bc['flag']} <span data-i18n=bench.h>Benchmark: the same tool where data is good</span></h2>"
+        f"<p data-i18n=bench.d>We also run CiO Costs on the United States' official construction input prices, published every month on "
+        f"time, so anyone can check how well it forecasts.</p></div><div class=bench-nums><div><b>{bc['bstats']['1']['inside']:.0%}</b>"
+        f"<span data-i18n=bench.in1>inside the likely range, 1 month ahead</span></div><div><b>{bc['bstats']['3']['inside']:.0%}</b>"
+        f"<span data-i18n=bench.in3>3 months ahead (aim: 80%)</span></div><a class=btn href='countries/{bc['key']}/index.html' data-i18n=bench.see>See the benchmark</a></div></section>")
     body = f"""
-<section class=hero><div><p class=eyebrow data-i18n=home.eyebrow>Construction cost outlook · 18 African countries</p>
+<section class=hero><div><p class=eyebrow data-i18n=home.eyebrow>Construction cost outlook · 7 African countries</p>
  <h1 data-i18n=home.h1>Will building costs rise where you work?</h1>
  <p class=lede data-i18n=home.lede>Choose your country and a date. See whether building material prices are likely to go up, by how much,
  and what that means for the price you pay — updated every few hours.</p>
@@ -252,7 +262,7 @@ def _home(cs, months, default, feat, tab_html, cards):
  <div class=hero-side><label class="when-box country-pick"><span data-i18n=pick.country>Your country</span><select id=mycountry aria-label="Your country">
  {country_options(cs)}</select></label>
  {picker(months, default)}</div></section>
-<p class=trust><span data-i18n=trust.sources>Official data from UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD and Statistics Mauritius</span>
+<p class=trust><span data-i18n=trust.sources>Official data from UBOS, KNBS and Stats SA</span>
  · <span id=updated-ago data-built="{BUILT}"></span> · <a href="method.html#track" data-i18n=trust.track>Track record</a>
  {f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.weekly>Free weekly update on WhatsApp</a>" if CHANNEL else ""}</p>
 <section class=featured data-key={feat['key']} aria-labelledby=fq>
@@ -281,7 +291,8 @@ def _home(cs, months, default, feat, tab_html, cards):
 <div class="grid folded" id=grid>{cards}</div>
 <p class=empty id=empty data-i18n=empty>No country matches. Try “cement”, “Kenya” or “West”.</p>
 
-<p class=center><button class=btn type=button id=grid-open data-i18n=grid.open>Show all 18 countries</button></p>
+{BENCH_STRIP}
+<p class=center><button class=btn type=button id=grid-open data-i18n=grid.open>Show all countries</button></p>
 <p class=moreline><a href=glance.html data-i18n=glance.link>Compare all countries in one table →</a></p>
 <p class=gameline>🎯 <span data-i18n=game.line>Five quick calls a day on real prices.</span> <a href=play.html data-i18n=game.cta>Play today's calls</a></p>
 """
@@ -290,17 +301,26 @@ def _home(cs, months, default, feat, tab_html, cards):
 
 BUY = "".join(f"<button type=button class=pill data-buy={k} data-i18n=buy.{k}>{t}</button>" for k, t in
               (("cement", "Cement"), ("steel", "Steel"), ("sand", "Sand"), ("diesel", "Diesel"), ("roofing", "Roofing")))
-QUICK = """<section class=quickrep aria-labelledby=qr-h><div class=qr-head><h2 id=qr-h data-i18n=qr.h>What did you pay this week?</h2>
- <p class=muted data-i18n=qr.d>Tell us one price. It is anonymous and takes 20 seconds — and once 3 people report an item, everyone sees the typical price.</p>
+WHEN = """<label class=when-paid><span data-i18n=rep.when>When did you pay?</span><select name=months_ago>
+ <option value=0 data-i18n=when.0>This month</option><option value=1 data-i18n=when.1>Last month</option>
+ <option value=2 data-i18n=when.2>2 months ago</option><option value=3 data-i18n=when.3>3 months ago</option>
+ <option value=4 data-i18n=when.4>4 months ago</option><option value=5 data-i18n=when.5>5 months ago</option>
+ <option value=6 data-i18n=when.6>6 months ago</option></select></label>"""
+QUICK = """<section class=quickrep aria-labelledby=qr-h><div class=qr-head><h2 id=qr-h data-i18n=qr.h2>What did you pay recently?</h2>
+ <p class=muted data-i18n=qr.d2>Tell us one price — today or from the last few months. It is anonymous and takes 20 seconds; once 3 people report an item, everyone sees the typical price.</p>
  <p class=qr-progress data-qr-progress></p></div>
  <form class=qr-form><label><span data-i18n=rep.item>Item</span><select name=item></select></label>
  <label><span><span data-i18n=rep.price>Price</span> <span class=muted data-qr-ccy></span></span><input name=price type=number min=1 step=any inputmode=decimal required></label>
  <fieldset class=areapick><legend data-i18n=rep.area>Where is that?</legend>
   <label><input type=radio name=area value=capital checked><span><span data-i18n=rep.incap>In</span> <b data-capital></b></span></label>
   <label><input type=radio name=area value=other><span data-i18n=rep.elsewhere>Elsewhere in the country</span></label></fieldset>
+ {WHEN}
  <label class=qr-town hidden><span data-i18n=rep.town>Town or area</span><input name=location></label>
  <button class='btn primary big' type=submit data-i18n=rep.send>Send price</button>
  <p class='formmsg muted' role=status></p></form></section>"""
+
+
+QUICK = QUICK.replace("{WHEN}", WHEN)
 
 
 MONEY = """<div class=money><b data-i18n=money.h>Your price</b>
@@ -377,7 +397,7 @@ Prices reported by participants (below) fill the gap, material by material.</p><
     def price(r):
         if r.get("published"):
             return f"{r['median']:,.0f} {e(c['currency'])} per {e(r['unit'])}"
-        return (f"<span class=progress-line><b>{r.get('pending', 0)} of 3</b> reports this week · "
+        return (f"<span class=progress-line><b>{r.get('pending', 0)} of 3</b> people in the last 2 months · "
                 f"<a href='../../report.html#{c['key']}'>add yours</a></span>")
     def area(r, a):
         v = r.get(a)
@@ -387,9 +407,9 @@ Prices reported by participants (below) fill the gap, material by material.</p><
                          f"<td>{r['reporters'] if r.get('published') else '–'}</td><td>{ch(r)}</td></tr>" for r in crowd_rows)
     crowd_sec = (f"<div class=tablewrap><table class=glance><thead><tr><th data-i18n=th.item>Item</th><th data-i18n=th.typical>Typical price</th>"
                  f"<th>{e(cap)}</th><th data-i18n=th.elsewhere>Elsewhere</th><th data-i18n=th.reporters>Reporters</th>"
-                 f"<th data-i18n=th.vs4>vs 4 weeks</th></tr></thead><tbody>{crowd_html}</tbody></table></div>"
-                 f"<p class=muted data-i18n=crowd.areas>Area prices use the last 4 weeks and appear once 3 people report from that area.</p>") if crowd_rows else (
-        f"<div class=tile><p><b>0 of 3</b> reports this week for {e(c['country'])}. Prices appear here once 3 people report "
+                 f"<th data-i18n=th.vsprev>vs previous 2 months</th></tr></thead><tbody>{crowd_html}</tbody></table></div>"
+                 f"<p class=muted data-i18n=crowd.areas2>Typical prices pool the last 2 months, so people can report whenever they buy. Area prices appear once 3 people report from that area.</p>") if crowd_rows else (
+        f"<div class=tile><p><b>0 of 3</b> people have reported prices for {e(c['country'])} in the last 2 months. Prices appear here once 3 people report "
         f"what they pay for an item ({e(', '.join(c['items'][:4]).lower())}…). "
         f"<a href='../../report.html#{c['key']}'>Be the first — it takes a minute and is anonymous</a>.</p></div>")
     dr = c["drivers"]
@@ -410,7 +430,7 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <div class=chart>{chart_svg(c)}</div><p class='advice big' data-advice></p>
  {track_country(c, crowd_rows)}
  {MONEY}
- <div class=actions><a class='btn primary' href="../../play.html#{c['key']}" data-i18n=link.makecall>Make your call</a>{note}
+ <div class=actions><a class='btn primary' href="../../play.html#{c['key']}" data-i18n=link.makecall>Play today's game</a>{note}
  <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div>{src}</div>
 </section>
 {mat_html}
@@ -470,10 +490,10 @@ def track_country(c: dict, crowd_rows: list[dict] = ()) -> str:
         est = (v[-1] / v[-2] - 1) * 100 if len(v) >= 2 and v[-2] else None
         got = [r for r in crowd_rows if r.get("published") and r.get("change_pct") is not None]
         if not got or est is None:
-            return (f"<p class='track muted'><b data-i18n=track.h>Track record</b>: <span data-i18n=track.crowdsoon>once 3 people report an item "
-                    f"for 4 weeks, we show what they pay next to our estimate here.</span> <a href='../../report.html#{c['key']}' data-i18n=track.addyours>Report a price</a></p>")
+            return (f"<p class='track muted'><b data-i18n=track.h>Track record</b>: <span data-i18n=track.crowdsoon2>once 3 people have reported an item "
+                    f"over two periods of 2 months, we show the change in what they pay next to our estimate here.</span> <a href='../../report.html#{c['key']}' data-i18n=track.addyours>Report a price</a></p>")
         li = "".join(f"<li>{e(r['name'])}: {arrow(r['change_pct'])} <b>{r['change_pct']:+.1f}%</b> <span class=muted>"
-                     f"({r['reporters']} people, 4 weeks)</span></li>" for r in got[:4])
+                     f"({r['reporters']} people, vs previous 2 months)</span></li>" for r in got[:4])
         return (f"<div class=track><b data-i18n=track.h>Track record</b> <span class=muted>· <span data-i18n=track.vscrowd>our estimate vs "
                 f"what people pay</span></span><ul><li><span data-i18n=track.est>Our import-cost estimate, last month</span>: {arrow(est)} "
                 f"<b>{est:+.1f}%</b></li>{li}</ul></div>")
@@ -489,8 +509,8 @@ def track_country(c: dict, crowd_rows: list[dict] = ()) -> str:
                 continue
             seen.add(t)
             rows.append((f"Said on {r['made']}", t, float(r["median"]), float(r["lo"]), float(r["hi"]), (lvl[t] / lvl[b] - 1) * 100))
-    if not rows and c["key"] == "uganda":
-        f = ROOT / "countries" / "uganda" / "outputs" / "forecast" / "backtest_errors.csv"
+    if not rows:
+        f = ROOT / "countries" / c["key"] / "outputs" / "forecast" / "backtest_errors.csv"
         if f.exists():
             for r in [r for r in csv.DictReader(open(f)) if r["target"] == "ALL" and r["h"] == "3"][-3:]:
                 y, m = int(r["origin"][:4]), int(r["origin"][5:7]) + 3
@@ -502,7 +522,13 @@ def track_country(c: dict, crowd_rows: list[dict] = ()) -> str:
                 "<span data-i18n=track.soon>we log every forecast and will show it here next to the official figure once it is published.</span></p>")
     li = "".join(f"<li>{e(w)}, for <b>{month_label(t)}</b>: {arrow(m)} {m:+.1f}% <span class=muted>({lo:+.1f} to {hi:+.1f})</span> → "
                  f"official {arrow(a)} <b>{a:+.1f}%</b> {'✓' if lo <= a <= hi else '✗'}</li>" for w, t, m, lo, hi, a in rows[-3:])
-    return f"<div class=track><b data-i18n=track.h>Track record</b> <span class=muted>· {label}</span><ul>{li}</ul></div>"
+    summary = ""
+    if c.get("bstats"):
+        b1, b3 = c["bstats"].get("1") or {}, c["bstats"].get("3") or {}
+        summary = (f"<p class=bench-sum><b>{b1.get('inside', 0):.0%}</b> of 1-month and <b>{b3.get('inside', 0):.0%}</b> of 3-month outcomes fell "
+                   f"inside the likely range over the last {b1.get('n', 0)} months (the aim is 80%). Average miss: {b1.get('mae', 0):.2f} points "
+                   f"one month ahead, against {b1.get('mae_nochange', 0):.2f} for simply assuming no change.</p>")
+    return f"<div class=track><b data-i18n=track.h>Track record</b> <span class=muted>· {label}</span>{summary}<ul>{li}</ul></div>"
 
 
 def track_record() -> str:
@@ -531,7 +557,7 @@ week to week, and turns them into a chance, an expected change and a likely rang
 <div class=howto>
 <div class=tile><span class=num>1</span><b data-i18n=m.in>What goes in</b><p>Official construction price indices where they exist
 (Uganda, Kenya and South Africa in full; latest readings for Ghana, Zimbabwe, Senegal and Mauritius), world oil prices,
-exchange rates for 18 currencies, rainfall, and published tax changes such as fuel and cement duties.</p></div>
+exchange rates, rainfall, and published tax changes such as fuel and cement duties.</p></div>
 <div class=tile><span class=num>2</span><b data-i18n=m.how>How it is forecast</b><p>Where a country publishes a detailed index, each
 material is forecast from the drivers that move it — oil for diesel, the currency for imported steel, rainfall for sand
 — and added back up the way the statistics office does. Elsewhere, an import-cost indicator tracks the share of costs
@@ -551,10 +577,10 @@ import-cost indicators).</li><li><b>Likely range</b>: where the change should la
 <li>Import-cost indicators see oil and currency effects only, not local materials or labour.</li>
 <li>Where official statistics are published late, the forecast bridges the gap with the latest market data.</li>
 <li>Nothing here is financial or contractual advice.</li></ul></section>
-<section class=join id=join><div><h2 data-i18n=cta.join>Join the pilot</h2><p data-i18n=join.d>Contractors, quantity surveyors, developers and lenders: report
-the prices you pay each week, play The Cost Call for points on the leaderboard, and get the Monday note for your country.
-Free. Ask CiO Lab for an invite code.</p></div><div class=actions>{f"<a class='btn big' href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else ""}
-<a class='btn primary big' href=app data-i18n=join.signin>Pilot sign-in</a></div></section>
+<section class=join id=join><div><h2 data-i18n=join.h>Take part</h2><p data-i18n=join.d2>Anyone can use CiO Costs and add prices — no account.
+Tell us what you paid for cement, steel, sand or diesel whenever you buy, even months later, and follow the free weekly update.</p></div>
+<div class=actions>{f"<a class='btn big' href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else ""}
+<a class='btn primary big' href=report.html data-i18n=cta.report>Report a price</a></div></section>
 """
 
 
@@ -567,18 +593,16 @@ def page_play() -> str:
 <section class=drawit><div class=section-h><h2 data-i18n=draw.h>Draw it</h2><span class=muted data-i18n=draw.d>Guess how an official
 price index moved. Draw the line, then reveal the real one.</span></div><div id=draw class=drawbox></div></section>
 <dialog id=results class=results aria-labelledby=res-h></dialog>
-<section><div class=section-h><h2 data-i18n=calls.h>This week's calls</h2><span class=muted data-i18n=calls.d>On the next official releases — scored when the data
-is published</span></div><div class=grid id=calls></div></section>
-<p class=muted>Play for points and a place on the leaderboard in the pilot app. <a href="method.html#join">Join the pilot</a>.</p>
+
 """
 
 
 def page_report(keys: list[str]) -> str:
     opts = country_options([{"key": k, "flag": flag(load_country(k)["iso3"]), "country": load_country(k)["country"]} for k in keys])
     return f"""
-<section class=prose><p class=eyebrow data-i18n=nav.report>Report prices</p><h1 data-i18n=rep.h1>What did you pay this week?</h1>
-<p class=lede data-i18n=rep.lede>Tell us the price you paid or were quoted for a construction input, in any of our 18 countries. Reports are
-anonymous: we publish medians by country, item and week — never names, numbers or single reports.</p></section>
+<section class=prose><p class=eyebrow data-i18n=nav.report>Report prices</p><h1 data-i18n=rep.h1>What did you pay?</h1>
+<p class=lede data-i18n=rep.lede2>Tell us a price you paid or were quoted for a building material — today or up to 6 months ago, whenever you
+have a moment. Reports are anonymous: we publish typical prices from at least 3 people — never names, numbers or single reports.</p></section>
 <section class=reportgrid><form id=reportform class=panel>
  <label><span data-i18n=th.country>Country</span><select name=country required>{opts}</select></label>
  <label><span data-i18n=rep.item>Item</span><select name=item required></select></label>
@@ -590,6 +614,7 @@ anonymous: we publish medians by country, item and week — never names, numbers
  <fieldset class=areapick><legend data-i18n=rep.area>Where is that?</legend>
   <label><input type=radio name=area value=capital checked><span><span data-i18n=rep.incap>In</span> <b data-capital></b></span></label>
   <label><input type=radio name=area value=other><span data-i18n=rep.elsewhere>Elsewhere in the country</span></label></fieldset>
+ {WHEN}
  <label><span data-i18n=rep.contact>Your phone or email</span> <span class=muted data-i18n=rep.contact.note>(optional, never published — only if you want follow-ups)</span><input name=contact></label>
  <button class='btn primary big' type=submit data-i18n=rep.send>Send price</button><p class='formmsg muted' role=status></p></form>
  <aside class=panel><h2 data-i18n=rep.others>What others report</h2><div id=crowdview></div>
@@ -629,13 +654,19 @@ def build() -> Path:
     global BUILT
     from datetime import datetime, timezone
     BUILT = datetime.now(timezone.utc).isoformat(timespec="minutes")
-    cs = [c for c in (country_data(k) for k in list_countries()) if c]
-    cs.sort(key=lambda c: (c["key"] not in PILOT, not c["official"], c["country"]))
+    cs = [c for c in (country_data(k) for k in list_countries() if not LIVE or k in LIVE) if c]
+    gone = OUT / "countries"                          # countries not live yet: no public page
+    if gone.exists():
+        import shutil
+        for d in gone.iterdir():
+            if d.is_dir() and d.name not in {c["key"] for c in cs}:
+                shutil.rmtree(d)
+    cs.sort(key=lambda c: (c["key"] in BENCH, not c["official"], c["country"]))
     months = months_ahead(12)
     default = f"M:{months[2]}"
     updated = max((c["generated"] for c in cs), default=date.today().isoformat())
     slim = {c["key"]: dict({k: c[k] for k in ("country", "flag", "currency", "region", "kind", "official", "base", "head",
-                                              "paths", "spark", "drivers", "materials", "step", "items")},
+                                              "paths", "spark", "drivers", "materials", "step", "items", "bench")},
                            cc=ISO2.get(load_country(c["key"])["iso3"], ""),
                            crowd={r["name"]: r["median"] for r in crowd(c["key"]) if r.get("published")},
                            pitems=[{"code": i["code"], "name": i["name"], "unit": i["unit"]} for i in load_country(c["key"]).get("price_items", [])],
@@ -667,7 +698,7 @@ def build() -> Path:
                                       encoding="utf-8")
     (OUT / "play.html").write_text(shell("The Cost Call — CiO Costs", page_play(), dict(base, quiz=quiz), page="play",
                                           desc="A daily game on real construction prices across Africa."), encoding="utf-8")
-    keys = [c["key"] for c in cs]
+    keys = [c["key"] for c in cs if load_country(c["key"]).get("price_items")]      # the benchmark takes no price reports
     items = {c["key"]: {"country": c["country"], "flag": c["flag"], "currency": c["currency"], "cc": slim[c["key"]]["cc"],
                         "capital": CAPITALS.get(c["key"], ""),
                         "items": load_country(c["key"]).get("price_items", []), "crowd": crowd(c["key"])} for c in cs}

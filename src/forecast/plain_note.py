@@ -83,6 +83,7 @@ def _move(x: float) -> str:
 def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url: str = "",
                channel: str = "") -> tuple[str, str]:
     country, ccy, kind = cfg["country"], cfg["currency"], d.get("kind")
+    country = ("the " + country) if country.startswith("United ") else country       # "in the United States"
     paths = d.get("paths") or {}
     head = next(iter(paths)) if paths else None
     now, target = _add_months(today, 0), _add_months(today, 3)

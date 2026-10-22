@@ -440,7 +440,92 @@ def generic_body(weekly, country: str) -> list[str]:
             + official_reading(country) + ["## Cost pressure outlook", ""] + pressure_section(country))
 
 
-BODIES = {"uganda": uganda_body, "kenya": kenya_body, "south_africa": south_africa_body}
+def _fred(country: str, sid: str) -> pd.Series:
+    f = ROOT / "countries" / country / "raw" / f"{sid}.csv"
+    d = pd.read_csv(f, parse_dates=["date"])
+    return d.set_index("date")["value"].astype(float)
+
+
+def _ar1_path(changes: pd.Series, start, H: int = 12, n: int = 4000, window: int = 120, seed: int = 0) -> list[dict]:
+    """Monthly change follows last month's change (AR(1) fitted on the last `window` months); the spread comes
+    from resampling its own past errors. Chosen for the benchmark because its 80% ranges held about 80% of
+    outcomes in a 48-month walk-forward test (the 60-month block bootstrap held 90-96%: too wide)."""
+    x = changes.dropna().tail(window).values
+    b = np.polyfit(x[:-1], x[1:], 1)
+    res = x[1:] - np.polyval(b, x[:-1])
+    rng = np.random.default_rng(seed)
+    last, sims = np.full(n, x[-1]), np.zeros((n, H))
+    for t in range(H):
+        last = np.polyval(b, last) + rng.choice(res, n)
+        sims[:, t] = last
+    cum = np.cumsum(sims, axis=1)
+    months = pd.date_range(pd.Timestamp(start) + pd.DateOffset(months=1), periods=H, freq="MS")
+    return [_entry(m, *np.percentile(cum[:, i], [10, 50, 90])) for i, m in enumerate(months)]
+
+
+def walk_forward(levels: pd.Series, months: int = 48, horizons=(1, 3)) -> pd.DataFrame:
+    """Test the method as if run in the past: at each month, forecast from the data up to then only,
+    then compare with what happened. Same columns as Uganda's backtest file."""
+    lv = levels.dropna()
+    ch = (lv / lv.shift(1) - 1).dropna() * 100
+    rows = []
+    for i in range(len(lv) - months - max(horizons), len(lv) - max(horizons)):
+        origin = lv.index[i]
+        path = _ar1_path(ch[ch.index <= origin], origin, H=max(horizons), n=1500)
+        for h in horizons:
+            q = path[h - 1]
+            rows.append({"origin": origin.strftime("%Y-%m-%d"), "target": "ALL", "h": h,
+                         "actual": (lv.iloc[i + h] / lv.iloc[i] - 1) * 100, "structural": q["median"],
+                         "lo": q["lo"], "hi": q["hi"], "no_change": 0.0})
+    return pd.DataFrame(rows)
+
+
+def united_states_body(weekly) -> list[str]:
+    """Benchmark: the same method on a timely official index (BLS PPI, inputs to construction)."""
+    from country import load_country
+    cfg = load_country("united_states")
+    series = cfg["fred_series"]
+    head = _fred("united_states", series[0]["id"])
+    latest = head.index.max()
+    ch = (head / head.shift(1) - 1).dropna() * 100
+    _spark("Construction input price index (BLS)", head)
+    paths = {series[0]["name"]: _ar1_path(ch, latest)}
+    mats = []
+    for sr in series[1:]:
+        try:
+            lv = _fred("united_states", sr["id"])
+        except FileNotFoundError:
+            continue
+        mats.append((sr["name"], lv.tail(30)))
+        if sr["name"] in ("Cement", "Ready-mix concrete", "Steel mill products", "Lumber", "Diesel"):
+            c2 = (lv / lv.shift(1) - 1).dropna() * 100
+            paths[sr["name"]] = _ar1_path(c2, lv.index.max())
+    _DATA["paths"] = paths
+    _DATA["base"] = f"{latest:%b %Y}"
+    _materials(mats, "month")
+    bt = walk_forward(head)
+    out = ROOT / "countries" / "united_states" / "outputs" / "forecast"
+    out.mkdir(parents=True, exist_ok=True)
+    bt.to_csv(out / "backtest_errors.csv", index=False)
+    lines = ["## Benchmark: United States", "",
+             f"The tool's forecasting method on the BLS construction input price index, latest **{latest:%B %Y}**.", "",
+             "| Test (last 48 months, forecast made with data available then) | 1 month ahead | 3 months ahead |", "|---|---|---|"]
+    stats = {}
+    for h in (1, 3):
+        b = bt[bt.h == h]
+        stats[h] = {"inside": float(((b.actual >= b.lo) & (b.actual <= b.hi)).mean()),
+                    "mae": float((b.actual - b.structural).abs().mean()), "mae_nochange": float(b.actual.abs().mean()), "n": int(len(b))}
+    lines += [f"| Inside the likely range | {stats[1]['inside']:.0%} | {stats[3]['inside']:.0%} |",
+              f"| Average miss (points) | {stats[1]['mae']:.2f} | {stats[3]['mae']:.2f} |",
+              f"| Average miss of 'no change' | {stats[1]['mae_nochange']:.2f} | {stats[3]['mae_nochange']:.2f} |"]
+    _DATA.update(kind="benchmark", benchmark=stats,
+                 basis=f"BLS {latest:%B %Y}; forecast tested month by month on the last 48 months")
+    for q in paths[series[0]["name"]][:3]:
+        _rec(series=series[0]["name"], period=q["month"], median=q["median"], lo=q["lo"], hi=q["hi"])
+    return lines
+
+
+BODIES = {"uganda": uganda_body, "kenya": kenya_body, "south_africa": south_africa_body, "united_states": united_states_body}
 
 
 def _log_forecast(country: str, d: dict) -> None:

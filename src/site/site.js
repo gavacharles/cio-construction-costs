@@ -12,7 +12,7 @@
   const label = m => T.month(m);
   const cname = c => T.country(c.cc, c.country);
   T.apply();
-  $$("optgroup[data-grp]").forEach(g => g.label = tr(g.dataset.grp === "pilot" ? "grp.pilot" : "grp.more"));
+  $$("optgroup[data-grp]").forEach(g => g.label = tr("grp." + g.dataset.grp));
   const langSel = $("#lang"); if (langSel) { langSel.value = T.lang; langSel.onchange = () => T.set(langSel.value); }
   $$("#when option").forEach(o => { const v = o.value; o.textContent = v[0] === "W" ? tr("weekof.cap", { d: T.dayMonth(v.slice(2)) }) : label(v.slice(2)); });
   $$("#when optgroup").forEach(g => g.label = tr(g.label === "Weeks" ? "grp.weeks" : "grp.months"));
@@ -276,6 +276,7 @@
   $$(".quickrep").forEach(box => { const f = $("form", box), msg = $(".formmsg", f), it = f.querySelector("[name=item]"), town = $(".qr-town", f);
     const key = () => { const h = box.closest("[data-key]"); return h ? h.dataset.key : (($("#mycountry") || {}).value || "uganda"); };
     function setup() { const c = DATA.countries[key()]; if (!c) return; const prev = it.value;
+      box.hidden = !(c.pitems || []).length; if (box.hidden) return;              /* the benchmark takes no price reports */
       it.innerHTML = (c.pitems || []).map(i => `<option value="${i.code}">${T.mat(i.name)}</option>`).join(""); if (prev) it.value = prev;
       if (!it.value && it.options.length) it.selectedIndex = 0;
       $("[data-qr-ccy]", f).textContent = `(${c.currency}${(c.pitems.find(i => i.code === it.value) || {}).unit ? " / " + c.pitems.find(i => i.code === it.value).unit : ""})`;
@@ -288,7 +289,8 @@
     f.onsubmit = ev => { ev.preventDefault(); const c = DATA.countries[key()], area = f.querySelector("[name=area]:checked").value;
       const loc = area === "capital" ? c.capital : f.querySelector("[name=location]").value.trim();
       if (!loc) { msg.textContent = tr("qr.town"); f.querySelector("[name=location]").focus(); return; }
-      sendPrice({ country: key(), item: it.value, price: +f.querySelector("[name=price]").value, location: loc, area, supplier: "" }, msg, c.currency,
+      sendPrice({ country: key(), item: it.value, price: +f.querySelector("[name=price]").value, location: loc, area, supplier: "",
+        months_ago: +f.querySelector("[name=months_ago]").value }, msg, c.currency,
         f.querySelector("[name=price]"), () => { c.pending = c.pending || {}; c.pending[it.value] = (c.pending[it.value] || 0) + 1; setup(); msg.textContent = tr("rep.thanks"); }); }; });
 
   /* ---------- alerts (country pages) ---------- */

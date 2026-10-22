@@ -12,6 +12,8 @@ whatsapp_channel_url: "https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L"
 alerts_whatsapp: false
 # Public address of the site, used in the website-widget code (CIO_SITE_URL on the server overrides it).
 site_url: ""
-# Pilot (first 3 months): these countries come first on the site, get invites and are covered by the monthly
-# pilot report. Forecasts and price reporting stay open for all 18 countries.
+# Pilot (first 3 months): only these countries (plus the benchmark) appear on the site; the monthly
+# pilot report covers them. Add the other countries here when expanding.
 pilot_countries: [uganda, south_africa, kenya, rwanda, zambia, tanzania, nigeria]
+# Benchmark country (global north): same forecasting tool on timely official data, to show how it performs.
+benchmark_countries: [united_states]

@@ -1,21 +1,18 @@
 """
-app.py — participant web app for the CiO construction-cost forecasting pilot.
+app.py — the CiO Costs web app: serves the public site and its small public API.
 
 Run:   CIO_ADMIN_KEY=<long-secret> uvicorn --app-dir src/webapp app:app --host 127.0.0.1 --port 8000 \
-           --proxy-headers --forwarded-allow-ips 127.0.0.1      (behind Caddy; see docs/DEPLOY.md)
+           --proxy-headers --forwarded-allow-ips 127.0.0.1      (behind Caddy or a tunnel; see docs/DEPLOY.md)
 Environment:
   CIO_DB               sqlite file (default data/live/exchange.sqlite)
   CIO_ADMIN_KEY        organiser password for /admin (admin is disabled when unset)
   CIO_SECURE_COOKIES   1 (default) = cookies only over HTTPS; set 0 for local http testing
-  CIO_DEMO             1 = show a "demo data" banner on every page
 
-Participants join with an invite code from the organiser, then:
-  - report the prices they pay each week (feeds the weekly note's crowd prices),
-  - trade play-money contracts on the next official index print (LMSR market maker),
-  - read the weekly forecast note and the leaderboard.
-Public site: public/ is served at / (index, country pages, The Cost Call, report prices,
-calculator); participants log in at /app. Organiser: /admin (password = CIO_ADMIN_KEY) to create invite codes. Markets are opened
-and settled by src/market/cycle.py, not from the browser.
+Public site: public/ is served at / (built by src/site/build_index.py). Anyone can view it and report prices:
+  POST /api/public/price   a price someone paid (anonymous; queried first when far from the usual price)
+  POST /api/public/alert   an email alert on a forecast
+  POST /api/public/hit     anonymous visit counting (no cookies, no IP stored)
+Organiser: /admin (password = CIO_ADMIN_KEY) for the monthly pilot report.
 """
 from __future__ import annotations
 
@@ -40,21 +37,18 @@ sys.path.insert(0, str(ROOT / "src" / "market"))
 sys.path.insert(0, str(ROOT / "src" / "forecast"))
 
 from country import load_country, list_countries        # noqa: E402
-from ledger import Exchange, ExchangeError              # noqa: E402
-from nowcast import expected_change                     # noqa: E402
 from reports import Participants, ReportError           # noqa: E402
 from usage import Usage, visitor_id                      # noqa: E402
 import pilot_report                                      # noqa: E402
 
 DB = Path(os.environ.get("CIO_DB", ROOT / "data" / "live" / "exchange.sqlite"))
 NOTES = ROOT / "countries"
-COOKIE = "cio_token"
 ADMIN_COOKIE = "cio_admin"
 SECURE = os.environ.get("CIO_SECURE_COOKIES", "1") != "0"
-DEMO = os.environ.get("CIO_DEMO") == "1"
 
 app = FastAPI(title="CiO construction cost pilot", docs_url=None, redoc_url=None)
 COUNTRIES = {c: load_country(c) for c in list_countries()}
+LIVE = [c for c in pilot_report.live_countries() if c in COUNTRIES]   # countries open on the public site
 
 
 # Connections opened while handling a request are closed when the response is done.
@@ -66,10 +60,6 @@ def _track(obj):
     if reg is not None:
         reg.append(obj)
     return obj
-
-
-def ex() -> Exchange:
-    return _track(Exchange(DB, 1000))
 
 
 def people() -> Participants:
@@ -126,10 +116,6 @@ def _ip(request: Request) -> str:
     return request.client.host if request.client else "?"
 
 
-def me(request: Request) -> dict | None:
-    return people().by_token(request.cookies.get(COOKIE))
-
-
 e = html.escape
 
 CSS = """
@@ -149,285 +135,23 @@ button{background:var(--acc);color:#fff;border:0;cursor:pointer;font-weight:600}
 """
 
 
-def page(title: str, body: str, user: dict | None = None) -> HTMLResponse:
-    nav = ("<nav><a href='/'>Public site</a><a href='/home'>Contracts</a><a href='/forecast'>Forecast</a><a href='/prices'>Report prices</a>"
-           "<a href='/note'>Weekly note</a>"
-           "<a href='/leaderboard'>Leaderboard</a><a href='/logout'>Log out</a></nav>") if user else ""
-    who = f"<span class=mut>{e(user['name'])} · {e(COUNTRIES[user['country']]['country'])}</span>" if user else ""
+def page(title: str, body: str) -> HTMLResponse:
+    """Organiser pages (the public site is static, in public/)."""
     return HTMLResponse(f"<!doctype html><html lang=en><head><meta charset=utf-8>"
                         f"<meta name=viewport content='width=device-width,initial-scale=1'><title>{e(title)}</title>"
-                        f"<style>{CSS}</style></head><body><header><div><b>CiO</b> construction cost pilot {who}</div>"
-                        f"{nav}</header><main>{DEMO_BANNER if DEMO else ''}{body}"
-                        f"<p class=mut>Play money only: points have no cash value.</p>"
-                        f"</main></body></html>")
+                        f"<style>{CSS}</style></head><body><header><div><b>CiO Costs</b> · organiser</div>"
+                        f"<nav><a href='/'>Public site</a><a href='/admin/pilot-report'>Pilot report</a><a href='/admin/logout'>Log out</a></nav>"
+                        f"</header><main>{body}</main></body></html>")
 
 
-DEMO_BANNER = ("<div class=card style='border-color:var(--acc)'><b>Demo.</b> Participants, trades and "
-               "prices here are illustrative sample data, not real reports.</div>")
+@app.get("/app")
+def old_members_area():
+    """The invite-only members area is retired: anyone can view and contribute on the public site."""
+    return RedirectResponse("/", status_code=301)
 
 
-def need_login(request: Request):
-    user = me(request)
-    return user, (None if user else RedirectResponse("/app", status_code=303))
+# ----------------------------------------------------------------- admin --
 
-
-# ------------------------------------------------------------------ auth --
-@app.get("/app", response_class=HTMLResponse)
-def index(request: Request, err: str = ""):
-    if me(request):
-        return RedirectResponse("/home", status_code=303)
-    msg = f"<p class=err>{e(err)}</p>" if err else ""
-    return page("Join", f"""<div class=card><h1>Construction cost forecasting pilot</h1>
-<p>Report the prices you pay for cement, steel, diesel and other inputs each week, forecast the next
-official index print, and get the weekly cost note. Uganda, Kenya and Rwanda.</p>
-<form method=post action=/login><label>Invite code</label><input name=code autocomplete=off required>
-<p><button>Enter</button></p></form>{msg}</div>""")
-
-
-@app.post("/login")
-def login(request: Request, code: str = Form(...)):
-    if LIMIT.blocked(_ip(request)):
-        return RedirectResponse("/app?err=Too+many+attempts.+Try+again+in+15+minutes", status_code=303)
-    try:
-        token = people().redeem(code)
-    except ReportError:
-        LIMIT.fail(_ip(request))
-        return RedirectResponse("/app?err=That+invite+code+was+not+recognised", status_code=303)
-    user = people().by_token(token)
-    ex().open_account(user["handle"])
-    r = RedirectResponse("/home", status_code=303)
-    r.set_cookie(COOKIE, token, httponly=True, samesite="lax", secure=SECURE, max_age=60 * 60 * 24 * 180)
-    return r
-
-
-@app.get("/logout")
-def logout():
-    r = RedirectResponse("/app", status_code=303)
-    r.delete_cookie(COOKIE)
-    return r
-
-
-# ------------------------------------------------------------- contracts --
-@app.get("/home", response_class=HTMLResponse)
-def home(request: Request):
-    user, redirect = need_login(request)
-    if redirect:
-        return redirect
-    x = ex()
-    rows = []
-    for m in x.markets(status="open", country=user["country"]):
-        crowd = expected_change(np.array(m["prices"]), m["cuts"])
-        rows.append(f"<tr><td><a href='/m/{m['id']}'>{e(m['title'])}</a></td><td>{e(m['ref_month'])}</td>"
-                    f"<td>{crowd:+.2f}%</td><td>{e(m['closes'][:10])}</td></tr>")
-    cfg = COUNTRIES[user["country"]]
-    table = ("<div class=tw><table><tr><th>Contract</th><th>Period</th><th>Crowd expects</th><th>Trading closes</th></tr>"
-             + "".join(rows) + "</table></div>") if rows else (
-        "<p>No open contracts for this country yet. " + (
-            "Rwanda has no official construction index, so this pilot collects prices and forecasts only."
-            if cfg["status"] == "reporting" else "New contracts open after each official release.") + "</p>")
-    bal = x.balance(user["handle"])
-    return page("Contracts", f"""<div class=card><h1>Open contracts — {e(cfg['country'])}</h1>
-<p class=mut>Each contract pays 1 point per share if the official {e(cfg['settlement']['statistics_office'])}
-change lands in the range you hold. Balance: <b>{bal:,.1f}</b> points.</p>{table}</div>
-<div class=card><h2>This week</h2><p><a href='/prices'>Report this week's prices</a> — it takes a minute and
-keeps the note current for everyone.</p></div>""", user)
-
-
-@app.get("/m/{mid}", response_class=HTMLResponse)
-def market(mid: int, request: Request, msg: str = "", err: str = ""):
-    user, redirect = need_login(request)
-    if redirect:
-        return redirect
-    x = ex()
-    try:
-        m = x.market(mid)
-    except ExchangeError:
-        return page("Not found", "<p>No such contract.</p>", user)
-    held = {r["outcome"]: r["shares"] for r in x.db.execute(
-        "SELECT outcome, shares FROM positions WHERE account=? AND market_id=?", (user["handle"], mid))}
-    bars = "".join(
-        f"<tr><td>{i}</td><td style='min-width:180px'><div class=bar><span style='width:{p * 100:.1f}%'></span>"
-        f"<em>{e(lab)}</em></div></td><td>{p:.0%}</td><td class=mut>{q:.0%}</td><td>{held.get(i, 0):g}</td></tr>"
-        for i, (lab, p, q) in enumerate(zip(m["outcomes"], m["prices"], m["prior"])))
-    opts = "".join(f"<option value={i}>{e(lab)}</option>" for i, lab in enumerate(m["outcomes"]))
-    note = f"<p class=ok>{e(msg)}</p>" if msg else (f"<p class=err>{e(err)}</p>" if err else "")
-    closed = m["status"] != "open"
-    form = "" if closed else f"""<form method=post action='/m/{mid}/trade'><div class=row>
-<div><label>Range</label><select name=outcome id=o>{opts}</select></div>
-<div><label>Shares (negative to sell)</label><input name=shares id=s type=number step=1 value=10 required></div></div>
-<p class=mut id=q>Cost: –</p><p><button>Place trade</button></p></form>
-<script>async function q(){{const r=await fetch('/api/quote?m={mid}&o='+o.value+'&s='+s.value);const j=await r.json();
-document.getElementById('q').textContent=j.error?j.error:'Cost: '+j.cost.toFixed(2)+' points';}}
-o.onchange=q;s.oninput=q;q();</script>"""
-    return page(m["title"], f"""<div class=card><h1>{e(m['title'])}</h1>
-<p class=mut>Change in {e(m['ref_month'])} · trading closes {e(m['closes'][:10])} · status {e(m['status'])}</p>
-<div class=tw><table><tr><th>#</th><th>Range</th><th>Crowd</th><th>Model</th><th>You hold</th></tr>{bars}</table></div>
-{note}{form}</div>""", user)
-
-
-@app.get("/api/quote")
-def quote(m: int, o: int, s: float, request: Request):
-    if not me(request):
-        return JSONResponse({"error": "log in"}, status_code=401)
-    try:
-        return {"cost": ex().quote(m, o, s)}
-    except (ExchangeError, IndexError) as err:
-        return {"error": str(err)}
-
-
-@app.post("/m/{mid}/trade")
-def trade(mid: int, request: Request, outcome: int = Form(...), shares: float = Form(...)):
-    user, redirect = need_login(request)
-    if redirect:
-        return redirect
-    try:
-        cost = ex().trade(user["handle"], mid, outcome, shares)
-        return RedirectResponse(f"/m/{mid}?msg=Done:+{cost:.2f}+points", status_code=303)
-    except ExchangeError as err:
-        return RedirectResponse(f"/m/{mid}?err={e(str(err))}", status_code=303)
-
-
-# --------------------------------------------------------------- prices --
-@app.get("/prices", response_class=HTMLResponse)
-def prices(request: Request, msg: str = "", err: str = ""):
-    user, redirect = need_login(request)
-    if redirect:
-        return redirect
-    cfg = COUNTRIES[user["country"]]
-    items = cfg.get("price_items", [])
-    opts = "".join(f"<option value='{e(i['code'])}'>{e(i['name'])} (per {e(i['unit'])})</option>" for i in items)
-    s = people().crowd_summary(user["country"], items)
-    def shown(r):
-        return num(r["median"], ",.0f") if r["published"] else f"needs 3 people ({r['pending']} so far)"
-
-    def num(x, fmt):
-        return "" if x is None or x != x else format(x, fmt)
-    rows = "".join(
-        f"<tr><td>{e(r['name'])}</td><td>{shown(r)}</td><td>{r['reporters']}</td>"
-        f"<td>{num(r['change_pct'], '+.1f')}{'%' if num(r['change_pct'], '+.1f') else ''}</td></tr>"
-        for _, r in s.iterrows())
-    note = f"<p class=ok>{e(msg)}</p>" if msg else (f"<p class=err>{e(err)}</p>" if err else "")
-    return page("Report prices", f"""<div class=card><h1>Report a price you paid or were quoted</h1>
-<p class=mut>{e(cfg['currency'])}, including VAT, for delivery or collection as you normally buy. One report per item per
-week is enough; the note uses each person's median so repeats do not count twice.</p>
-<form method=post action=/prices><label>Item</label><select name=item>{opts}</select>
-<div class=row><div><label>Price ({e(cfg['currency'])})</label><input name=price type=number step=any min=1 required></div>
-<div><label>Where (town / area)</label><input name=location required></div></div>
-<label>Supplier type (optional)</label><input name=supplier placeholder='hardware shop, factory, quarry, fuel station'>
-<p><button>Submit</button></p></form>{note}</div>
-<div class=card><h2>What participants are paying — latest week</h2><div class=tw><table>
-<tr><th>Item</th><th>Median ({e(cfg['currency'])})</th><th>Reporters</th><th>vs 4 weeks</th></tr>{rows}</table></div></div>""",
-                user)
-
-
-@app.post("/prices")
-def add_price(request: Request, item: str = Form(...), price: float = Form(...), location: str = Form(...),
-              supplier: str = Form("")):
-    user, redirect = need_login(request)
-    if redirect:
-        return redirect
-    items = [i["code"] for i in COUNTRIES[user["country"]].get("price_items", [])]
-    try:
-        people().add_report(user["handle"], user["country"], item, price, location, supplier, items=items)
-        return RedirectResponse("/prices?msg=Thank+you+-+recorded", status_code=303)
-    except ReportError as err:
-        return RedirectResponse(f"/prices?err={e(str(err))}", status_code=303)
-
-
-# -------------------------------------------------------------- forecast --
-def _range_svg(rows: list[dict]) -> dict[int, str]:
-    """One small range chart per row on a shared scale: bar = 80% range, dot = expected change."""
-    vals = [v for r in rows for v in (r.get("lo"), r.get("hi"), r.get("median")) if v is not None] + [0.0]
-    lo_all, hi_all = min(vals), max(vals)
-    pad = (hi_all - lo_all) * 0.05 or 1.0
-    lo_all, hi_all = lo_all - pad, hi_all + pad
-    x = lambda v: 4 + 232 * (v - lo_all) / (hi_all - lo_all)
-    out = {}
-    for i, r in enumerate(rows):
-        parts = [f"<line x1='{x(0):.1f}' y1='2' x2='{x(0):.1f}' y2='22' stroke='var(--mut)' stroke-dasharray='2 2'/>"]
-        if r.get("lo") is not None and r.get("hi") is not None:
-            parts.append(f"<rect x='{x(r['lo']):.1f}' y='8' width='{max(1.5, x(r['hi']) - x(r['lo'])):.1f}' height='8' "
-                         "rx='4' fill='var(--bar)'/>")
-        if r.get("median") is not None:
-            parts.append(f"<circle cx='{x(r['median']):.1f}' cy='12' r='5' fill='var(--acc)'/>")
-        out[i] = (f"<svg viewBox='0 0 240 24' width='100%' style='max-width:240px' role='img' "
-                  f"aria-label='range chart'>{''.join(parts)}</svg>")
-    return out
-
-
-def _pct(v, nd=1):
-    return "–" if v is None else f"{v:+.{nd}f}%"
-
-
-@app.get("/forecast", response_class=HTMLResponse)
-def forecast_page(request: Request):
-    user, redirect = need_login(request)
-    if redirect:
-        return redirect
-    import json
-    f = ROOT / "countries" / user["country"] / "outputs" / "forecast_latest.json"
-    cfg = COUNTRIES[user["country"]]
-    if not f.exists():
-        return page("Forecast", f"<div class=card><h1>Forecast — {e(cfg['country'])}</h1>"
-                                "<p>No forecast yet; it is produced with the weekly note.</p></div>", user)
-    d = json.loads(f.read_text(encoding="utf-8"))
-    rows, dr = d.get("rows", []), d.get("drivers", {})
-    svg = _range_svg(rows)
-    extra = any("last_change" in r for r in rows)
-    head = ("<tr><th>Series</th><th>Period</th><th>Expected</th><th>80% range</th><th></th>"
-            + ("<th>Last month</th><th>Year</th>" if extra else "")
-            + ("<th>Without new data</th>" if any("without" in r for r in rows) else "") + "</tr>")
-    body = "".join(
-        f"<tr><td>{e(r['series'])}</td><td>{e(r['period'])}</td><td><b>{_pct(r.get('median'))}</b></td>"
-        f"<td>{'–' if r.get('lo') is None else _pct(r['lo']) + ' to ' + _pct(r['hi'])}</td><td style='min-width:150px'>{svg[i]}</td>"
-        + (f"<td>{_pct(r.get('last_change'), 2)}</td><td>{_pct(r.get('year_change'))}</td>" if extra else "")
-        + (f"<td class=mut>{_pct(r.get('without'))}</td>" if "without" in r else "") + "</tr>"
-        for i, r in enumerate(rows))
-    off = d.get("official")
-    official = (f"<p><b>Latest official reading:</b> {e(off['series'])}, {e(str(off['period']))}"
-                + (f" — {off['change_year_pct']:+.1f}% on a year earlier" if off.get("change_year_pct") is not None else "")
-                + f". <a href='{e(off['source'])}'>Source</a></p>") if off else ""
-    observed = (f"<p>Observed over the last 3 months: <b>{_pct(d['observed_3m'])}</b></p>"
-                if d.get("observed_3m") is not None else "")
-    fx = (f"{dr['fx']:,.1f} {e(cfg['currency'])}/USD ({_pct(dr.get('fx_13w_pct'))} over 13 weeks)"
-          if dr.get("fx") else "–")
-    return page("Forecast", f"""<div class=card><h1>Forecast — {e(cfg['country'])}</h1>
-<p class=mut>{e(d.get('basis', ''))}. Updated {e(d.get('generated', ''))}. Dot = expected change; bar = 80% range;
-dashed line = no change.</p>{official}{observed}
-<div class=tw><table>{head}{body}</table></div></div>
-<div class=card><h2>Drivers this week</h2><p>Brent crude: <b>{dr.get('brent_usd', 0):,.1f} USD</b>
-({_pct(dr.get('brent_13w_pct'))} over 13 weeks) · Exchange rate: <b>{fx}</b></p>
-<p class=mut>Apply the expected % to your own latest quote for the same item. Forecasts are estimates with ranges,
-not certainties. Method: FORECASTING.md.</p></div>""", user)
-
-
-# -------------------------------------------------------- note, ranking --
-@app.get("/note", response_class=HTMLResponse)
-def note(request: Request):
-    user, redirect = need_login(request)
-    if redirect:
-        return redirect
-    notes = sorted((NOTES / user["country"] / "notes").glob(f"weekly_{user['country']}_*.html"))
-    if not notes:
-        return page("Weekly note", "<p>The first weekly note has not been published yet.</p>", user)
-    return HTMLResponse(notes[-1].read_text(encoding="utf-8"))
-
-
-@app.get("/leaderboard", response_class=HTMLResponse)
-def leaderboard(request: Request):
-    user, redirect = need_login(request)
-    if redirect:
-        return redirect
-    names = {p["handle"]: p for p in people().all()}
-    rows = "".join(f"<tr><td>{i}</td><td>{e(names.get(r['account'], {}).get('name', r['account']))}</td>"
-                   f"<td>{e(names.get(r['account'], {}).get('org') or '')}</td><td>{r['total']:,.1f}</td></tr>"
-                   for i, r in enumerate(ex().leaderboard(), 1))
-    return page("Leaderboard", f"""<div class=card><h1>Leaderboard</h1><p class=mut>Points plus open positions at
-current prices. Good forecasters rise as contracts settle.</p><div class=tw><table>
-<tr><th>#</th><th>Name</th><th>Organisation</th><th>Points</th></tr>{rows}</table></div></div>""", user)
-
-
-# ---------------------------------------------------------------- admin --
 def _admin_token() -> str | None:
     """Stateless admin session: an HMAC of a fixed label under the admin password, so the
     password itself never sits in a cookie or a URL, and changing it logs everyone out."""
@@ -441,7 +165,7 @@ def _is_admin(request: Request) -> bool:
 
 
 @app.get("/admin", response_class=HTMLResponse)
-def admin(request: Request, made: str = "", err: str = ""):
+def admin(request: Request, err: str = ""):
     if not _admin_token():
         return HTMLResponse("Admin is disabled (CIO_ADMIN_KEY not set)", status_code=403)
     if not _is_admin(request):
@@ -449,21 +173,12 @@ def admin(request: Request, made: str = "", err: str = ""):
         return page("Organiser login", f"""<div class=card><h1>Organiser login</h1>
 <form method=post action=/admin/login><label>Admin password</label><input name=key type=password required>
 <p><button>Log in</button></p></form>{msg}</div>""")
-    pilot = pilot_report.pilot_countries()
-    opt = lambda ks: "".join(f"<option value={c}>{e(COUNTRIES[c]['country'])}</option>" for c in ks if c in COUNTRIES)
-    opts = (f"<optgroup label='Pilot countries'>{opt(pilot)}</optgroup>"
-            f"<optgroup label='Later'>{opt(sorted((c for c in COUNTRIES if c not in pilot), key=lambda c: COUNTRIES[c]['country']))}</optgroup>")
-    rows = "".join(f"<tr><td>{e(p['name'])}</td><td>{e(p['org'] or '')}</td><td>{e(p['country'])}</td>"
-                   f"<td><code>{e(p['invite_code'])}</code></td><td>{'yes' if p['active'] else ''}</td></tr>"
-                   for p in people().all())
-    flash = f"<p class=ok>Invite code: <b>{e(made)}</b></p>" if made else ""
-    return page("Admin", f"""<div class=card><h1>Invite a participant</h1>
-<form method=post action=/admin/invite><div class=row><div><label>Name</label><input name=name required></div>
-<div><label>Organisation</label><input name=org></div></div><label>Country</label><select name=country>{opts}</select>
-<p><button>Create invite code</button></p></form>{flash}<p><a href=/admin/pilot-report>Monthly pilot report</a> ·
-<a href=/admin/logout>Log out of admin</a></p></div>
-<div class=card><h2>Participants</h2><div class=tw><table><tr><th>Name</th><th>Organisation</th><th>Country</th>
-<th>Code</th><th>Joined</th></tr>{rows}</table></div></div>""")
+    from datetime import date as _date
+    months = [(_date.today().replace(day=1) - __import__("datetime").timedelta(days=31 * i)).strftime("%Y-%m") for i in range(6)]
+    links = "".join(f"<li><a href='/admin/pilot-report?month={m}'>{m}</a></li>" for m in dict.fromkeys(months))
+    live = ", ".join(e(COUNTRIES[c]["country"]) for c in LIVE)
+    return page("Organiser", f"""<div class=card><h1>Pilot</h1><p>Live countries: {live}.
+Anyone can view the site and report prices; there are no accounts.</p><h2>Monthly pilot reports</h2><ul>{links}</ul></div>""")
 
 
 @app.post("/admin/login")
@@ -496,14 +211,6 @@ def admin_pilot_report(request: Request, month: str = ""):
     return HTMLResponse(pilot_report.build(DB, month))
 
 
-@app.post("/admin/invite")
-def invite(request: Request, name: str = Form(...), org: str = Form(""), country: str = Form(...)):
-    if not _is_admin(request) or country not in COUNTRIES:
-        return HTMLResponse("Forbidden", status_code=403)
-    code = people().invite(name, org, country)
-    return RedirectResponse(f"/admin?made={code}", status_code=303)
-
-
 # ----------------------------------------------------------- public API --
 PUBLIC_LIMIT = Limiter(limit=30, window=3600)          # submissions per IP per hour
 SALT = os.environ.get("CIO_ADMIN_KEY", "cio") + ":public"
@@ -514,6 +221,16 @@ def _anon(request: Request) -> str:
     return "anon-" + hashlib.sha256((SALT + _ip(request)).encode()).hexdigest()[:10]
 
 
+def _paid_on(months_ago) -> "date":
+    """The date a reported price applies to: today, or the middle of a month up to BACKFILL_MONTHS ago."""
+    from datetime import date as _date, timedelta as _td
+    from reports import BACKFILL_MONTHS
+    m = int(months_ago or 0)
+    if not 0 <= m <= BACKFILL_MONTHS:
+        raise ReportError(f"prices can go back {BACKFILL_MONTHS} months at most")
+    return _date.today() if m == 0 else _date.today() - _td(days=30 * m)
+
+
 @app.post("/api/public/price")
 async def public_price(request: Request):
     if PUBLIC_LIMIT.blocked(_ip(request)):
@@ -522,7 +239,7 @@ async def public_price(request: Request):
     try:
         d = await request.json()
         country = str(d.get("country", ""))
-        if country not in COUNTRIES:
+        if country not in LIVE:
             raise ReportError("unknown country")
         items = [i["code"] for i in COUNTRIES[country].get("price_items", [])]
         price = float(d.get("price", 0))
@@ -533,7 +250,7 @@ async def public_price(request: Request):
         rid = people().add_report(_anon(request), country, str(d.get("item", "")), float(d.get("price", 0)),
                                   str(d.get("location", ""))[:80], str(d.get("supplier", ""))[:60],
                                   note=("public; contact: " + str(d.get("contact", ""))[:80]) if d.get("contact") else "public",
-                                  items=items, area=str(d.get("area", ""))[:10])
+                                  items=items, area=str(d.get("area", ""))[:10], on=_paid_on(d.get("months_ago", 0)))
         return {"ok": True, "id": rid}
     except (ReportError, ValueError, TypeError) as err:
         return JSONResponse({"ok": False, "error": str(err)}, status_code=400)
@@ -571,7 +288,7 @@ async def public_alert(request: Request):
     try:
         d = await request.json()
         country = str(d.get("country", ""))
-        if country not in COUNTRIES:
+        if country not in LIVE:
             raise ReportError("unknown country")
         if not d.get("consent"):
             raise ReportError("please tick the box to agree to receive alerts")

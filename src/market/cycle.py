@@ -2,9 +2,10 @@
 """
 cycle.py — the automated operating cycle (run from cron; see deploy/crontab.example).
 
-    python src/market/cycle.py daily    # harvest UBOS + KNBS; on a new release: settle, refit, open
+    python src/market/cycle.py daily    # harvest UBOS, KNBS, Stats SA and the BLS benchmark; refit on a new release
     python src/market/cycle.py weekly   # refresh weekly drivers + rainfall, write the weekly notes
     python src/market/cycle.py refresh  # every few hours: latest oil/FX -> forecasts -> site pages
+    python src/market/cycle.py monthly  # 1st of the month: pilot report
 
 Both are idempotent: running twice does nothing new. Every step is logged to
 data/live/cycle_log.csv; a failing step is logged and the rest still run.
@@ -70,16 +71,14 @@ def daily(db: str | None) -> None:
     run("harvest UBOS", "src/ingest/pull_ubos_cipi.py", "--out", "countries/uganda/raw/downloads")
     run("harvest KNBS", "src/ingest/pull_knbs_cipi.py")
     run("harvest Stats SA", "src/ingest/statssa_p01511.py", "pull")
+    run("harvest BLS (benchmark)", "src/ingest/pull_fred.py")
     for c in COUNTRIES:
         after = latest_release_month(c)
-        mkt = ["src/market/run_market.py"]
-        run(f"settle {c}", *mkt, *(["--db", db] if db else []), "settle", "--country", c)
         if after != before[c]:
             log(f"new release {c}", "ok", f"{before[c]} -> {after}")
             if c == "uganda":
                 run("forecast backtest", "src/forecast/run_forecast.py", "backtest")
                 run("forecast", "src/forecast/run_forecast.py", "forecast")
-        run(f"open {c}", *mkt, *(["--db", db] if db else []), "open", "--country", c)
 
 
 def refresh(db: str | None) -> None:

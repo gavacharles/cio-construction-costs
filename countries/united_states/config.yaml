@@ -1,0 +1,42 @@
+# United States: the BENCHMARK country. Same forecasting method, on an official construction input price index
+# that is published monthly, on time and with 40 years of history, so the tool's accuracy can be checked
+# quickly and in public. No price reporting here. Data: BLS Producer Price Indexes, via FRED (no key needed).
+# Note: BLS revises PPIs for four months after first release; the benchmark uses the current vintage.
+country: United States
+iso3: USA
+status: benchmark
+benchmark: true
+currency: USD
+fx_code: usd
+pressure_currency: USD
+regulation:
+  mode: play_money
+  regulators: []
+  note: Benchmark only; no contracts and no price reporting.
+
+settlement:
+  statistics_office: U.S. Bureau of Labor Statistics (BLS)
+  publication: "Producer Price Index by commodity: inputs to construction industries (monthly)"
+  url: https://fred.stlouisfed.org/series/WPUIP2300001
+  parser: fred
+  raw_dirs: [countries/united_states/raw]
+  frequency: monthly
+  quantity: mom_pct_change
+  decimals: 2
+  void_after_days: 120
+  excluded_participants: []
+
+exchange: {}
+markets: []
+
+# FRED series: the headline index first, then materials (name shown on the site).
+fred_series:
+  - { id: WPUIP2300001, name: "Construction inputs (all)" }
+  - { id: WPU1322,      name: "Cement" }
+  - { id: WPU1333,      name: "Ready-mix concrete" }
+  - { id: WPU1017,      name: "Steel mill products" }
+  - { id: WPU081,       name: "Lumber" }
+  - { id: WPU057303,    name: "Diesel" }
+  - { id: WPU1342,      name: "Gypsum products" }
+
+price_items: []
