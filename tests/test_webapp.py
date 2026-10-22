@@ -143,7 +143,7 @@ def test_rwanda_note_builds_offline(tmp_path, monkeypatch):
     import weekly_note
     monkeypatch.setattr(weekly_note, "NOTES", tmp_path)
     md = weekly_note.build("rwanda", fetch=False, db_path=tmp_path / "none.sqlite").read_text()
-    assert "Rwanda construction cost note" in md and "Brent in RWF" in md
+    assert "# Rwanda building costs" in md and "What it means for your money" in md and "RWF" in md
     assert (tmp_path / md.splitlines()[0] if False else tmp_path).exists()
     assert any(p.suffix == ".html" for p in tmp_path.rglob("*"))
 
@@ -173,7 +173,7 @@ def test_all_country_configs_and_generic_note(tmp_path, monkeypatch):
     import weekly_note
     monkeypatch.setattr(weekly_note, "NOTES", tmp_path)
     md = weekly_note.build("nigeria", fetch=False, db_path=tmp_path / "none.sqlite").read_text()
-    assert "Nigeria construction cost note" in md and "Official index" in md and "Next 6 months" in md
+    assert "# Nigeria building costs" in md and "no official construction price index" in md and "Prices to watch" in md
 
 
 def test_cost_pressure_indicator():

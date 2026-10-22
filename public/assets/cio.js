@@ -6,6 +6,7 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "nav.prices": "Bei", "nav.plan": "Panga zabuni", "nav.reportshort": "Ripoti bei", "nav.playshort": "Cheza", "pick.country": "Nchi yako", "chip.yours": "Nchi yako", "chip.officialdata": "Takwimu rasmi", "chip.estimate": "Makadirio", "tip.official": "Imejengwa kutoka takwimu rasmi za bei za ujenzi za nchi, ikisasishwa kwa mabadiliko ya mafuta na sarafu ya wiki hii.", "tip.estimate": "Bado hakuna fahirisi rasmi ya bei za ujenzi inayotumika: haya ni makadirio ya shinikizo kwa vifaa vinavyoagizwa kutoka bei za mafuta na kiwango cha ubadilishaji. Vifaa vya ndani na kazi havijajumuishwa.", "trust.sources": "Takwimu rasmi kutoka UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD na Statistics Mauritius", "trust.track": "Rekodi ya usahihi", "trust.ago": "imesasishwa saa {h} zilizopita", "trust.justnow": "imesasishwa sasa hivi", "wa.follow": "Fuata kwenye WhatsApp (bure)", "money.h": "Bei yako", "money.ph": "Bei yako ya mwisho", "money.need": "Andika bei uliyolipa mara ya mwisho kuona bei inayotarajiwa.", "money.out": "Tarajia takriban {p} kufikia {when} (kwa uwezekano mkubwa {lo} – {hi}).", "alert.email": "Barua pepe", "tab.official": "Takwimu rasmi", "tab.indicator": "Makadirio",
       "nav.countries": "Nchi", "nav.glance": "Gharama kwa muhtasari", "nav.calc": "Kikokotoo cha zabuni", "nav.report": "Ripoti bei",
       "nav.play": "The Cost Call", "nav.method": "Jinsi inavyofanya kazi", "cta.join": "Jiunge na majaribio",
       "footer.short": "CiO Lab · Utabiri ni makadirio yenye viwango, si ushauri. The Cost Call ni mchezo: alama hazina thamani ya pesa.",
@@ -16,7 +17,7 @@ window.I18N = (function () {
       "tool.report.t": "Ripoti bei", "tool.report.d": "Tuambie ulilipa kiasi gani kwa saruji, chuma, dizeli au mchanga wiki hii. Inachukua dakika moja na inaboresha takwimu za kila mtu.",
       "tool.play.t": "The Cost Call", "tool.play.d": "Makisio matano kila siku kuhusu bei halisi. Endeleza mfululizo wako.",
       "tab.all": "Zote", "tab.east": "Afrika Mashariki", "tab.south": "Kusini mwa Afrika", "tab.west": "Afrika Magharibi", "tab.north": "Afrika Kaskazini",
-      "tab.official": "Fahirisi rasmi ya bei", "tab.indicator": "Kiashiria cha gharama za uagizaji", "tab.rising": "Zinapanda", "tab.easing": "Zinashuka",
+      "tab.rising": "Zinapanda", "tab.easing": "Zinashuka",
       "chip.official": "Fahirisi rasmi ya bei", "chip.indicator": "Kiashiria cha gharama za uagizaji", "chip.featured": "Iliyoangaziwa",
       "lbl.chance": "uwezekano wa kupanda", "lbl.expected": "mabadiliko yanayotarajiwa", "lbl.range": "kiwango kinachowezekana (8 kati ya 10)",
       "lbl.expected.cap": "Mabadiliko yanayotarajiwa", "lbl.range.cap": "Kiwango kinachowezekana (8 kati ya 10)",
@@ -80,6 +81,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "nav.prices": "Prix", "nav.plan": "Préparer une offre", "nav.reportshort": "Signaler un prix", "nav.playshort": "Jouer", "pick.country": "Votre pays", "chip.yours": "Votre pays", "chip.officialdata": "Données officielles", "chip.estimate": "Estimation", "tip.official": "Construit à partir des statistiques officielles des prix de la construction du pays, mis à jour avec les variations du pétrole et de la monnaie de la semaine.", "tip.estimate": "Pas encore d'indice officiel utilisable des prix de la construction : estimation de la pression sur les matériaux importés à partir du prix du pétrole et du taux de change. Matériaux locaux et main-d'œuvre non inclus.", "trust.sources": "Données officielles de l'UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD et Statistics Mauritius", "trust.track": "Historique de précision", "trust.ago": "mis à jour il y a {h} h", "trust.justnow": "mis à jour à l'instant", "wa.follow": "Suivre sur WhatsApp (gratuit)", "money.h": "Votre prix", "money.ph": "Votre dernier prix", "money.need": "Saisissez le dernier prix payé pour voir le prix attendu.", "money.out": "Prévoyez environ {p} d'ici {when} (le plus probable : {lo} – {hi}).", "alert.email": "E-mail", "tab.official": "Données officielles", "tab.indicator": "Estimations",
       "nav.countries": "Pays", "nav.glance": "Coûts en un coup d'œil", "nav.calc": "Calculateur d'offre", "nav.report": "Signaler des prix",
       "nav.play": "The Cost Call", "nav.method": "Comment ça marche", "cta.join": "Rejoindre le pilote",
       "footer.short": "CiO Lab · Les prévisions sont des estimations avec des fourchettes, pas des conseils. The Cost Call est un jeu : les points n'ont aucune valeur monétaire.",
@@ -90,7 +92,7 @@ window.I18N = (function () {
       "tool.report.t": "Signaler un prix", "tool.report.d": "Dites-nous combien vous avez payé le ciment, l'acier, le gazole ou le sable cette semaine. Une minute suffit, et tout le monde y gagne.",
       "tool.play.t": "The Cost Call", "tool.play.d": "Cinq pronostics par jour sur des prix réels. Gardez votre série.",
       "tab.all": "Tous", "tab.east": "Afrique de l'Est", "tab.south": "Afrique australe", "tab.west": "Afrique de l'Ouest", "tab.north": "Afrique du Nord",
-      "tab.official": "Indice officiel des prix", "tab.indicator": "Indicateur des coûts d'importation", "tab.rising": "En hausse", "tab.easing": "En baisse",
+      "tab.rising": "En hausse", "tab.easing": "En baisse",
       "chip.official": "Indice officiel des prix", "chip.indicator": "Indicateur des coûts d'importation", "chip.featured": "À la une",
       "lbl.chance": "probabilité de hausse", "lbl.expected": "variation attendue", "lbl.range": "fourchette probable (8 sur 10)",
       "lbl.expected.cap": "Variation attendue", "lbl.range.cap": "Fourchette probable (8 sur 10)",
@@ -154,6 +156,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "nav.prices": "Prices", "nav.plan": "Plan a bid", "nav.reportshort": "Report a price", "nav.playshort": "Play", "pick.country": "Your country", "chip.yours": "Your country", "chip.officialdata": "Official data", "chip.estimate": "Estimate", "tip.official": "Built from the country's official construction price statistics, updated with this week's oil and currency moves.", "tip.estimate": "No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.", "trust.sources": "Official data from UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD and Statistics Mauritius", "trust.track": "Track record", "trust.ago": "updated {h} h ago", "trust.justnow": "updated just now", "wa.follow": "Follow on WhatsApp (free)", "money.h": "Your price", "money.ph": "Your latest price", "money.need": "Type what you paid last to see the expected price.", "money.out": "Expect about {p} by {when} (most likely {lo} – {hi}).", "alert.email": "Email", "tab.official": "Official data", "tab.indicator": "Estimates",
       "q.official": "Will {c}'s construction input prices rise by {when}?", "q.indicator": "Will import costs push {c}'s building prices up by {when}?",
       "adv.up": "Allow about {x} on quotes for work priced to {when}, compared with {base} prices.",
       "adv.down": "Prices may ease about {x} by {when} — consider delaying bulk buying.",
@@ -229,7 +232,7 @@ window.I18N = (function () {
       "Civil engineering materials": "Matériaux de génie civil", "Imported-input cost pressure": "Pression des coûts d'importation" },
   };
   const mat = n => (MAT[lang] && MAT[lang][n]) || n;
-  return { lang, t, mat, month, dayMonth, country, base, apply, set(v) { try { localStorage.setItem("cio-lang", v); } catch (e) { /* ignore */ } location.reload(); } };
+  return { lang, loc, t, mat, month, dayMonth, country, base, apply, set(v) { try { localStorage.setItem("cio-lang", v); } catch (e) { /* ignore */ } location.reload(); } };
 })();
 
 /* CiO Costs — public site behaviour: theme, forecast-to picker (weeks then months), filters, search, sorting,
@@ -292,6 +295,27 @@ window.I18N = (function () {
     const pts = v.map((x, i) => `${(i * 116 / (v.length - 1) + 2).toFixed(1)},${(35 - (x - lo) * 30 / sp).toFixed(1)}`).join(" ");
     return `<svg class=spark viewBox="0 0 120 38" preserveAspectRatio=none aria-hidden=true><polygon points="2,38 ${pts} 118,38"/><polyline points="${pts}"/></svg>`; }
 
+  /* ---------- "your price": a price today -> the expected price at the target date ---------- */
+  const nowTg = () => { const d = new Date(); return `M:${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
+  const money0 = n => Math.round(n).toLocaleString(T.loc || undefined);
+  function money(el, c, tg) {
+    const box = $(".money", el); if (!box) return;
+    const sel = $("[data-money-mat]", box), inp = $("[data-money-price]", box), out = $("[data-money-out]", box);
+    if (sel.dataset.key !== c.key) {                       /* (re)build the material list when the country changes */
+      sel.dataset.key = c.key; sel.innerHTML = Object.keys(c.paths).map(n => `<option value="${n}">${T.mat(n)}</option>`).join("");
+      $("[data-money-ccy]", box).textContent = c.currency;
+      inp.placeholder = tr("money.ph");
+      const load = () => { const v = store.get(`cio-price-${c.key}-${sel.value}`, null) ?? (c.crowd || {})[sel.value]; inp.value = v == null ? "" : v; };
+      sel.onchange = () => { load(); money(el, c, target); };
+      inp.oninput = () => { store.set(`cio-price-${c.key}-${sel.value}`, inp.value === "" ? null : +inp.value); money(el, c, target); };
+      load(); }
+    const a = at(c.paths[sel.value], nowTg()), b = at(c.paths[sel.value], tg), v = +inp.value;
+    if (!a || !b || !(v > 0)) { out.textContent = tr("money.need"); return; }
+    const f = x => v * (1 + x / 100) / (1 + a.q.median / 100);
+    out.innerHTML = tr("money.out", { p: `<strong>${money0(f(b.q.median))} ${c.currency}</strong>`, when: tLabel(tg),
+      lo: money0(f(b.q.lo)), hi: money0(f(b.q.hi)) });
+  }
+
   /* ---------- fill a block (card / featured / country page) for target tg ---------- */
   function fill(el, c, tg) {
     const r = at(c.paths[c.head], tg); if (!r) return; const q = r.q, p = chance(q);
@@ -303,12 +327,29 @@ window.I18N = (function () {
     const sl = $("[data-spark]", el); if (sl && !sl.innerHTML) sl.innerHTML = spark(c);
     const br = $("[data-breakdown]", el);
     if (br) br.innerHTML = Object.entries(c.paths).map(([n, pth]) => { const x = at(pth, tg); return x ? `<li><span>${T.mat(n)}</span><b>${pct(x.q.median)}</b></li>` : ""; }).join("");
+    money(el, c, tg);
     el.dataset.trend = q.median > 0.05 ? "rising" : (q.median < -0.05 ? "easing" : "flat");
     const fan = $(".fan", el); if (fan) { const xs = JSON.parse(fan.dataset.xs || "{}"), mk = $(".marker", fan), m = tMonth(tg);
       const x = xs[m] || xs[Object.keys(xs).filter(k => k <= m).pop()]; if (mk && x) { mk.setAttribute("x1", x); mk.setAttribute("x2", x); } }
     $$("tr[data-mat]").forEach(row => { const pth = c.paths[row.dataset.mat] || (row.dataset.mat === "Reinforcement steel" ? c.paths["Rebar"] : null);
       const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.textContent = x ? `${pct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})` : tr("notsep"); } });
   }
+
+  /* ---------- country-first home ---------- */
+  const my = $("#mycountry"), feat = $(".featured:not(.solo)");
+  Object.entries(DATA.countries || {}).forEach(([k, c]) => { c.key = k; });
+  if (my && feat) {
+    $$("option", my).forEach(o => { const c = DATA.countries[o.value]; if (c) o.textContent = `${c.flag} ${cname(c)}`; });
+    const show = k => { const c = DATA.countries[k]; if (!c) return; feat.dataset.key = k;
+      $(".flag", feat).textContent = c.flag; const nm = $("[data-feat-name]", feat); nm.textContent = cname(c); nm.dataset.cc = c.cc;
+      $$("[data-feat-name], [data-feat-link]", feat).forEach(a => a.href = `countries/${k}/index.html`);
+      $("[data-chart]", feat).innerHTML = ""; };
+    const k0 = store.get("cio-country", null); my.value = DATA.countries[k0] ? k0 : feat.dataset.key; show(my.value);
+    my.onchange = () => { store.set("cio-country", my.value); show(my.value); render(); };
+  }
+  const ago = $("#updated-ago");
+  if (ago) { const h = Math.max(0, Math.round((Date.now() - Date.parse(ago.dataset.built)) / 36e5));
+    ago.textContent = isNaN(h) ? "" : (h < 1 ? tr("trust.justnow") : tr("trust.ago", { h })); }
 
   /* ---------- forecast-to picker ---------- */
   let target = store.get("cio-target", DATA.default); if (!DATA.months || DATA.months.indexOf(target) < 0) target = DATA.default;

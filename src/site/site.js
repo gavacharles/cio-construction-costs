@@ -58,6 +58,27 @@
     const pts = v.map((x, i) => `${(i * 116 / (v.length - 1) + 2).toFixed(1)},${(35 - (x - lo) * 30 / sp).toFixed(1)}`).join(" ");
     return `<svg class=spark viewBox="0 0 120 38" preserveAspectRatio=none aria-hidden=true><polygon points="2,38 ${pts} 118,38"/><polyline points="${pts}"/></svg>`; }
 
+  /* ---------- "your price": a price today -> the expected price at the target date ---------- */
+  const nowTg = () => { const d = new Date(); return `M:${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
+  const money0 = n => Math.round(n).toLocaleString(T.loc || undefined);
+  function money(el, c, tg) {
+    const box = $(".money", el); if (!box) return;
+    const sel = $("[data-money-mat]", box), inp = $("[data-money-price]", box), out = $("[data-money-out]", box);
+    if (sel.dataset.key !== c.key) {                       /* (re)build the material list when the country changes */
+      sel.dataset.key = c.key; sel.innerHTML = Object.keys(c.paths).map(n => `<option value="${n}">${T.mat(n)}</option>`).join("");
+      $("[data-money-ccy]", box).textContent = c.currency;
+      inp.placeholder = tr("money.ph");
+      const load = () => { const v = store.get(`cio-price-${c.key}-${sel.value}`, null) ?? (c.crowd || {})[sel.value]; inp.value = v == null ? "" : v; };
+      sel.onchange = () => { load(); money(el, c, target); };
+      inp.oninput = () => { store.set(`cio-price-${c.key}-${sel.value}`, inp.value === "" ? null : +inp.value); money(el, c, target); };
+      load(); }
+    const a = at(c.paths[sel.value], nowTg()), b = at(c.paths[sel.value], tg), v = +inp.value;
+    if (!a || !b || !(v > 0)) { out.textContent = tr("money.need"); return; }
+    const f = x => v * (1 + x / 100) / (1 + a.q.median / 100);
+    out.innerHTML = tr("money.out", { p: `<strong>${money0(f(b.q.median))} ${c.currency}</strong>`, when: tLabel(tg),
+      lo: money0(f(b.q.lo)), hi: money0(f(b.q.hi)) });
+  }
+
   /* ---------- fill a block (card / featured / country page) for target tg ---------- */
   function fill(el, c, tg) {
     const r = at(c.paths[c.head], tg); if (!r) return; const q = r.q, p = chance(q);
@@ -69,12 +90,29 @@
     const sl = $("[data-spark]", el); if (sl && !sl.innerHTML) sl.innerHTML = spark(c);
     const br = $("[data-breakdown]", el);
     if (br) br.innerHTML = Object.entries(c.paths).map(([n, pth]) => { const x = at(pth, tg); return x ? `<li><span>${T.mat(n)}</span><b>${pct(x.q.median)}</b></li>` : ""; }).join("");
+    money(el, c, tg);
     el.dataset.trend = q.median > 0.05 ? "rising" : (q.median < -0.05 ? "easing" : "flat");
     const fan = $(".fan", el); if (fan) { const xs = JSON.parse(fan.dataset.xs || "{}"), mk = $(".marker", fan), m = tMonth(tg);
       const x = xs[m] || xs[Object.keys(xs).filter(k => k <= m).pop()]; if (mk && x) { mk.setAttribute("x1", x); mk.setAttribute("x2", x); } }
     $$("tr[data-mat]").forEach(row => { const pth = c.paths[row.dataset.mat] || (row.dataset.mat === "Reinforcement steel" ? c.paths["Rebar"] : null);
       const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.textContent = x ? `${pct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})` : tr("notsep"); } });
   }
+
+  /* ---------- country-first home ---------- */
+  const my = $("#mycountry"), feat = $(".featured:not(.solo)");
+  Object.entries(DATA.countries || {}).forEach(([k, c]) => { c.key = k; });
+  if (my && feat) {
+    $$("option", my).forEach(o => { const c = DATA.countries[o.value]; if (c) o.textContent = `${c.flag} ${cname(c)}`; });
+    const show = k => { const c = DATA.countries[k]; if (!c) return; feat.dataset.key = k;
+      $(".flag", feat).textContent = c.flag; const nm = $("[data-feat-name]", feat); nm.textContent = cname(c); nm.dataset.cc = c.cc;
+      $$("[data-feat-name], [data-feat-link]", feat).forEach(a => a.href = `countries/${k}/index.html`);
+      $("[data-chart]", feat).innerHTML = ""; };
+    const k0 = store.get("cio-country", null); my.value = DATA.countries[k0] ? k0 : feat.dataset.key; show(my.value);
+    my.onchange = () => { store.set("cio-country", my.value); show(my.value); render(); };
+  }
+  const ago = $("#updated-ago");
+  if (ago) { const h = Math.max(0, Math.round((Date.now() - Date.parse(ago.dataset.built)) / 36e5));
+    ago.textContent = isNaN(h) ? "" : (h < 1 ? tr("trust.justnow") : tr("trust.ago", { h })); }
 
   /* ---------- forecast-to picker ---------- */
   let target = store.get("cio-target", DATA.default); if (!DATA.months || DATA.months.indexOf(target) < 0) target = DATA.default;

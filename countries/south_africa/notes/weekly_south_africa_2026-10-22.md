@@ -1,38 +1,43 @@
-# South Africa construction cost note — week of 22 October 2026
+# South Africa building costs — week of 22 October 2026
 
-_CiO Lab construction cost note · play-money pilot · not investment advice._
+## In one line
 
-## This week's drivers
+Building material prices in South Africa are likely to rise — about 1.6% by January 2027.
 
-| Driver | Latest | 1 week | 4 weeks | 13 weeks | 52 weeks |
-|---|---|---|---|---|---|
-| Brent crude (USD/bbl) | 115.2 | -11.4% | -3.7% | +35.5% | +88.2% |
-| ZAR per USD | 16.4 | -0.5% | +1.2% | -0.2% | -5.3% |
-| Brent in ZAR | 1,961.1 | -8.7% | +1.0% | +40.1% | +84.5% |
+## What it means for your money
 
-## Latest Stats SA readings
+For every **1,000,000 ZAR** you spend on materials today, budget about **1,016,000 ZAR** for the same materials in January 2027 (most likely between 988,000 and 1,042,000).
 
-Stats SA P0151.1 construction materials price indices, latest release **August 2026** (monthly). Changes are computed inside each release, so rebasing does not distort them.
+## Prices to watch
 
-| Series | Change on previous month | Change on a year earlier | Expected next month |
-|---|---|---|---|
-| Construction input prices (whole industry) | +0.18% | +8.3% | +0.30% |
-| Cement | -0.25% | +3.4% | +0.22% |
-| Ready-mix concrete | +3.59% | +16.0% | +0.07% |
-| Reinforcing steel | +0.50% | +9.1% | -0.23% |
-| Construction stone and sand | -2.34% | +2.4% | -0.09% |
-| Civil engineering materials | -0.52% | +4.7% | +0.20% |
+- ⬆ **Cement** — up about 1.9% by January 2027
+- ⬆ **Ready-mix concrete** — up about 1.8% by January 2027
+- ⬆ **Civil engineering materials** — up about 1.7% by January 2027
+- ⬆ **All building inputs** — up about 1.6% by January 2027
+- ⬆ **Construction stone and sand** — up about 1.5% by January 2027
 
-Expected = the opening price of the September 2026 contract (recent change patterns; backtest over 43 months beat plain frequencies for 7 of 12 contract-horizons, none significantly). A driver-based South Africa model is next.
+## Why
 
-## Prices reported by participants
+- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- The ZAR has been steady against the US dollar.
 
-_No price reports yet. Participants report the prices they pay in the app each week._
+## What to do this week
 
-## Open forecasting contracts
+- Prices are creeping up: compare at least two quotes before big orders.
+- Keep a small contingency for price rises in new quotes.
 
-_No open contracts._
+## What people are paying
 
-## Sources
+Not enough reports yet this week. Tell us what you pay — it is anonymous: Report a price on the CiO Costs site.
 
-UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall). How the forecasts work: see How it works on the CiO site.
+## Official figures
+
+The latest official figures are for **August 2026**, from the Statistics South Africa (Stats SA).
+
+## How to read this
+
+"Likely" means about 7 times in 10; "almost certain" about 9 in 10. Changes are measured from today. These are estimates, not advice.
+
+[See all the figures for South Africa](../index.html)
+
+_CiO Costs · free weekly note · CiO Lab_

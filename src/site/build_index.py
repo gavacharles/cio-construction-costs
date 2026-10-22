@@ -34,6 +34,18 @@ import yaml                                          # noqa: E402
 SITE_CFG = yaml.safe_load((ROOT / "config" / "site.yaml").read_text(encoding="utf-8")) if (ROOT / "config" / "site.yaml").exists() else {}
 WA = str(SITE_CFG.get("whatsapp_number") or "").strip().lstrip("+")
 FEATURED = SITE_CFG.get("glance_featured") or ["uganda", "kenya", "south_africa", "nigeria", "ghana"]
+CHANNEL = str(SITE_CFG.get("whatsapp_channel_url") or "").strip()
+ALERTS_WA = bool(SITE_CFG.get("alerts_whatsapp"))
+TIP_OFFICIAL = "Built from the country's official construction price statistics, updated with this week's oil and currency moves."
+TIP_ESTIMATE = ("No usable official construction price index yet: an estimate of the pressure on imported materials "
+                "from oil prices and the exchange rate. Local materials and labour are not included.")
+
+
+def chip(official: bool) -> str:
+    k, t, tip, tk = (("chip.officialdata", "Official data", TIP_OFFICIAL, "tip.official") if official else
+                     ("chip.estimate", "Estimate", TIP_ESTIMATE, "tip.estimate"))
+    return (f"<span class=chip><span data-i18n={k}>{t}</span> <span class=info tabindex=0 role=note "
+            f"aria-label='{e(tip)}' data-tipkey={tk}>ⓘ<span class=tip data-i18n={tk}>{e(tip)}</span></span></span>")
 
 e = html.escape
 REGION = {"uganda": "east", "kenya": "east", "rwanda": "east", "tanzania": "east", "ethiopia": "east",
@@ -130,17 +142,16 @@ LOGO = ("<svg class=logo viewBox='0 0 24 24' width=24 height=24 aria-hidden=true
 
 
 def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc: str = "") -> str:
-    nav = [("index.html#countries", "Countries", "home", "nav.countries"), ("index.html#glance", "Costs at a glance", "glance", "nav.glance"),
-           ("calculator.html", "Bid calculator", "calc", "nav.calc"), ("report.html", "Report prices", "report", "nav.report"),
-           ("play.html", "The Cost Call", "play", "nav.play"), ("method.html", "How it works", "method", "nav.method")]
-    minor = {"glance", "method"}                     # hidden first on narrower screens
+    nav = [("index.html#countries", "Prices", "home", "nav.prices"), ("calculator.html", "Plan a bid", "calc", "nav.plan"),
+           ("report.html", "Report a price", "report", "nav.reportshort"), ("play.html", "Play", "play", "nav.playshort")]
+    minor: set[str] = set()
     links = "".join(f"<a href='{rel}{h}' data-i18n='{k}'{' class=minor' if p in minor else ''}{' aria-current=page' if p == page else ''}>{t}</a>"
                     for h, t, p, k in nav)
     payload = json.dumps(data, separators=(",", ":")).replace("</", "<\\/")
     return f"""<!doctype html>
 <html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>{e(title)}</title><meta name=description content="{e(desc or 'Construction cost forecasts for 18 African countries.')}">
-<link rel=stylesheet href="{rel}assets/cio.css"></head><body data-page="{page}" data-rel="{rel}">
+<link rel=stylesheet href="{rel}assets/cio.css"><link rel=stylesheet href="{rel}assets/fonts.css" media=print onload="this.media='all'"></head><body data-page="{page}" data-rel="{rel}">
 <header class=topbar><div class=wrap>
  <a class=mark href="{rel}index.html">{LOGO}CiO <span>Costs</span></a>
  <nav class=nav aria-label=Main>{links}</nav>
@@ -150,9 +161,10 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
  <button class=theme id=theme type=button aria-label=Theme>◐</button>
 </div></header>
 <main class=wrap>{body}</main>
-<footer class=wrap data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
+<footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
+{f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else ""}</p><span data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
 value. Official data: UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD, Statistics Mauritius; oil and exchange rates from public
-market sources. Updated {e(data.get('updated', ''))}.</footer>
+market sources. Updated {e(data.get('updated', ''))}.</span></footer>
 <script id=cio-data type="application/json">{payload}</script>
 <script src="{rel}assets/cio.js"></script></body></html>
 """
@@ -168,16 +180,16 @@ def picker(months: list[str], default: str) -> str:
 
 # ------------------------------------------------------------------ pages --
 def page_index(cs: list[dict], months: list[str], default: str) -> str:
-    feat = next((c for c in cs if c["key"] == "uganda"), cs[0])
+    feat = next((c for c in cs if c["key"] == "uganda"), cs[0])      # replaced in the browser by the visitor's country
     tabs = [("all", "All"), ("east", "East Africa"), ("south", "Southern Africa"), ("west", "West Africa"),
-            ("north", "North Africa"), ("official", "Official price index"), ("indicator", "Import-cost indicator"),
+            ("north", "North Africa"), ("official", "Official data"), ("indicator", "Estimates"),
             ("rising", "Rising"), ("easing", "Easing")]
     tab_html = "".join(f"<button type=button data-tab={k} data-i18n=tab.{k} aria-pressed={'true' if k == 'all' else 'false'}>{v}</button>"
                        for k, v in tabs)
     cards = "".join(f"""<article class=card data-key={c['key']} data-region={c['region']}
  data-type={'official' if c['official'] else 'indicator'} data-search="{e(' '.join([c['country'], c['currency'], REGION_NAME.get(c['region'], ''), *c['items'], *(m['name'] for m in c['materials'])]).lower())}">
  <div class=card-top><span class=flag aria-hidden=true>{c['flag']}</span><a class=country data-cc={ISO2.get(load_country(c['key'])['iso3'], '')} href="countries/{c['key']}/index.html">{e(c['country'])}</a>
- <span class=chip data-i18n={'chip.official' if c['official'] else 'chip.indicator'}>{'Official price index' if c['official'] else 'Import-cost indicator'}</span></div>
+ {chip(c['official'])}</div>
  <h3 class=q data-q></h3>
  <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
@@ -195,9 +207,14 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
  <h1 data-i18n=home.h1>Will building costs rise where you work?</h1>
  <p class=lede data-i18n=home.lede>Pick a month. See the chance that construction input prices rise, how much, and what is driving it —
  from official statistics, oil and exchange rates, updated every few hours.</p></div>
- <div class=hero-side>{picker(months, default)}<p class=muted id=when-note data-i18n=when.note>Weekly figures are interpolated from the monthly forecast, which is refreshed
+ <div class=hero-side><label class="when country-pick"><span data-i18n=pick.country>Your country</span><select id=mycountry aria-label="Your country">
+ {''.join(f"<option value={c['key']}>{c['flag']} {e(c['country'])}</option>" for c in sorted(cs, key=lambda c: c['country']))}</select></label>
+ {picker(months, default)}<p class=muted id=when-note data-i18n=when.note>Weekly figures are interpolated from the monthly forecast, which is refreshed
  every few hours. Changes are measured from each country's latest official reading (or from today for import-cost
  indicators).</p></div></section>
+<p class=trust><span data-i18n=trust.sources>Official data from UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD and Statistics Mauritius</span>
+ · <span id=updated-ago data-built="{BUILT}"></span> · <a href="method.html#track" data-i18n=trust.track>Track record</a>
+ {f" · <a class='wa-link' href='{CHANNEL}' target=_blank rel=noopener>{WA_ICON} <span data-i18n=wa.follow>Follow on WhatsApp (free)</span></a>" if CHANNEL else ""}</p>
 <section class=tools><a class=tool href=calculator.html><b data-i18n=tool.calc.t>Bid escalation calculator</b><span data-i18n=tool.calc.d>How much could prices move
  over your contract? Get the expected escalation in your currency, with a range.</span></a>
  <a class=tool href=report.html><b data-i18n=tool.report.t>Report a price</b><span data-i18n=tool.report.d>Tell us what you paid for cement, steel, diesel or sand this
@@ -206,14 +223,15 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
 
 <section class=featured data-key={feat['key']} aria-labelledby=fq>
  <div class=feat-main><div class=card-top><span class=flag aria-hidden=true>{feat['flag']}</span>
- <a class=country data-cc={ISO2.get(load_country(feat['key'])['iso3'], '')} href="countries/{feat['key']}/index.html">{e(feat['country'])}</a><span class=chip data-i18n=chip.featured>Featured</span></div>
+ <a class=country data-feat-name data-cc={ISO2.get(load_country(feat['key'])['iso3'], '')} href="countries/{feat['key']}/index.html">{e(feat['country'])}</a><span class=chip data-i18n=chip.yours>Your country</span></div>
  <h2 id=fq class=feat-q data-q></h2>
  <div class=feat-odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
  <div><span class='pct small' data-exp>–</span><span class=pct-l data-i18n=lbl.expected>expected change</span></div>
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
  <div class=pbar><span data-bar></span></div><div class=chart data-chart></div>
  <p class='advice big' data-advice></p>
- <div class=actions><a class='btn primary' href="countries/{feat['key']}/index.html" data-i18n=btn.bymaterial>See costs by material</a>
+ {MONEY}
+ <div class=actions><a class='btn primary' data-feat-link href="countries/{feat['key']}/index.html" data-i18n=btn.bymaterial>See costs by material</a>
  <a class=btn href="play.html" data-i18n=btn.play>Play The Cost Call</a></div></div>
  <aside class=feat-side><h3><span data-i18n=feat.bymaterial>By material, to</span> <span data-when-label></span></h3><ul class=breakdown data-breakdown></ul></aside>
 </section>
@@ -252,6 +270,13 @@ Free. Ask CiO Lab for an invite code.</p></div><div class=actions>{f"<a class='b
 <a class='btn primary big' href=play.html data-i18n=join.cta>Start with today's game</a></div></section>
 """
     return body
+
+
+MONEY = """<div class=money><b data-i18n=money.h>Your price</b>
+ <label><span class=sr-only>Material</span><select data-money-mat></select></label>
+ <label class=money-in><span class=sr-only>Your latest price</span><input data-money-price type=number min=0 step=any inputmode=decimal
+ placeholder="Your latest price"><span data-money-ccy></span></label>
+ <p class=money-out data-money-out aria-live=polite></p></div>"""
 
 
 def chart_svg(c: dict, w: int = 760, h: int = 220) -> str:
@@ -337,13 +362,14 @@ Prices reported by participants (below) fill the gap, material by material.</p><
 <p class=crumbs><a href="../../index.html" data-i18n=crumbs.all>All countries</a> › <span data-i18n=tab.{c['region']}>{e(REGION_NAME.get(c['region'], ''))}</span></p>
 <section class="featured solo" data-key={c['key']}>
  <div class=feat-main><div class=card-top><span class='flag big' aria-hidden=true>{c['flag']}</span><h1 class=country-h data-cc={ISO2.get(load_country(c['key'])['iso3'], '')}>{e(c['country'])}</h1>
- <span class=chip data-i18n={'chip.official' if c['official'] else 'chip.indicator'}>{'Official price index' if c['official'] else 'Import-cost indicator'}</span>{picker(months, default)}</div>
+ {chip(c['official'])}{picker(months, default)}</div>
  <h2 class=feat-q data-q></h2>
  <div class=feat-odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
  <div><span class='pct small' data-exp>–</span><span class=pct-l data-i18n=lbl.expected>expected change</span></div>
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
  <div class=pbar><span data-bar></span></div>
  <div class=chart>{chart_svg(c)}</div><p class='advice big' data-advice></p>
+ {MONEY}
  <div class=actions><a class='btn primary' href="../../play.html#{c['key']}" data-i18n=link.makecall>Make your call</a>{note}
  <button class='btn wa' type=button data-wa-share={c['key']}>{WA_ICON} <span data-i18n=wa.share>Share on WhatsApp</span></button></div>{src}</div>
 </section>
@@ -358,12 +384,12 @@ Prices reported by participants (below) fill the gap, material by material.</p><
 <section><div class=section-h><h2 data-i18n=sec.crowd>Prices reported by people who buy them</h2>
 <a class='btn primary' href="../../report.html#{c['key']}" data-i18n=tool.report.t>Report a price</a></div>{crowd_sec}</section>
 <section class=alertbox data-country={c['key']}><div><h2 data-i18n=alert.h>Get a price alert</h2><p data-i18n=alert.d>We'll message you when the expected change
-for a material in {e(c['country'])} reaches your level.</p></div>
+for a material in {e(c['country'])} reaches your level.</p>{f"<p><a class='btn wa' href='{CHANNEL}' target=_blank rel=noopener>{WA_ICON} <span data-i18n=wa.follow>Follow on WhatsApp (free)</span></a></p>" if CHANNEL else ""}</div>
 <form class=alertform><label><span data-i18n=th.material>Material</span><select name=series>{''.join(f"<option>{e(k)}</option>" for k in c['paths'])}</select></label>
 <label><span data-i18n=alert.at>Alert me at</span><select name=threshold><option value=3>+3%</option><option value=5 selected>+5%</option><option value=10>+10%</option>
 <option value=-3>−3% (prices falling)</option></select></label>
-<label><span data-i18n=alert.by>By</span><select name=channel><option value=whatsapp>WhatsApp</option><option value=email>Email</option></select></label>
-<label><span data-i18n=alert.contact>Number or email</span><input name=contact required placeholder="+256… or you@company.com"></label>
+{"<label><span data-i18n=alert.by>By</span><select name=channel><option value=whatsapp>WhatsApp</option><option value=email>Email</option></select></label>" if ALERTS_WA else "<input type=hidden name=channel value=email>"}
+<label><span data-i18n={'alert.contact' if ALERTS_WA else 'alert.email'}>{'Number or email' if ALERTS_WA else 'Email'}</span><input name=contact required {'' if ALERTS_WA else 'type=email '}placeholder="{'+256… or you@company.com' if ALERTS_WA else 'you@company.com'}"></label>
 <label class=consent><input type=checkbox name=consent required> <span data-i18n=alert.consent>I agree to receive these alerts from CiO Costs by
 the channel above. Reply STOP at any time to stop them.</span></label>
 <button class='btn primary' type=submit data-i18n=alert.btn>Set alert</button><p class='muted formmsg' role=status></p></form></section>
@@ -384,7 +410,7 @@ def track_record() -> str:
     cells = "".join(f"<tr><td>{r['h']} month{'s' if r['h'] != '1' else ''} ahead</td>"
                     f"<td>{(1 - float(r['rel_structural'])) * 100:.0f}% smaller</td>"
                     f"<td>{float(r['coverage80']) * 100:.0f}% raw → about 80% after calibration</td></tr>" for r in rows)
-    return (f"<h2>Track record</h2><p>Uganda, overall construction input index, tested month by month since 2021 using only "
+    return (f"<h2 id=track>Track record</h2><p>Uganda, overall construction input index, tested month by month since 2021 using only "
             f"the data available at each point:</p><div class=tablewrap><table class=glance><thead><tr><th>Horizon</th>"
             f"<th>Errors vs a simple trend</th><th>Outcomes inside the likely range</th></tr></thead><tbody>{cells}</tbody>"
             f"</table></div><p class=muted>Each month we will also publish our forecast next to the official figure.</p>")
@@ -478,7 +504,13 @@ def page_embed() -> str:
 
 
 # ------------------------------------------------------------------ build --
+BUILT = ""
+
+
 def build() -> Path:
+    global BUILT
+    from datetime import datetime, timezone
+    BUILT = datetime.now(timezone.utc).isoformat(timespec="minutes")
     cs = [c for c in (country_data(k) for k in list_countries()) if c]
     cs.sort(key=lambda c: (not c["official"], c["country"]))
     months = months_ahead(12)
@@ -486,7 +518,8 @@ def build() -> Path:
     updated = max((c["generated"] for c in cs), default=date.today().isoformat())
     slim = {c["key"]: dict({k: c[k] for k in ("country", "flag", "currency", "region", "kind", "official", "base", "head",
                                               "paths", "spark", "drivers", "materials", "step")},
-                           cc=ISO2.get(load_country(c["key"])["iso3"], "")) for c in cs}
+                           cc=ISO2.get(load_country(c["key"])["iso3"], ""),
+                           crowd={r["name"]: r["median"] for r in crowd(c["key"]) if r.get("published")}) for c in cs}
     quiz = [{"key": c["key"], "country": c["country"], "flag": c["flag"], "cc": slim[c["key"]]["cc"], "material": m["name"], "period": p, "change": v,
              "step": c["step"]} for c in cs for m in c["materials"]
             for p, v in m.get("history", [])[-(8 if c["step"] == "quarter" else 12):] if abs(v) >= 0.2]   # recent periods only
@@ -496,9 +529,10 @@ def build() -> Path:
     opts = [v for v, _, _ in target_options(months)]
     base = {"updated": updated, "months": opts, "default": default, "countries": slim}
     (OUT / "assets").mkdir(parents=True, exist_ok=True)
-    fonts = "".join((SITE / "vendor" / f).read_text(encoding="utf-8") for f in ("clash-grotesk.css", "inter.css")
-                    if (SITE / "vendor" / f).exists())
-    (OUT / "assets" / "cio.css").write_text(fonts + (SITE / "site.css").read_text(encoding="utf-8"), encoding="utf-8")
+    # Body text uses the phone's own font; only the display face is embedded, loaded without blocking the page.
+    display = SITE / "vendor" / "clash-grotesk.css"
+    (OUT / "assets" / "fonts.css").write_text(display.read_text(encoding="utf-8") if display.exists() else "", encoding="utf-8")
+    (OUT / "assets" / "cio.css").write_text((SITE / "site.css").read_text(encoding="utf-8"), encoding="utf-8")
     (OUT / "assets" / "cio.js").write_text((SITE / "i18n.js").read_text(encoding="utf-8") + "\n"
                                            + (SITE / "site.js").read_text(encoding="utf-8"), encoding="utf-8")
 

@@ -472,18 +472,29 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
     (out / "forecast_latest.json").write_text(json.dumps(clean, indent=1), encoding="utf-8")
     if not write_note:
         return out / "forecast_latest.json"
-    return _write(country, "\n".join(lines) + "\n", today)
+    # The published note is the plain-language one; the detailed tables live on the country web page.
+    from plain_note import plain_note
+    crowd_rows = []
+    if Path(db_path).exists():
+        from reports import Participants
+        with Participants(db_path) as pp:
+            crowd_rows = pp.crowd_summary(country, cfg.get("price_items", [])).to_dict("records")
+    md, txt = plain_note(clean, cfg, crowd_rows, today, os.environ.get("CIO_SITE_URL", ""))
+    path = _write(country, md, today)
+    path.with_suffix(".txt").write_text(txt + "\n", encoding="utf-8")     # paste into the WhatsApp Channel
+    return path
 
 
 def to_html(md: str, title: str) -> str:
-    """Small markdown subset (headings, tables, emphasis, paragraphs) -> standalone page."""
-    out, table = [], []
+    """Small markdown subset (headings, bullets, links, bold, italics, tables, paragraphs) -> standalone page."""
+    import re
+    out, table, bullets = [], [], []
 
     def inline(t):
         t = html.escape(t)
-        import re
+        t = re.sub(r"\[(.+?)\]\((.+?)\)", r"<a href='\2'>\1</a>", t)
         t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
-        return re.sub(r"_(.+?)_", r"<em>\1</em>", t)
+        return re.sub(r"(?<![\w/])_(.+?)_(?![\w/])", r"<em>\1</em>", t)
 
     def flush():
         if table:
@@ -492,9 +503,15 @@ def to_html(md: str, title: str) -> str:
                        + "</tr></thead><tbody>" + "".join("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in r)
                                                           + "</tr>" for r in body) + "</tbody></table></div>")
             table.clear()
+        if bullets:
+            out.append("<ul>" + "".join(f"<li>{inline(b)}</li>" for b in bullets) + "</ul>")
+            bullets.clear()
     for line in md.splitlines():
         if line.startswith("|"):
             table.append([c.strip() for c in line.strip("|").split("|")])
+            continue
+        if line.startswith("- "):
+            bullets.append(line[2:])
             continue
         flush()
         if line.startswith("# "):
@@ -504,14 +521,15 @@ def to_html(md: str, title: str) -> str:
         elif line.strip():
             out.append(f"<p>{inline(line)}</p>")
     flush()
-    css = (":root{--bg:#fbfaf7;--fg:#1d1d1b;--mut:#6b6a66;--line:#e3e0d8;--acc:#b5651d}"
-           "@media (prefers-color-scheme:dark){:root{--bg:#141412;--fg:#ecebe6;--mut:#a3a29c;--line:#33322e;--acc:#e0a060}}"
-           "body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,sans-serif}"
-           "main{max-width:820px;margin:0 auto;padding:24px 16px}h1{font-size:1.6rem;margin:.2em 0}"
-           "h2{font-size:1.15rem;margin-top:1.8em;border-bottom:2px solid var(--acc);padding-bottom:4px}"
-           "em{color:var(--mut)}.t{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.92rem}"
-           "th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}"
-           "th{color:var(--mut);font-weight:600}")
+    css = (":root{--bg:#f4f7fa;--card:#fff;--fg:#0e0f11;--mut:#5f646b;--line:#e1e6ec;--acc:#ffc21a;--acc-ink:#8a6600}"
+           "@media (prefers-color-scheme:dark){:root{--bg:#0a0a0b;--card:#141416;--fg:#f5f5f2;--mut:#9e9e99;--line:#27272b;--acc-ink:#ffc21a}}"
+           "body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 system-ui,-apple-system,'Segoe UI',sans-serif}"
+           "main{max-width:720px;margin:0 auto;padding:24px 16px 48px}h1{font-size:1.65rem;line-height:1.2;margin:.2em 0 .6em}"
+           "h2{font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--acc-ink);margin:1.8em 0 .4em}"
+           "h2+p{font-size:1.12rem}ul{padding-left:1.1em}li{margin:.35em 0}a{color:inherit}strong{font-weight:700}"
+           "em{color:var(--mut)}p:first-of-type{background:var(--card)}"
+           ".t{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.92rem}"
+           "th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}th{color:var(--mut)}")
     return (f"<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport "
             f"content='width=device-width,initial-scale=1'><title>{html.escape(title)}</title>"
             f"<style>{css}</style></head><body><main>{''.join(out)}</main></body></html>")

@@ -1,5 +1,5 @@
-/* CiO Costs — public site. Brand: near-black ground, amber #ffc21a, teal; Clash Grotesk + Inter. */
-:root{--display:'Clash Grotesk','Inter',system-ui,sans-serif;--text:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+/* CiO Costs — public site. Brand: near-black ground, amber #ffc21a, teal; Clash Grotesk headings, the phone's own font for text. */
+:root{--display:'Clash Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--text:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
 --page:#f4f7fa;--surface:#ffffff;--raise:#eef2f6;--ink:#0e0f11;--ink-2:#3f4247;--ink-3:#5f646b;--line:#e1e6ec;
 --accent:#8a6600;--accent-fill:#ffc21a;--accent-ink:#141108;--teal:#027f8d;--trend:#027f8d;--up:#b3261e;--down:#0a7a3e;
 --bar-bg:#e3e9ef;--focus:#027f8d;--good:#0a7a3e;--bad:#b3261e;color-scheme:light}
@@ -109,7 +109,7 @@ border-radius:999px;padding:9px 16px;font:600 14.5px var(--text);text-decoration
 .choice.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
 .reveal{margin-top:16px;font-size:15px}.reveal b{font-size:1.15rem}.result-grid{font-size:30px;letter-spacing:4px;margin:10px 0}
 .callcard .conf{width:100%}.callcard .row{display:flex;gap:8px;margin:10px 0}.callcard .row .choice{flex:1;font-size:15px;padding:10px}
-@media (max-width:980px){.featured{grid-template-columns:1fr}.nav{display:none}}
+@media (max-width:980px){.featured{grid-template-columns:1fr}}
 @media (max-width:560px){.facts{grid-template-columns:1fr 1fr}.cta{display:none}.choices{grid-template-columns:1fr 1fr}}
 footer.wrap{color:var(--ink-3);font-size:13px;border-top:1px solid var(--line);margin-top:40px;padding-top:16px;padding-bottom:40px}
 input[type=range]{accent-color:var(--accent-fill)}
@@ -137,9 +137,25 @@ background:var(--page);color:var(--ink);padding:0 12px;font:inherit;font-weight:
 .lang{height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 10px;font:500 14px var(--text);cursor:pointer}
 .nav a,.cta{white-space:nowrap}.nav a{padding:8px 10px;font-size:14.5px}
 @media (max-width:1260px){.nav a.minor{display:none}}
-@media (max-width:1060px){.nav{display:none}}
+
 .consent{display:flex!important;gap:8px;align-items:flex-start;font-weight:400!important;font-size:13px;color:var(--ink-2);grid-column:1/-1}.consent input{width:auto!important;height:auto!important;margin:3px 0 0!important}
 .center{text-align:center;margin:12px 0 0}
 .wa{background:#25d366;border-color:#25d366;color:#06301a}.wa:hover{background:#20bd5a}
 .wa-share{border:1px solid var(--line);background:var(--surface);color:#1fa855;border-radius:999px;width:36px;height:36px;display:inline-grid;place-items:center;cursor:pointer}
 .cta-wa{padding:8px 10px}
+
+/* reframe: country picker, trust bar, money widget, info tips, mobile nav */
+.country-pick{margin-bottom:10px;display:flex}.hero-side .when{width:100%;box-sizing:border-box}.hero-side .when select{flex:1;min-width:0}
+.trust{font-size:13.5px;color:var(--ink-3);margin:0 0 14px;line-height:1.6}.trust a{color:var(--ink-2)}
+.wa-link{color:#0b7a3b!important;font-weight:600;text-decoration:none;white-space:nowrap}.wa-link svg{width:15px;height:15px;vertical-align:-2px}
+.footlinks{margin:0 0 6px}.footlinks a{color:var(--ink-2)}
+.money{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;background:var(--raise);border-radius:14px;padding:12px 14px;margin:6px 0 14px}
+.money b{font-size:14px}.money select,.money input{font:500 15px var(--text);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.money select{max-width:220px}.money input{width:150px}.money-in{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--ink-3)}
+.money-out{flex-basis:100%;margin:2px 0 0;font-size:15.5px;line-height:1.45}.money-out strong{font-size:18px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.info{position:relative;cursor:help;color:var(--teal);font-weight:700;outline-offset:2px}
+.info .tip{display:none;position:absolute;right:0;top:130%;z-index:5;width:260px;white-space:normal;font-weight:400;font-size:13px;line-height:1.45;
+color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 11px;box-shadow:0 8px 24px rgba(0,0,0,.14)}
+.info:hover .tip,.info:focus .tip{display:block}
+@media (max-width:980px){.topbar .wrap{flex-wrap:wrap;height:auto;min-height:62px;padding-bottom:6px}.nav{display:flex;order:5;width:100%;margin:6px 0 0;overflow-x:auto;scrollbar-width:none}}

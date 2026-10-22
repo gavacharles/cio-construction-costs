@@ -4,3 +4,9 @@
 whatsapp_number: ""
 # Countries shown first in "Costs at a glance" (the rest sit behind "Show all").
 glance_featured: [uganda, kenya, south_africa, nigeria, ghana]
+# Free WhatsApp Channel link (WhatsApp Business app > Updates > Channels > create > share link).
+# When set, the site shows "Follow on WhatsApp (free)" buttons. Post the weekly note text there:
+# countries/<country>/notes/weekly_<country>_<date>.txt is ready to paste.
+whatsapp_channel_url: ""
+# Paid WhatsApp alerts (Cloud API) are off: alert sign-ups offer email only until this is true.
+alerts_whatsapp: false

@@ -1,39 +1,40 @@
-# Namibia construction cost note — week of 22 October 2026
+# Namibia building costs — week of 22 October 2026
 
-_CiO Lab construction cost note · play-money pilot · not investment advice._
+## In one line
 
-## This week's drivers
+Import costs for building in Namibia look steady for the next 3 months.
 
-| Driver | Latest | 1 week | 4 weeks | 13 weeks | 52 weeks |
-|---|---|---|---|---|---|
-| Brent crude (USD/bbl) | 115.2 | -11.4% | -3.7% | +35.5% | +88.2% |
-| NAD per USD | 16.4 | -0.5% | +1.2% | -0.2% | -5.3% |
-| Brent in NAD | 1,961.1 | -8.7% | +0.9% | +40.1% | +84.5% |
+## What it means for your money
 
-## Official index
+For every **1,000,000 NAD** you spend on materials today, budget about **1,003,000 NAD** for the same materials in January 2027 (most likely between 971,000 and 1,039,000).
 
-Status: partial: NSA PPI covers cement, lime and plaster only; private First Capital building cost index.
+## Prices to watch
 
-## Cost pressure outlook
+- ➡ **Imported materials (steel, cement inputs, paint, pipes, fuel)** — about the same by January 2027
+- ➡ **Local materials and labour** — not covered by this estimate; check local quotes.
 
-**Imported-input cost pressure** (oil in NAD and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+## Why
 
-| Window | Pressure on input costs | 80% range |
-|---|---|---|
-| Last 3 months (observed) | +4.2% | – |
-| Next 3 months | +0.3% | -2.9% to +3.9% |
-| Next 6 months | +0.4% | -4.3% to +5.6% |
+- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- The NAD has been steady against the US dollar.
 
-In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
+## What to do this week
 
-## Prices reported by participants
+- No rush: today's quotes are a fair guide.
+- Use the quiet time to compare suppliers.
 
-_No price reports yet. Participants report the prices they pay in the app each week._
+## What people are paying
 
-## Open forecasting contracts
+Not enough reports yet this week. Tell us what you pay — it is anonymous: Report a price on the CiO Costs site.
 
-_No open contracts._
+## Official figures
 
-## Sources
+Namibia has no official construction price index yet. This is an estimate from oil and currency moves.
 
-UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall). How the forecasts work: see How it works on the CiO site.
+## How to read this
+
+"Likely" means about 7 times in 10; "almost certain" about 9 in 10. Changes are measured from today. These are estimates, not advice.
+
+[See all the figures for Namibia](../index.html)
+
+_CiO Costs · free weekly note · CiO Lab_

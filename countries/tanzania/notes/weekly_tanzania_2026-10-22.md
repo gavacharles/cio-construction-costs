@@ -1,39 +1,40 @@
-# Tanzania construction cost note — week of 22 October 2026
+# Tanzania building costs — week of 22 October 2026
 
-_CiO Lab construction cost note · play-money pilot · not investment advice._
+## In one line
 
-## This week's drivers
+Import costs for building in Tanzania look steady for the next 3 months.
 
-| Driver | Latest | 1 week | 4 weeks | 13 weeks | 52 weeks |
-|---|---|---|---|---|---|
-| Brent crude (USD/bbl) | 115.2 | -11.4% | -3.7% | +35.5% | +88.2% |
-| TZS per USD | 2,640.5 | -0.1% | -0.3% | +0.3% | +7.7% |
-| Brent in TZS | 315,093.7 | -8.4% | -0.6% | +40.8% | +109.9% |
+## What it means for your money
 
-## Official index
+For every **1,000,000 TZS** you spend on materials today, budget about **1,003,000 TZS** for the same materials in January 2027 (most likely between 973,000 and 1,039,000).
 
-Status: none current: NCC labour/material indices last seen 2020; NBS quarterly PPI/trade indices, construction coverage unconfirmed.
+## Prices to watch
 
-## Cost pressure outlook
+- ➡ **Imported materials (steel, cement inputs, paint, pipes, fuel)** — about the same by January 2027
+- ➡ **Local materials and labour** — not covered by this estimate; check local quotes.
 
-**Imported-input cost pressure** (oil in TZS and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+## Why
 
-| Window | Pressure on input costs | 80% range |
-|---|---|---|
-| Last 3 months (observed) | +4.2% | – |
-| Next 3 months | +0.3% | -2.7% to +3.9% |
-| Next 6 months | +0.7% | -3.4% to +5.6% |
+- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- The TZS has been steady against the US dollar.
 
-In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
+## What to do this week
 
-## Prices reported by participants
+- No rush: today's quotes are a fair guide.
+- Use the quiet time to compare suppliers.
 
-_No price reports yet. Participants report the prices they pay in the app each week._
+## What people are paying
 
-## Open forecasting contracts
+Not enough reports yet this week. Tell us what you pay — it is anonymous: Report a price on the CiO Costs site.
 
-_No open contracts._
+## Official figures
 
-## Sources
+Tanzania has no official construction price index yet. This is an estimate from oil and currency moves.
 
-UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall). How the forecasts work: see How it works on the CiO site.
+## How to read this
+
+"Likely" means about 7 times in 10; "almost certain" about 9 in 10. Changes are measured from today. These are estimates, not advice.
+
+[See all the figures for Tanzania](../index.html)
+
+_CiO Costs · free weekly note · CiO Lab_

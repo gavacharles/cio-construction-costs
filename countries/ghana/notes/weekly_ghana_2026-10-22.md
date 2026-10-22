@@ -1,41 +1,41 @@
-# Ghana construction cost note — week of 22 October 2026
+# Ghana building costs — week of 22 October 2026
 
-_CiO Lab construction cost note · play-money pilot · not investment advice._
+## In one line
 
-## This week's drivers
+Import costs are pushing building prices in Ghana up — about 2.5% over the next 3 months (a little more likely than not).
 
-| Driver | Latest | 1 week | 4 weeks | 13 weeks | 52 weeks |
-|---|---|---|---|---|---|
-| Brent crude (USD/bbl) | 115.2 | -11.4% | -3.7% | +35.5% | +88.2% |
-| GHS per USD | 11.6 | -1.1% | +1.1% | +1.0% | +9.3% |
-| Brent in GHS | 1,388.6 | -9.2% | +0.8% | +41.7% | +113.0% |
+## What it means for your money
 
-## Official index
+For every **1,000,000 GHS** you spend on materials today, budget about **1,025,000 GHS** for the same materials in January 2027 (most likely between 948,000 and 1,078,000).
 
-Status: available: GSS Prime Building Cost Index (PBCI), monthly, 406 items, base 2023; adapter next.
+## Prices to watch
 
-**Latest official reading:** GSS Prime Building Cost Index (PBCI), 2023 = 100, monthly, 2026-08: level 138.4, +0.1% on the previous period, +4.6% on a year earlier. Source: https://www.myjoyonline.com/wp-content/uploads/2026/09/August-2026_PBCI-Bulletin.pdf
+- ⬆ **Imported materials (steel, cement inputs, paint, pipes, fuel)** — up about 2.5% by January 2027
+- ➡ **Local materials and labour** — not covered by this estimate; check local quotes.
 
-## Cost pressure outlook
+## Why
 
-**Imported-input cost pressure** (oil in GHS and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- The GHS has been steady against the US dollar.
 
-| Window | Pressure on input costs | 80% range |
-|---|---|---|
-| Last 3 months (observed) | +4.9% | – |
-| Next 3 months | +2.5% | -5.2% to +7.8% |
-| Next 6 months | +4.7% | -9.2% to +14.1% |
+## What to do this week
 
-In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
+- Lock in prices for big orders now if you can.
+- Add a price-adjustment clause to new contracts, or a bigger contingency.
+- Ask suppliers how long their quotes are valid.
 
-## Prices reported by participants
+## What people are paying
 
-_No price reports yet. Participants report the prices they pay in the app each week._
+Not enough reports yet this week. Tell us what you pay — it is anonymous: Report a price on the CiO Costs site.
 
-## Open forecasting contracts
+## Official figures
 
-_No open contracts._
+Latest official reading: GSS Prime Building Cost Index (PBCI), 2026-08 — +4.6% on a year.
 
-## Sources
+## How to read this
 
-UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall). How the forecasts work: see How it works on the CiO site.
+"Likely" means about 7 times in 10; "almost certain" about 9 in 10. Changes are measured from today. These are estimates, not advice.
+
+[See all the figures for Ghana](../index.html)
+
+_CiO Costs · free weekly note · CiO Lab_
