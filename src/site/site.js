@@ -154,10 +154,12 @@
     $$("#glance-table tr.more").forEach(r => r.hidden = !hid); more.textContent = hid ? tr("glance.fewer") : tr("glance.more", { n: $$("#glance-table tbody tr").length }); };
 
   /* ---------- share on WhatsApp ---------- */
-  $$("[data-wa-share]").forEach(b => b.onclick = () => { const c = DATA.countries[b.dataset.waShare]; if (!c) return;
-    const q = at(c.paths[c.head], target).q, url = new URL((b.closest("main") ? "" : "") + (location.protocol === "file:" ? "" : `${location.origin}/countries/${b.dataset.waShare}/`), location.href);
-    const text = `${question(c, target)} ${Math.round(chance(q) * 100)}% · ${pct(q.median)} (${pct(q.lo)} – ${pct(q.hi)}) — CiO Costs ${online ? url.href : ""}`;
-    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener"); });
+  /* the phone's own share sheet (WhatsApp, SMS, email…); WhatsApp link where there is none */
+  $$("[data-share]").forEach(b => b.onclick = () => { const box = b.closest("[data-key]"), k = box && box.dataset.key, c = DATA.countries[k]; if (!c) return;
+    const q = at(c.paths[c.head], target).q, url = online ? `${location.origin}/countries/${k}/` : "";
+    const text = `${c.flag} ${cname(c)}: ${advice(c, q, target)} — CiO Costs`;
+    if (navigator.share) { navigator.share({ title: "CiO Costs", text, url: url || undefined }).catch(() => {}); return; }
+    window.open("https://wa.me/?text=" + encodeURIComponent(text + (url ? " " + url : "")), "_blank", "noopener"); });
 
   /* ---------- posting to the server (public API) ---------- */
   async function post(url, body, msg) {

@@ -196,8 +196,7 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
  <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p>
  <div class=card-foot><a class='btn primary' href="countries/{c['key']}/index.html"><span data-i18n=btn.seecosts data-c="{e(c['country'])}">See costs in {e(c['country'])}</span> <span aria-hidden=true>→</span></a>
- <a class=link href="play.html#{c['key']}" data-i18n=link.makecall>Make your call</a>
- <button class='wa-share' type=button data-wa-share={c['key']} aria-label='Share on WhatsApp'>{WA_ICON}</button></div></article>""" for c in cs)
+ <a class=link href="play.html#{c['key']}" data-i18n=link.makecall>Make your call</a></div></article>""" for c in cs)
     order = sorted(cs, key=lambda c: (c["key"] not in FEATURED, FEATURED.index(c["key"]) if c["key"] in FEATURED else 0, c["country"]))
     glance = "".join(f"""<tr data-key={c['key']}{'' if c['key'] in FEATURED else ' class=more hidden'}><th scope=row><a href="countries/{c['key']}/index.html">{c['flag']} {e(c['country'])}</a></th>
  <td>{e(c['base'])}</td><td data-g=official>{'–' if not c['reading'] and not c['materials'] else ''}</td><td data-g=exp></td><td data-g=rng></td>
@@ -214,7 +213,7 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
  indicators).</p></div></section>
 <p class=trust><span data-i18n=trust.sources>Official data from UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD and Statistics Mauritius</span>
  · <span id=updated-ago data-built="{BUILT}"></span> · <a href="method.html#track" data-i18n=trust.track>Track record</a>
- {f" · <a class='wa-link' href='{CHANNEL}' target=_blank rel=noopener>{WA_ICON} <span data-i18n=wa.follow>Follow on WhatsApp (free)</span></a>" if CHANNEL else ""}</p>
+ {f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.weekly>Free weekly update on WhatsApp</a>" if CHANNEL else ""}</p>
 <section class=tools><a class=tool href=calculator.html><b data-i18n=tool.calc.t>Bid escalation calculator</b><span data-i18n=tool.calc.d>How much could prices move
  over your contract? Get the expected escalation in your currency, with a range.</span></a>
  <a class=tool href=report.html><b data-i18n=tool.report.t>Report a price</b><span data-i18n=tool.report.d>Tell us what you paid for cement, steel, diesel or sand this
@@ -232,7 +231,8 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
  <p class='advice big' data-advice></p>
  {MONEY}
  <div class=actions><a class='btn primary' data-feat-link href="countries/{feat['key']}/index.html" data-i18n=btn.bymaterial>See costs by material</a>
- <a class=btn href="play.html" data-i18n=btn.play>Play The Cost Call</a></div></div>
+ <a class=btn href="play.html" data-i18n=btn.play>Play The Cost Call</a>
+ <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div></div>
  <aside class=feat-side><h3><span data-i18n=feat.bymaterial>By material, to</span> <span data-when-label></span></h3><ul class=breakdown data-breakdown></ul></aside>
 </section>
 
@@ -371,7 +371,7 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <div class=chart>{chart_svg(c)}</div><p class='advice big' data-advice></p>
  {MONEY}
  <div class=actions><a class='btn primary' href="../../play.html#{c['key']}" data-i18n=link.makecall>Make your call</a>{note}
- <button class='btn wa' type=button data-wa-share={c['key']}>{WA_ICON} <span data-i18n=wa.share>Share on WhatsApp</span></button></div>{src}</div>
+ <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div>{src}</div>
 </section>
 {mat_html}
 <section><div class=section-h><h2 data-i18n=sec.drivers>What is driving costs</h2></div><div class=howto>
@@ -384,7 +384,7 @@ Prices reported by participants (below) fill the gap, material by material.</p><
 <section><div class=section-h><h2 data-i18n=sec.crowd>Prices reported by people who buy them</h2>
 <a class='btn primary' href="../../report.html#{c['key']}" data-i18n=tool.report.t>Report a price</a></div>{crowd_sec}</section>
 <section class=alertbox data-country={c['key']}><div><h2 data-i18n=alert.h>Get a price alert</h2><p data-i18n=alert.d>We'll message you when the expected change
-for a material in {e(c['country'])} reaches your level.</p>{f"<p><a class='btn wa' href='{CHANNEL}' target=_blank rel=noopener>{WA_ICON} <span data-i18n=wa.follow>Follow on WhatsApp (free)</span></a></p>" if CHANNEL else ""}</div>
+for a material in {e(c['country'])} reaches your level.</p></div>
 <form class=alertform><label><span data-i18n=th.material>Material</span><select name=series>{''.join(f"<option>{e(k)}</option>" for k in c['paths'])}</select></label>
 <label><span data-i18n=alert.at>Alert me at</span><select name=threshold><option value=3>+3%</option><option value=5 selected>+5%</option><option value=10>+10%</option>
 <option value=-3>−3% (prices falling)</option></select></label>

@@ -6,6 +6,7 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "share": "Shiriki", "wa.weekly": "Taarifa ya kila wiki bure kwenye WhatsApp",
       "nav.prices": "Bei", "nav.plan": "Panga zabuni", "nav.reportshort": "Ripoti bei", "nav.playshort": "Cheza", "pick.country": "Nchi yako", "chip.yours": "Nchi yako", "chip.officialdata": "Takwimu rasmi", "chip.estimate": "Makadirio", "tip.official": "Imejengwa kutoka takwimu rasmi za bei za ujenzi za nchi, ikisasishwa kwa mabadiliko ya mafuta na sarafu ya wiki hii.", "tip.estimate": "Bado hakuna fahirisi rasmi ya bei za ujenzi inayotumika: haya ni makadirio ya shinikizo kwa vifaa vinavyoagizwa kutoka bei za mafuta na kiwango cha ubadilishaji. Vifaa vya ndani na kazi havijajumuishwa.", "trust.sources": "Takwimu rasmi kutoka UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD na Statistics Mauritius", "trust.track": "Rekodi ya usahihi", "trust.ago": "imesasishwa saa {h} zilizopita", "trust.justnow": "imesasishwa sasa hivi", "wa.follow": "Fuata kwenye WhatsApp (bure)", "money.h": "Bei yako", "money.ph": "Bei yako ya mwisho", "money.need": "Andika bei uliyolipa mara ya mwisho kuona bei inayotarajiwa.", "money.out": "Tarajia takriban {p} kufikia {when} (kwa uwezekano mkubwa {lo} – {hi}).", "alert.email": "Barua pepe", "tab.official": "Takwimu rasmi", "tab.indicator": "Makadirio",
       "nav.countries": "Nchi", "nav.glance": "Gharama kwa muhtasari", "nav.calc": "Kikokotoo cha zabuni", "nav.report": "Ripoti bei",
       "nav.play": "The Cost Call", "nav.method": "Jinsi inavyofanya kazi", "cta.join": "Jiunge na majaribio",
@@ -81,6 +82,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "share": "Partager", "wa.weekly": "Point hebdomadaire gratuit sur WhatsApp",
       "nav.prices": "Prix", "nav.plan": "Préparer une offre", "nav.reportshort": "Signaler un prix", "nav.playshort": "Jouer", "pick.country": "Votre pays", "chip.yours": "Votre pays", "chip.officialdata": "Données officielles", "chip.estimate": "Estimation", "tip.official": "Construit à partir des statistiques officielles des prix de la construction du pays, mis à jour avec les variations du pétrole et de la monnaie de la semaine.", "tip.estimate": "Pas encore d'indice officiel utilisable des prix de la construction : estimation de la pression sur les matériaux importés à partir du prix du pétrole et du taux de change. Matériaux locaux et main-d'œuvre non inclus.", "trust.sources": "Données officielles de l'UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD et Statistics Mauritius", "trust.track": "Historique de précision", "trust.ago": "mis à jour il y a {h} h", "trust.justnow": "mis à jour à l'instant", "wa.follow": "Suivre sur WhatsApp (gratuit)", "money.h": "Votre prix", "money.ph": "Votre dernier prix", "money.need": "Saisissez le dernier prix payé pour voir le prix attendu.", "money.out": "Prévoyez environ {p} d'ici {when} (le plus probable : {lo} – {hi}).", "alert.email": "E-mail", "tab.official": "Données officielles", "tab.indicator": "Estimations",
       "nav.countries": "Pays", "nav.glance": "Coûts en un coup d'œil", "nav.calc": "Calculateur d'offre", "nav.report": "Signaler des prix",
       "nav.play": "The Cost Call", "nav.method": "Comment ça marche", "cta.join": "Rejoindre le pilote",
@@ -156,6 +158,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "share": "Share", "wa.weekly": "Free weekly update on WhatsApp",
       "nav.prices": "Prices", "nav.plan": "Plan a bid", "nav.reportshort": "Report a price", "nav.playshort": "Play", "pick.country": "Your country", "chip.yours": "Your country", "chip.officialdata": "Official data", "chip.estimate": "Estimate", "tip.official": "Built from the country's official construction price statistics, updated with this week's oil and currency moves.", "tip.estimate": "No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.", "trust.sources": "Official data from UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD and Statistics Mauritius", "trust.track": "Track record", "trust.ago": "updated {h} h ago", "trust.justnow": "updated just now", "wa.follow": "Follow on WhatsApp (free)", "money.h": "Your price", "money.ph": "Your latest price", "money.need": "Type what you paid last to see the expected price.", "money.out": "Expect about {p} by {when} (most likely {lo} – {hi}).", "alert.email": "Email", "tab.official": "Official data", "tab.indicator": "Estimates",
       "q.official": "Will {c}'s construction input prices rise by {when}?", "q.indicator": "Will import costs push {c}'s building prices up by {when}?",
       "adv.up": "Allow about {x} on quotes for work priced to {when}, compared with {base} prices.",
@@ -391,10 +394,12 @@ window.I18N = (function () {
     $$("#glance-table tr.more").forEach(r => r.hidden = !hid); more.textContent = hid ? tr("glance.fewer") : tr("glance.more", { n: $$("#glance-table tbody tr").length }); };
 
   /* ---------- share on WhatsApp ---------- */
-  $$("[data-wa-share]").forEach(b => b.onclick = () => { const c = DATA.countries[b.dataset.waShare]; if (!c) return;
-    const q = at(c.paths[c.head], target).q, url = new URL((b.closest("main") ? "" : "") + (location.protocol === "file:" ? "" : `${location.origin}/countries/${b.dataset.waShare}/`), location.href);
-    const text = `${question(c, target)} ${Math.round(chance(q) * 100)}% · ${pct(q.median)} (${pct(q.lo)} – ${pct(q.hi)}) — CiO Costs ${online ? url.href : ""}`;
-    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener"); });
+  /* the phone's own share sheet (WhatsApp, SMS, email…); WhatsApp link where there is none */
+  $$("[data-share]").forEach(b => b.onclick = () => { const box = b.closest("[data-key]"), k = box && box.dataset.key, c = DATA.countries[k]; if (!c) return;
+    const q = at(c.paths[c.head], target).q, url = online ? `${location.origin}/countries/${k}/` : "";
+    const text = `${c.flag} ${cname(c)}: ${advice(c, q, target)} — CiO Costs`;
+    if (navigator.share) { navigator.share({ title: "CiO Costs", text, url: url || undefined }).catch(() => {}); return; }
+    window.open("https://wa.me/?text=" + encodeURIComponent(text + (url ? " " + url : "")), "_blank", "noopener"); });
 
   /* ---------- posting to the server (public API) ---------- */
   async function post(url, body, msg) {
