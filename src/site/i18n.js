@@ -74,6 +74,7 @@ window.I18N = (function () {
       "calc.escal": "ongezeko linalotarajiwa la bei za vifaa (8 kati ya 10: {lo} hadi {hi})", "calc.money": "{v} linatarajiwa · kiwango {lo} hadi {hi}",
       "calc.input": "Kifaa", "calc.shr": "Sehemu", "calc.avg": "Mabadiliko ya wastani yanayotarajiwa", "calc.print": "Chapisha au hifadhi kama PDF",
       "calc.order": "Chagua mwezi wa mwisho baada ya mwanzo.", "calc.mix": "Mchanganyiko wa vifaa (%)",
+      "glance.more": "Onyesha nchi zote {n}", "glance.fewer": "Onyesha chache", "wa.share": "Shiriki kwenye WhatsApp", "wa.chat": "Ongea nasi kwenye WhatsApp",
       "alert.consent": "Ninakubali kupokea tahadhari hizi kutoka CiO Costs kupitia njia iliyochaguliwa hapo juu. Jibu STOP wakati wowote kuzisimamisha.",
       "btn.note": "Soma ripoti ya wiki", "lbl.officialdata": "Takwimu rasmi:", "lbl.offlatestmonth": "Takwimu rasmi, mwezi wa karibuni:",
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
@@ -147,6 +148,7 @@ window.I18N = (function () {
       "calc.escal": "actualisation attendue des intrants (8 sur 10 : {lo} à {hi})", "calc.money": "{v} attendus · fourchette {lo} à {hi}",
       "calc.input": "Intrant", "calc.shr": "Part", "calc.avg": "Variation moyenne attendue", "calc.print": "Imprimer ou enregistrer en PDF",
       "calc.order": "Choisissez une fin postérieure au début.", "calc.mix": "Répartition des intrants (%)",
+      "glance.more": "Afficher les {n} pays", "glance.fewer": "Afficher moins", "wa.share": "Partager sur WhatsApp", "wa.chat": "Discuter avec nous sur WhatsApp",
       "alert.consent": "J'accepte de recevoir ces alertes de CiO Costs par le canal choisi ci-dessus. Répondez STOP à tout moment pour les arrêter.",
       "btn.note": "Lire la note hebdomadaire", "lbl.officialdata": "Données officielles :", "lbl.offlatestmonth": "Chiffres officiels, dernier mois :",
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
@@ -174,6 +176,7 @@ window.I18N = (function () {
       "calc.escal": "expected escalation on inputs (8 in 10: {lo} to {hi})", "calc.money": "{v} expected · range {lo} to {hi}",
       "calc.input": "Input", "calc.shr": "Share", "calc.avg": "Average expected move", "calc.print": "Print or save as PDF",
       "calc.order": "Choose an end month after the start.", "calc.mix": "Mix of inputs (%)",
+      "glance.more": "Show all {n} countries", "glance.fewer": "Show fewer",
     },
   };
   let lang = "en";

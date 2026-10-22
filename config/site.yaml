@@ -1,0 +1,6 @@
+# Public site settings (src/site/build_index.py).
+# WhatsApp Business number in international format, digits only (e.g. 256700123456).
+# When set, the site shows "Chat with us on WhatsApp" buttons (wa.me click-to-chat links).
+whatsapp_number: ""
+# Countries shown first in "Costs at a glance" (the rest sit behind "Show all").
+glance_featured: [uganda, kenya, south_africa, nigeria, ghana]

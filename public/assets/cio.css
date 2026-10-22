@@ -142,3 +142,7 @@ background:var(--page);color:var(--ink);padding:0 12px;font:inherit;font-weight:
 @media (max-width:1260px){.nav a.minor{display:none}}
 @media (max-width:1060px){.nav{display:none}}
 .consent{display:flex!important;gap:8px;align-items:flex-start;font-weight:400!important;font-size:13px;color:var(--ink-2);grid-column:1/-1}.consent input{width:auto!important;height:auto!important;margin:3px 0 0!important}
+.center{text-align:center;margin:12px 0 0}
+.wa{background:#25d366;border-color:#25d366;color:#06301a}.wa:hover{background:#20bd5a}
+.wa-share{border:1px solid var(--line);background:var(--surface);color:#1fa855;border-radius:999px;width:36px;height:36px;display:inline-grid;place-items:center;cursor:pointer}
+.cta-wa{padding:8px 10px}

@@ -29,6 +29,11 @@ OUT = ROOT / "public"            # everything public lives here; the app serves 
 sys.path.insert(0, str(ROOT / "src" / "market"))
 
 from country import load_country, list_countries   # noqa: E402
+import yaml                                          # noqa: E402
+
+SITE_CFG = yaml.safe_load((ROOT / "config" / "site.yaml").read_text(encoding="utf-8")) if (ROOT / "config" / "site.yaml").exists() else {}
+WA = str(SITE_CFG.get("whatsapp_number") or "").strip().lstrip("+")
+FEATURED = SITE_CFG.get("glance_featured") or ["uganda", "kenya", "south_africa", "nigeria", "ghana"]
 
 e = html.escape
 REGION = {"uganda": "east", "kenya": "east", "rwanda": "east", "tanzania": "east", "ethiopia": "east",
@@ -118,6 +123,7 @@ def months_ahead(n: int = 12) -> list[str]:
 
 
 # ----------------------------------------------------------------- shell --
+WA_ICON = ("<svg viewBox='0 0 24 24' width=18 height=18 aria-hidden=true><path fill='currentColor' d='M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3a.5.5 0 0 0 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z'/></svg>")
 LOGO = ("<svg class=logo viewBox='0 0 24 24' width=24 height=24 aria-hidden=true><circle class=ring cx=12 cy=12 r=9.5 "
         "fill=none stroke='var(--accent-fill)' stroke-width=2 stroke-linecap=round pathLength=100 stroke-dasharray='62 38'/>"
         "<circle class=orbit cx=12 cy=2.5 r=1.6 fill='var(--teal)'/><circle class=core cx=12 cy=12 r=4 fill='var(--accent-fill)'/></svg>")
@@ -138,6 +144,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
 <header class=topbar><div class=wrap>
  <a class=mark href="{rel}index.html">{LOGO}CiO <span>Costs</span></a>
  <nav class=nav aria-label=Main>{links}</nav>
+ {f"<a class='btn wa cta-wa' href='https://wa.me/{WA}' target=_blank rel=noopener aria-label='Chat with us on WhatsApp'>{WA_ICON}</a>" if WA else ""}
  <a class="btn primary cta" href="{rel}index.html#join" data-i18n=cta.join>Join the pilot</a>
  <select class=lang id=lang aria-label="Language"><option value=en>EN</option><option value=sw>Kiswahili</option><option value=fr>Français</option></select>
  <button class=theme id=theme type=button aria-label=Theme>◐</button>
@@ -177,10 +184,12 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
  <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p>
  <div class=card-foot><a class='btn primary' href="countries/{c['key']}/index.html"><span data-i18n=btn.seecosts data-c="{e(c['country'])}">See costs in {e(c['country'])}</span> <span aria-hidden=true>→</span></a>
- <a class=link href="play.html#{c['key']}" data-i18n=link.makecall>Make your call</a></div></article>""" for c in cs)
-    glance = "".join(f"""<tr data-key={c['key']}><th scope=row><a href="countries/{c['key']}/index.html">{c['flag']} {e(c['country'])}</a></th>
+ <a class=link href="play.html#{c['key']}" data-i18n=link.makecall>Make your call</a>
+ <button class='wa-share' type=button data-wa-share={c['key']} aria-label='Share on WhatsApp'>{WA_ICON}</button></div></article>""" for c in cs)
+    order = sorted(cs, key=lambda c: (c["key"] not in FEATURED, FEATURED.index(c["key"]) if c["key"] in FEATURED else 0, c["country"]))
+    glance = "".join(f"""<tr data-key={c['key']}{'' if c['key'] in FEATURED else ' class=more hidden'}><th scope=row><a href="countries/{c['key']}/index.html">{c['flag']} {e(c['country'])}</a></th>
  <td>{e(c['base'])}</td><td data-g=official>{'–' if not c['reading'] and not c['materials'] else ''}</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr>""" for c in cs)
+ <td data-g=pct></td><td data-g=fx></td></tr>""" for c in order)
     body = f"""
 <section class=hero><div><p class=eyebrow data-i18n=home.eyebrow>Construction cost outlook · 18 African countries</p>
  <h1 data-i18n=home.h1>Will building costs rise where you work?</h1>
@@ -221,7 +230,8 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
 <th scope=col data-sort=text data-i18n=th.latest>Latest official</th><th scope=col data-sort=num data-i18n=th.offyear>Official change, year</th>
 <th scope=col data-sort=num><span data-i18n=th.expby>Expected by</span> <span data-when-label></span></th><th scope=col data-i18n=th.range>Likely range</th>
 <th scope=col data-sort=num data-i18n=th.chance>Chance of a rise</th><th scope=col data-sort=num data-i18n=th.fx>Currency vs USD, 13 weeks</th></tr></thead>
-<tbody>{glance}</tbody></table></div></section>
+<tbody>{glance}</tbody></table></div>
+<p class=center><button class=btn type=button id=glance-more data-i18n=glance.more>Show all {len(cs)} countries</button></p></section>
 
 <section class=gamebox><div><p class=eyebrow data-i18n=game.eyebrow>New · daily game</p><h2 data-i18n=tool.play.t>The Cost Call</h2>
 <p data-i18n=game.teaser>Five quick calls a day on real construction prices across Africa. Did cement go up or down? Keep your streak, share
@@ -238,7 +248,8 @@ new official data.</span> <a href=method.html data-i18n=nav.method>How it works<
 
 <section class=join id=join><div><h2 data-i18n=cta.join>Join the pilot</h2><p data-i18n=join.d>Contractors, quantity surveyors, developers and lenders: report
 the prices you pay each week, play The Cost Call for points on the leaderboard, and get the Monday note for your country.
-Free. Ask CiO Lab for an invite code.</p></div><a class='btn primary big' href=play.html data-i18n=join.cta>Start with today's game</a></section>
+Free. Ask CiO Lab for an invite code.</p></div><div class=actions>{f"<a class='btn wa big' href='https://wa.me/{WA}?text=" + "Hello%20CiO%20Costs%2C%20I%27d%20like%20to%20join%20the%20pilot." + "' target=_blank rel=noopener>" + WA_ICON + " <span data-i18n=wa.chat>Chat with us on WhatsApp</span></a>" if WA else ""}
+<a class='btn primary big' href=play.html data-i18n=join.cta>Start with today's game</a></div></section>
 """
     return body
 
@@ -333,7 +344,8 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
  <div class=pbar><span data-bar></span></div>
  <div class=chart>{chart_svg(c)}</div><p class='advice big' data-advice></p>
- <div class=actions><a class='btn primary' href="../../play.html#{c['key']}" data-i18n=link.makecall>Make your call</a>{note}</div>{src}</div>
+ <div class=actions><a class='btn primary' href="../../play.html#{c['key']}" data-i18n=link.makecall>Make your call</a>{note}
+ <button class='btn wa' type=button data-wa-share={c['key']}>{WA_ICON} <span data-i18n=wa.share>Share on WhatsApp</span></button></div>{src}</div>
 </section>
 {mat_html}
 <section><div class=section-h><h2 data-i18n=sec.drivers>What is driving costs</h2></div><div class=howto>

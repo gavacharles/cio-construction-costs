@@ -74,6 +74,7 @@ window.I18N = (function () {
       "calc.escal": "ongezeko linalotarajiwa la bei za vifaa (8 kati ya 10: {lo} hadi {hi})", "calc.money": "{v} linatarajiwa · kiwango {lo} hadi {hi}",
       "calc.input": "Kifaa", "calc.shr": "Sehemu", "calc.avg": "Mabadiliko ya wastani yanayotarajiwa", "calc.print": "Chapisha au hifadhi kama PDF",
       "calc.order": "Chagua mwezi wa mwisho baada ya mwanzo.", "calc.mix": "Mchanganyiko wa vifaa (%)",
+      "glance.more": "Onyesha nchi zote {n}", "glance.fewer": "Onyesha chache", "wa.share": "Shiriki kwenye WhatsApp", "wa.chat": "Ongea nasi kwenye WhatsApp",
       "alert.consent": "Ninakubali kupokea tahadhari hizi kutoka CiO Costs kupitia njia iliyochaguliwa hapo juu. Jibu STOP wakati wowote kuzisimamisha.",
       "btn.note": "Soma ripoti ya wiki", "lbl.officialdata": "Takwimu rasmi:", "lbl.offlatestmonth": "Takwimu rasmi, mwezi wa karibuni:",
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
@@ -147,6 +148,7 @@ window.I18N = (function () {
       "calc.escal": "actualisation attendue des intrants (8 sur 10 : {lo} à {hi})", "calc.money": "{v} attendus · fourchette {lo} à {hi}",
       "calc.input": "Intrant", "calc.shr": "Part", "calc.avg": "Variation moyenne attendue", "calc.print": "Imprimer ou enregistrer en PDF",
       "calc.order": "Choisissez une fin postérieure au début.", "calc.mix": "Répartition des intrants (%)",
+      "glance.more": "Afficher les {n} pays", "glance.fewer": "Afficher moins", "wa.share": "Partager sur WhatsApp", "wa.chat": "Discuter avec nous sur WhatsApp",
       "alert.consent": "J'accepte de recevoir ces alertes de CiO Costs par le canal choisi ci-dessus. Répondez STOP à tout moment pour les arrêter.",
       "btn.note": "Lire la note hebdomadaire", "lbl.officialdata": "Données officielles :", "lbl.offlatestmonth": "Chiffres officiels, dernier mois :",
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
@@ -174,6 +176,7 @@ window.I18N = (function () {
       "calc.escal": "expected escalation on inputs (8 in 10: {lo} to {hi})", "calc.money": "{v} expected · range {lo} to {hi}",
       "calc.input": "Input", "calc.shr": "Share", "calc.avg": "Average expected move", "calc.print": "Print or save as PDF",
       "calc.order": "Choose an end month after the start.", "calc.mix": "Mix of inputs (%)",
+      "glance.more": "Show all {n} countries", "glance.fewer": "Show fewer",
     },
   };
   let lang = "en";
@@ -342,6 +345,15 @@ window.I18N = (function () {
       const va = num ? parseFloat(A.dataset.v ?? A.textContent) : A.textContent.trim(), vb = num ? parseFloat(B.dataset.v ?? B.textContent) : B.textContent.trim();
       return (va > vb ? 1 : va < vb ? -1 : 0) * (asc ? 1 : -1); }).forEach(r => tbody.appendChild(r)); }; });
   render();
+  const more = $("#glance-more");
+  if (more) more.onclick = () => { const hid = $$("#glance-table tr.more").some(r => r.hidden);
+    $$("#glance-table tr.more").forEach(r => r.hidden = !hid); more.textContent = hid ? tr("glance.fewer") : tr("glance.more", { n: $$("#glance-table tbody tr").length }); };
+
+  /* ---------- share on WhatsApp ---------- */
+  $$("[data-wa-share]").forEach(b => b.onclick = () => { const c = DATA.countries[b.dataset.waShare]; if (!c) return;
+    const q = at(c.paths[c.head], target).q, url = new URL((b.closest("main") ? "" : "") + (location.protocol === "file:" ? "" : `${location.origin}/countries/${b.dataset.waShare}/`), location.href);
+    const text = `${question(c, target)} ${Math.round(chance(q) * 100)}% · ${pct(q.median)} (${pct(q.lo)} – ${pct(q.hi)}) — CiO Costs ${online ? url.href : ""}`;
+    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener"); });
 
   /* ---------- posting to the server (public API) ---------- */
   async function post(url, body, msg) {
@@ -424,13 +436,16 @@ window.I18N = (function () {
 
   /* ---------- The Cost Call ---------- */
   const game = $("#game"); if (!game || !DATA.quiz) return;
-  const today = new Date().toISOString().slice(0, 10);
+  const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const today = ymd(new Date());               /* the player's local date: new calls at local midnight */
   function seeded(seed) { let h = 2166136261; for (const ch of seed) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
     return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; }; }
   const focus = (location.hash || "").slice(1);
-  function todaysQuestions() { const rnd = seeded("cio" + today), pool = DATA.quiz.slice(), picked = [], usedC = {};
-    while (picked.length < 5 && pool.length) { const i = Math.floor(rnd() * pool.length), q = pool.splice(i, 1)[0];
-      if ((usedC[q.key] || 0) >= 2) continue; usedC[q.key] = (usedC[q.key] || 0) + 1; picked.push(q); } return picked; }
+  /* A fixed shuffle of the pool, walked 5 at a time, one step per day: no repeats until the pool is used up. */
+  function todaysQuestions() { const rnd = seeded("cio-pool"), pool = DATA.quiz.slice();
+    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    const day = Math.floor(Date.UTC(+today.slice(0, 4), +today.slice(5, 7) - 1, +today.slice(8)) / 864e5), start = (day * 5) % pool.length;
+    return Array.from({ length: Math.min(5, pool.length) }, (_, k) => pool[(start + k) % pool.length]); }
   const Q = todaysQuestions();
   let st = store.get("cio-call", {}); if (st.date !== today) st = { date: today, answers: [] };
   const stats = store.get("cio-call-stats", { played: 0, wins: 0, streak: 0, best: 0, last: null });
@@ -452,7 +467,7 @@ window.I18N = (function () {
         <button class="btn primary" id=next>${tr(st.answers.length < Q.length ? "gm.next" : "gm.seescore")}</button></div>`;
       $("#next").onclick = ask; }); }
   function finish() { const score = st.answers.filter(Boolean).length, grid = st.answers.map(a => a ? "🟩" : "🟥").join("");
-    if (stats.last !== today) { const y = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+    if (stats.last !== today) { const y = ymd(new Date(Date.now() - 864e5));
       stats.played++; stats.wins += score; stats.streak = (stats.last === y ? stats.streak : 0) + 1; stats.best = Math.max(stats.best, stats.streak); stats.last = today; store.set("cio-call-stats", stats); }
     statsRow(); const text = `CiO Cost Call ${today}\n${grid} ${score}/5\nWill building costs rise? Play: CiO Costs`;
     game.innerHTML = `<div class=qcard>${progress()}<h2>${tr("gm.score", { n: score })}</h2><div class=result-grid>${grid}</div>
