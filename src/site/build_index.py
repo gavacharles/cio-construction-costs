@@ -67,7 +67,7 @@ REGION = {"uganda": "east", "kenya": "east", "rwanda": "east", "tanzania": "east
           "namibia": "south", "mozambique": "south", "mauritius": "south",
           "ghana": "west", "nigeria": "west", "senegal": "west", "egypt": "north", "morocco": "north"}
 REGION_NAME = {"east": "East Africa", "south": "Southern Africa", "west": "West Africa", "north": "North Africa", "bench": "Benchmark"}
-ISO2 = {"USA": "US", "AUT": "AT", "PHL": "PH", "BRA": "BR", "UGA": "UG", "KEN": "KE", "RWA": "RW", "TZA": "TZ", "ETH": "ET", "ZAF": "ZA", "ZMB": "ZM", "BWA": "BW",
+ISO2 = {"USA": "US", "AUT": "AT", "PHL": "PH", "BRA": "BR", "GBR": "GB", "HKG": "HK", "UGA": "UG", "KEN": "KE", "RWA": "RW", "TZA": "TZ", "ETH": "ET", "ZAF": "ZA", "ZMB": "ZM", "BWA": "BW",
         "MWI": "MW", "ZWE": "ZW", "NAM": "NA", "MOZ": "MZ", "MUS": "MU", "GHA": "GH", "NGA": "NG", "SEN": "SN",
         "EGY": "EG", "MAR": "MA"}
 SOURCE = {"uganda": "Uganda Bureau of Statistics (UBOS)", "kenya": "Kenya National Bureau of Statistics (KNBS)",

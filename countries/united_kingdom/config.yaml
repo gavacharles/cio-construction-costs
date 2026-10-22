@@ -1,0 +1,38 @@
+# United Kingdom: BENCHMARK country (Europe). Same forecasting tool on an official construction price index published
+# monthly and on time, so its accuracy can be checked in public. No price reporting here.
+# DBT monthly building materials statistics, Table 1a. Publication paused Feb-Dec 2025 while ONS corrected a PPI error; the series was revised.
+country: United Kingdom
+iso3: GBR
+status: benchmark
+benchmark: true
+currency: GBP
+fx_code: gbp
+pressure_currency: USD
+aliases: [uk, britain, great britain, england, europe]
+regulation:
+  mode: play_money
+  regulators: []
+  note: Benchmark only; no contracts and no price reporting.
+
+settlement:
+  statistics_office: Department for Business and Trade (DBT), from ONS and BCIS
+  publication: "Construction material price index, All Work (monthly, 2015 = 100)"
+  url: https://www.gov.uk/government/collections/building-materials-and-components-monthly-statistics-2012
+  parser: benchmark
+  raw_dirs: [countries/united_kingdom/raw]
+  frequency: monthly
+  quantity: mom_pct_change
+  decimals: 2
+  void_after_days: 120
+  excluded_participants: []
+
+exchange: {}
+markets: []
+
+# Benchmark series: the headline index first, then materials (name shown on the site).
+benchmark_series:
+  - { source: dbt, id: UK_ALL, sheet: "1a", column: "All Work", name: "Construction materials (all work)" }
+  - { source: dbt, id: UK_HOUSING, sheet: "1a", column: "New Housing", name: "Materials for new housing" }
+  - { source: dbt, id: UK_RM, sheet: "1a", column: "Repair and Maintenance", name: "Materials for repair and maintenance" }
+
+price_items: []

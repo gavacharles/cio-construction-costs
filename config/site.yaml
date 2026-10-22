@@ -16,4 +16,4 @@ site_url: ""
 # pilot report covers them. Add the other countries here when expanding.
 pilot_countries: [uganda, south_africa, kenya, rwanda, zambia, tanzania, nigeria]
 # Benchmark country (global north): same forecasting tool on timely official data, to show how it performs.
-benchmark_countries: [united_states, austria, philippines, brazil]
+benchmark_countries: [united_states, united_kingdom, austria, hong_kong, philippines, brazil]

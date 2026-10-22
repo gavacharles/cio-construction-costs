@@ -104,9 +104,13 @@ Anyone can view the site and report prices: no accounts or invites (`/app` redir
 what they paid up to 6 months back, whenever they have a moment; typical prices pool the last 8 weeks and publish from
 3 different people (`src/market/reports.py`).
 
-Benchmark: the United States' BLS construction input price index (FRED, `src/ingest/pull_fred.py`, daily) runs through
-the same kind of forecast, with a 48-month walk-forward test written to
-`countries/united_states/outputs/forecast/backtest_errors.csv` and shown on the site as the track record.
+Benchmarks (`benchmark_countries`): the same kind of forecast on official monthly indices that are published on time —
+United States (BLS via FRED), United Kingdom (DBT/ONS "All Work" materials), Austria (Eurostat construction costs),
+Hong Kong (C&SD materials; equal-weight basket of six, our calculation), Philippines (PSA materials, Metro Manila) and
+Brazil (FGV INCC via the Central Bank). `src/ingest/pull_benchmarks.py` downloads them daily; each gets a 48-month
+walk-forward test (`countries/<c>/outputs/forecast/backtest_errors.csv`), a track record on its page and a weekly note
+that explains it. Not added yet: China (no downloadable official monthly series), Singapore (monthly prices only in
+PDFs since 2020), India (WPI items; needs a free data.gov.in key).
 
 The monthly pilot report (`/admin/pilot-report`) scores: main items with a typical price in the capital, contributors
 and returning contributors, forecasts inside the likely range, the benchmark, and site visits. Site visits come from

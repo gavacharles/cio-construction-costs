@@ -9,6 +9,8 @@ Sources (one per `source:` value in the config):
   eurostat  Eurostat sts_copi_m, construction cost, new residential  (levels, 2021 = 100)
   pxweb     Philippine Statistics Authority OpenSTAT (PXWeb)          (levels, 2018 = 100)
   bcb       Banco Central do Brasil SGS (monthly % change)            (turned into a level index from `start`, default 2000-01)
+  dbt       UK DBT/ONS monthly construction material price indices    (latest "tables" workbook found via the gov.uk API)
+  censtatd  Hong Kong C&SD costs of materials, public sector works   (one material, or `items`: equal-weight basket)
 Saves countries/<country>/raw/<id>.csv as date,value. Keeps the old file if a download fails.
 """
 from __future__ import annotations
@@ -77,7 +79,57 @@ def bcb(s: dict) -> list[tuple[str, float]]:
     return out
 
 
-SOURCES = {"fred": fred, "eurostat": eurostat, "pxweb": pxweb, "bcb": bcb}
+def dbt(s: dict) -> list[tuple[str, float]]:
+    """Newest edition of the UK 'Building materials and components' statistics -> Table 1a column (e.g. 'All Work')."""
+    import tempfile
+    import openpyxl
+    col = json.loads(fetch("https://www.gov.uk/api/content/government/collections/building-materials-and-components-monthly-statistics-2012"))
+    docs = sorted((d for d in col["links"].get("documents", []) if "building-materials-and-components-statistics" in d["base_path"]),
+                  key=lambda d: d.get("public_updated_at", ""), reverse=True)
+    for doc in docs[:3]:                                  # newest edition that has the tables workbook
+        ed = json.loads(fetch("https://www.gov.uk/api/content" + doc["base_path"]))
+        xl = [a["url"] for a in ed.get("details", {}).get("attachments", []) if a.get("url", "").endswith(".xlsx") and "tables" in a["url"]]
+        if xl:
+            break
+    else:
+        raise ValueError("no tables workbook in the latest editions")
+    with tempfile.TemporaryDirectory() as tmp:
+        f = Path(tmp) / "t.xlsx"
+        subprocess.run(["curl", "-sSfL", "-m", "120", "-o", str(f), xl[0]], check=True) if shutil.which("curl") else \
+            f.write_bytes(urllib.request.urlopen(xl[0], timeout=120).read())
+        rows = [r for r in openpyxl.load_workbook(f, read_only=True, data_only=True)[s.get("sheet", "1a")].iter_rows(values_only=True)]
+    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    hdr = next(i for i, r in enumerate(rows) if r and r[0] == "Year")
+    ci = list(rows[hdr]).index(s.get("column", "All Work"))
+    out, year = [], None
+    for r in rows[hdr + 1:]:
+        if r[0] is not None:
+            year = r[0]
+        m = str(r[1] or "").split(" [")[0].strip()
+        if year and m in months and isinstance(r[ci], (int, float)):
+            out.append((f"{int(year)}-{months.index(m) + 1:02d}-01", float(r[ci])))
+    return out
+
+
+def censtatd(s: dict) -> list[tuple[str, float]]:
+    """Hong Kong cost-of-materials indices; with `items`, an equal-weight basket chained from the average monthly change."""
+    d = json.loads(fetch(f"https://www.censtatd.gov.hk/api/get.php?id={s.get('table', '615-21002A')}&lang=en&full_series=1"))
+    by = {}
+    for r in d["dataSet"]:
+        if isinstance(r.get("figure"), (int, float)):
+            by.setdefault(r["ITEM_P"], {})[f"{r['period'][:4]}-{r['period'][4:6]}-01"] = float(r["figure"])
+    items = s.get("items") or [s["item"]]
+    dates = sorted(set.intersection(*(set(by[i]) for i in items)))
+    if len(items) == 1:
+        return [(t, by[items[0]][t]) for t in dates]
+    lvl, out = 100.0, [(dates[0], 100.0)]
+    for a, b in zip(dates, dates[1:]):
+        lvl *= sum(by[i][b] / by[i][a] for i in items) / len(items)
+        out.append((b, round(lvl, 4)))
+    return out
+
+
+SOURCES = {"fred": fred, "eurostat": eurostat, "pxweb": pxweb, "bcb": bcb, "dbt": dbt, "censtatd": censtatd}
 
 
 def pull(country: str, series: list[dict]) -> int:

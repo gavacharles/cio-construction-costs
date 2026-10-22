@@ -1,0 +1,41 @@
+# Hong Kong: BENCHMARK country (Asia). Same forecasting tool on an official construction price index published
+# monthly and on time, so its accuracy can be checked in public. No price reporting here.
+# C&SD table 615-21002A. No official all-materials index: the headline is an equal-weight basket of six key materials (CiO calculation).
+country: Hong Kong
+iso3: HKG
+status: benchmark
+benchmark: true
+currency: HKD
+fx_code: hkd
+pressure_currency: USD
+aliases: [hk, hongkong, china, asia]
+regulation:
+  mode: play_money
+  regulators: []
+  note: Benchmark only; no contracts and no price reporting.
+
+settlement:
+  statistics_office: Census and Statistics Department (C&SD), Hong Kong
+  publication: "Costs of materials used in public sector construction projects (monthly, April 2003 = 100)"
+  url: https://www.censtatd.gov.hk/en/web_table.html?id=615-21002A
+  parser: benchmark
+  raw_dirs: [countries/hong_kong/raw]
+  frequency: monthly
+  quantity: mom_pct_change
+  decimals: 2
+  void_after_days: 120
+  excluded_participants: []
+
+exchange: {}
+markets: []
+
+# Benchmark series: the headline index first, then materials (name shown on the site).
+benchmark_series:
+  - { source: censtatd, id: HK_BASKET, items: [CEMENT, SR, AGG, SAND, CONCRETE, DIESEL], name: "Key materials (basket)" }
+  - { source: censtatd, id: HK_CEMENT, item: CEMENT, name: "Cement" }
+  - { source: censtatd, id: HK_SR, item: SR, name: "Steel reinforcement" }
+  - { source: censtatd, id: HK_SAND, item: SAND, name: "Sand" }
+  - { source: censtatd, id: HK_AGG, item: AGG, name: "Aggregates" }
+  - { source: censtatd, id: HK_DIESEL, item: DIESEL, name: "Diesel" }
+
+price_items: []
