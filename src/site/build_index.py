@@ -239,10 +239,10 @@ def _home(cs, months, default, feat, tab_html, cards):
  <div class=feat-main><div class=card-top><span class=flag aria-hidden=true>{feat['flag']}</span>
  <a class=country data-feat-name data-cc={ISO2.get(load_country(feat['key'])['iso3'], '')} href="countries/{feat['key']}/index.html">{e(feat['country'])}</a><span class=chip data-i18n=chip.yours>Your country</span></div>
  <h2 id=fq class=feat-q data-q></h2>
- <div class=feat-odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div>
+ <div class=feat-odds><div class=needle data-needle aria-hidden=true></div><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div>
  <div><span class='pct small' data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
- <div class=pbar><span data-bar></span></div><div class=chart data-chart></div>
+ <div class=chart data-chart></div>
  <p class='advice big' data-advice></p>
  <div class=buy><span data-i18n=buy.q>What are you buying?</span>{BUY}</div>
  {MONEY}
@@ -362,10 +362,9 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <div class=feat-main><div class=card-top><span class='flag big' aria-hidden=true>{c['flag']}</span><h1 class=country-h data-cc={ISO2.get(load_country(c['key'])['iso3'], '')}>{e(c['country'])}</h1>
  {chip(c['official'])}{picker(months, default)}</div>
  <h2 class=feat-q data-q></h2>
- <div class=feat-odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div>
+ <div class=feat-odds><div class=needle data-needle aria-hidden=true></div><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div>
  <div><span class='pct small' data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
- <div class=pbar><span data-bar></span></div>
  <div class=chart>{chart_svg(c)}</div><p class='advice big' data-advice></p>
  {track_country(c)}
  {MONEY}
@@ -505,9 +504,12 @@ def page_play() -> str:
 <p class=lede data-i18n=game.lede>Five calls on real construction prices. Did each one go up or down? New calls every day.</p></div>
 <div class=stats-row id=stats></div></section>
 <section class=game id=game aria-live=polite></section>
+<section class=drawit><div class=section-h><h2 data-i18n=draw.h>Draw it</h2><span class=muted data-i18n=draw.d>Guess how an official
+price index moved. Draw the line, then reveal the real one.</span></div><div id=draw class=drawbox></div></section>
+<dialog id=results class=results aria-labelledby=res-h></dialog>
 <section><div class=section-h><h2 data-i18n=calls.h>This week's calls</h2><span class=muted data-i18n=calls.d>On the next official releases — scored when the data
 is published</span></div><div class=grid id=calls></div></section>
-<p class=muted>Play for points and a place on the leaderboard in the pilot app. <a href="index.html#join">Join the pilot</a>.</p>
+<p class=muted>Play for points and a place on the leaderboard in the pilot app. <a href="method.html#join">Join the pilot</a>.</p>
 """
 
 

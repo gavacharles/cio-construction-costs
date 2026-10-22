@@ -6,6 +6,7 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "needle.down": "Bei chini", "needle.up": "Bei juu", "draw.h": "Chora", "draw.d": "Kisia jinsi fahirisi rasmi ya bei ilivyobadilika. Chora mstari, kisha ona halisi.", "draw.q": "{s} nchini {c} ilibadilikaje kutoka {a} hadi {b}? Chora mstari.", "draw.hint": "Chora hapa →", "draw.reveal": "Onyesha", "draw.score": "Umepata {n}/100.", "draw.off": "Mstari wako ulikosea kwa wastani wa pointi {x}.", "draw.fc": "Mstari wa vitone ni utabiri wetu wa kinachofuata.", "draw.done": "Chati mpya kesho.", "res.h": "Ona matokeo", "res.dist": "Alama zako hadi sasa", "res.next": "Makisio mapya baada ya", "res.close": "Funga",
       "h.1": "Mwezi ujao", "h.3": "Miezi 3", "h.6": "Miezi 6", "h.pick": "Chagua tarehe", "v.sure.up": "Hakika zitapanda", "v.likely.up": "Huenda zikapanda", "v.lean.up": "Zinaelekea kupanda", "v.sure.down": "Hakika zitashuka", "v.likely.down": "Huenda zikashuka", "v.lean.down": "Zinaelekea kushuka", "v.same": "Takriban hazibadiliki", "v.sub": "takriban {x} kufikia {when}", "lbl.chance.cap": "Uwezekano wa kupanda", "buy.q": "Unanunua nini?", "buy.cement": "Saruji", "buy.steel": "Nondo", "buy.sand": "Mchanga", "buy.diesel": "Dizeli", "buy.roofing": "Mabati", "grid.open": "Onyesha nchi zote 18", "glance.link": "Linganisha nchi zote kwenye jedwali moja →", "game.line": "Makisio matano ya haraka kila siku kwa bei halisi.", "track.h": "Rekodi ya usahihi", "track.none": "bado hakuna fahirisi rasmi ya kulinganisha; tunalinganisha na bei zinazoripotiwa zinapoingia.", "track.soon": "tunahifadhi kila utabiri na tutauonyesha hapa kando ya takwimu rasmi zitakapochapishwa.", "join.signin": "Ingia (majaribio)", "rep.needs": "Ripoti {n} kati ya 3 wiki hii — ongeza yako",
       "match.by": "inayotarajiwa kufikia {when}", "match.last": "rasmi, ya karibuni ({p})", "match.ind": "gharama za uagizaji {x} kufikia {when}",
       "share": "Shiriki", "wa.weekly": "Taarifa ya kila wiki bure kwenye WhatsApp",
@@ -84,6 +85,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "needle.down": "Prix en baisse", "needle.up": "Prix en hausse", "draw.h": "Dessinez", "draw.d": "Devinez l'évolution d'un indice officiel des prix. Tracez la ligne, puis découvrez la vraie.", "draw.q": "Comment {s} a-t-il évolué au {c} de {a} à {b} ? Tracez la ligne.", "draw.hint": "Dessinez ici →", "draw.reveal": "Révéler", "draw.score": "Votre score : {n}/100.", "draw.off": "Votre ligne s'écartait en moyenne de {x} points.", "draw.fc": "La ligne pointillée montre où notre prévision la mène ensuite.", "draw.done": "Un nouveau graphique demain.", "res.h": "Voir les résultats", "res.dist": "Vos scores jusqu'ici", "res.next": "Prochains pronostics dans", "res.close": "Fermer",
       "h.1": "Mois prochain", "h.3": "3 mois", "h.6": "6 mois", "h.pick": "Choisir une date", "v.sure.up": "Hausse quasi certaine", "v.likely.up": "Hausse probable", "v.lean.up": "Plutôt en hausse", "v.sure.down": "Baisse quasi certaine", "v.likely.down": "Baisse probable", "v.lean.down": "Plutôt en baisse", "v.same": "À peu près stable", "v.sub": "environ {x} d'ici {when}", "lbl.chance.cap": "Probabilité de hausse", "buy.q": "Qu'achetez-vous ?", "buy.cement": "Ciment", "buy.steel": "Acier", "buy.sand": "Sable", "buy.diesel": "Gazole", "buy.roofing": "Tôles", "grid.open": "Afficher les 18 pays", "glance.link": "Comparer tous les pays dans un tableau →", "game.line": "Cinq pronostics rapides par jour sur des prix réels.", "track.h": "Historique de précision", "track.none": "pas encore d'indice officiel pour comparer ; nous comparons avec les prix signalés à mesure qu'ils arrivent.", "track.soon": "nous enregistrons chaque prévision et l'afficherons ici à côté du chiffre officiel dès sa publication.", "join.signin": "Connexion pilote", "rep.needs": "{n} signalements sur 3 cette semaine — ajoutez le vôtre",
       "match.by": "attendu d'ici {when}", "match.last": "officiel, dernier ({p})", "match.ind": "coûts d'importation {x} d'ici {when}",
       "share": "Partager", "wa.weekly": "Point hebdomadaire gratuit sur WhatsApp",
@@ -162,6 +164,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "needle.down": "Prices down", "needle.up": "Prices up", "draw.h": "Draw it", "draw.d": "Guess how an official price index moved. Draw the line, then reveal the real one.", "draw.q": "How did {s} in {c} move from {a} to {b}? Draw the line.", "draw.hint": "Draw here →", "draw.reveal": "Reveal", "draw.score": "You scored {n}/100.", "draw.off": "Your line was off by {x} points on average.", "draw.fc": "The dashed line is where our forecast says it goes next.", "draw.done": "A new chart tomorrow.", "res.h": "See results", "res.dist": "Your scores so far", "res.next": "Next calls in", "res.close": "Close",
       "home.lede": "Choose your country and a date. See whether building material prices are likely to go up, by how much, and what that means for the price you pay — updated every few hours.",
       "h.1": "Next month", "h.3": "3 months", "h.6": "6 months", "h.pick": "Pick a date", "v.sure.up": "Almost certainly up", "v.likely.up": "Likely up", "v.lean.up": "Leaning up", "v.sure.down": "Almost certainly down", "v.likely.down": "Likely down", "v.lean.down": "Leaning down", "v.same": "About the same", "v.sub": "about {x} by {when}", "lbl.chance.cap": "Chance of a rise", "buy.q": "What are you buying?", "buy.cement": "Cement", "buy.steel": "Steel", "buy.sand": "Sand", "buy.diesel": "Diesel", "buy.roofing": "Roofing", "grid.open": "Show all 18 countries", "glance.link": "Compare all countries in one table →", "game.line": "Five quick calls a day on real prices.", "track.h": "Track record", "track.none": "no official index to check against yet; we compare with reported prices as they come in.", "track.soon": "we log every forecast and will show it here next to the official figure once it is published.", "join.signin": "Pilot sign-in", "rep.needs": "{n} of 3 reports this week — add yours",
       "match.by": "expected by {when}", "match.last": "official, latest ({p})", "match.ind": "import costs {x} by {when}",
@@ -347,6 +350,16 @@ window.I18N = (function () {
       lo: money0(f(b.q.lo)), hi: money0(f(b.q.hi)) });
   }
 
+
+  /* ---------- the needle: chance of a rise as a dial, Prices down ← → Prices up ---------- */
+  const P = t => [100 - 80 * Math.cos(Math.PI * t), 100 - 80 * Math.sin(Math.PI * t)].map(v => v.toFixed(1)).join(" ");
+  const arc = (a, b, cls) => `<path class="${cls}" d="M ${P(a)} A 80 80 0 0 1 ${P(b)}"/>`;
+  const NEEDLE = `<svg viewBox="0 0 200 116" class=dial>${arc(0, 0.3, "seg down")}${arc(0.3, 0.45, "seg down2")}${arc(0.45, 0.55, "seg even")}${arc(0.55, 0.7, "seg up2")}${arc(0.7, 1, "seg up")}
+    <g class=hand><line x1=100 y1=100 x2=100 y2=30 /><circle cx=100 cy=100 r=7 /></g>
+    <text x=14 y=114 class=dl data-i18n=needle.down>${tr("needle.down")}</text><text x=186 y=114 text-anchor=end class=dl>${tr("needle.up")}</text></svg>`;
+  function needle(el, p) { const nd = $("[data-needle]", el); if (!nd) return; if (!nd.innerHTML) nd.innerHTML = NEEDLE;
+    $(".hand", nd).style.transform = `rotate(${(-90 + 180 * p).toFixed(1)}deg)`; }
+
   /* ---------- fill a block (card / featured / country page) for target tg ---------- */
   function fill(el, c, tg) {
     const r = at(c.paths[c.head], tg); if (!r) return; const q = r.q, p = chance(q);
@@ -359,7 +372,7 @@ window.I18N = (function () {
     const sl = $("[data-spark]", el); if (sl && !sl.innerHTML) sl.innerHTML = spark(c);
     const br = $("[data-breakdown]", el);
     if (br) br.innerHTML = Object.entries(c.paths).map(([n, pth]) => { const x = at(pth, tg); return x ? `<li><span>${T.mat(n)}</span><b>${apct(x.q.median)}</b></li>` : ""; }).join("");
-    money(el, c, tg);
+    money(el, c, tg); needle(el, p);
     el.dataset.trend = q.median > 0.05 ? "rising" : (q.median < -0.05 ? "easing" : "flat");
     const fan = $(".fan", el); if (fan) { const xs = JSON.parse(fan.dataset.xs || "{}"), mk = $(".marker", fan), m = tMonth(tg);
       const x = xs[m] || xs[Object.keys(xs).filter(k => k <= m).pop()]; if (mk && x) { mk.setAttribute("x1", x); mk.setAttribute("x2", x); } }
@@ -589,14 +602,84 @@ window.I18N = (function () {
       $("#next").onclick = ask; }); }
   function finish() { const score = st.answers.filter(Boolean).length, grid = st.answers.map(a => a ? "🟩" : "🟥").join("");
     if (stats.last !== today) { const y = ymd(new Date(Date.now() - 864e5));
-      stats.played++; stats.wins += score; stats.streak = (stats.last === y ? stats.streak : 0) + 1; stats.best = Math.max(stats.best, stats.streak); stats.last = today; store.set("cio-call-stats", stats); }
+      stats.played++; stats.wins += score; stats.dist = stats.dist || [0, 0, 0, 0, 0, 0]; stats.dist[score]++; stats.streak = (stats.last === y ? stats.streak : 0) + 1; stats.best = Math.max(stats.best, stats.streak); stats.last = today; store.set("cio-call-stats", stats); }
     statsRow(); const text = `CiO Cost Call ${today}\n${grid} ${score}/5\nWill building costs rise? Play: CiO Costs`;
     game.innerHTML = `<div class=qcard>${progress()}<h2>${tr("gm.score", { n: score })}</h2><div class=result-grid>${grid}</div>
       <p class=muted>${tr("gm.newcalls", { s: stats.streak })}</p>
-      <div class=actions style="justify-content:center"><button class="btn primary" id=share>${tr("gm.share")}</button><a class=btn href="report.html">${tr("gm.report")}</a></div></div>`;
+      <div class=actions style="justify-content:center"><button class="btn primary" id=share>${tr("gm.share")}</button><button class=btn id=showres>${tr("res.h")}</button><a class=btn href="report.html">${tr("gm.report")}</a></div></div>`;
+    $("#showres").onclick = () => results(score, grid, text);
     $("#share").onclick = async () => { try { if (navigator.share) await navigator.share({ text }); else { await navigator.clipboard.writeText(text); $("#share").textContent = tr("gm.copied"); } }
-      catch (e) { $("#share").textContent = "Copy: " + grid; } }; }
+      catch (e) { $("#share").textContent = "Copy: " + grid; } };
+    if (!game.dataset.shown) { game.dataset.shown = 1; results(score, grid, text); } }
+  /* NYT-style results card: score, stats, past scores and a countdown to the next calls */
+  function results(score, grid, text) { const dlg = $("#results"); if (!dlg || !dlg.showModal) return;
+    const dist = stats.dist || [0, 0, 0, 0, 0, 0], top = Math.max(1, ...dist);
+    dlg.innerHTML = `<form method=dialog class=res-close><button aria-label="${tr("res.close")}">✕</button></form>
+      <h2 id=res-h>${tr("gm.score", { n: score })}</h2><div class=result-grid>${grid}</div>
+      <div class=stats-row>${[[tr("st.played"), stats.played], [tr("st.avg"), stats.played ? (stats.wins / stats.played).toFixed(1) : "–"], [tr("st.streak"), stats.streak], [tr("st.best"), stats.best]]
+        .map(([k, v]) => `<div class=stat><b>${v}</b><span>${k}</span></div>`).join("")}</div>
+      <h3>${tr("res.dist")}</h3><div class=dist>${dist.map((d, i) => `<div><span>${i}</span><i style="width:${Math.max(6, d / top * 100)}%" class="${i === score ? "now" : ""}">${d}</i></div>`).join("")}</div>
+      <div class=res-foot><div><span class=muted>${tr("res.next")}</span><b id=cd>--:--:--</b></div><button class="btn primary" id=res-share>${tr("gm.share")}</button></div>`;
+    const cd = $("#cd", dlg), tick = () => { const now = new Date(), mid = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), s = Math.max(0, Math.floor((mid - now) / 1000));
+      cd.textContent = [s / 3600, s % 3600 / 60, s % 60].map(x => String(Math.floor(x)).padStart(2, "0")).join(":"); };
+    tick(); const iv = setInterval(tick, 1000); dlg.addEventListener("close", () => clearInterval(iv), { once: true });
+    dlg.addEventListener("click", ev => { if (ev.target === dlg) dlg.close(); });
+    $("#res-share", dlg).onclick = async () => { try { if (navigator.share) await navigator.share({ text }); else { await navigator.clipboard.writeText(text); $("#res-share", dlg).textContent = tr("gm.copied"); } } catch (e) { /* cancelled */ } };
+    dlg.showModal(); }
   statsRow(); ask();
+  /* ---------- Draw it: guess the hidden part of an official index, then reveal it ---------- */
+  const draw = $("#draw");
+  if (draw) {
+    const offs = Object.entries(DATA.countries).filter(([, c]) => c.official && c.spark && (c.spark.values || []).length >= 12);
+    const dayN = Math.floor(Date.UTC(+today.slice(0, 4), +today.slice(5, 7) - 1, +today.slice(8)) / 864e5);
+    if (offs.length) {
+      const [k, c] = offs[dayN % offs.length], qtr = c.step === "quarter", hideN = qtr ? 4 : 6, showN = qtr ? 8 : 12;
+      const vals = c.spark.values.slice(-(showN + hideN)), dates = c.spark.dates.slice(-(showN + hideN)), n = vals.length, k0 = n - hideN - 1;
+      const fc = (c.paths[c.head] || []).slice(0, qtr ? 2 : 4).map(q => vals[n - 1] * (1 + q.median / 100));
+      const all = vals.concat(fc), lo0 = Math.min(...all), hi0 = Math.max(...all), pad = (hi0 - lo0) * 0.6 || 1, lo = lo0 - pad, hi = hi0 + pad;
+      const W = 640, H = 300, L = 46, R = 20, T0 = 16, B = 34, N = n + fc.length;
+      const X = i => L + i * (W - L - R) / (N - 1), Y = v => T0 + (hi - v) * (H - T0 - B) / (hi - lo), V = y => hi - (y - T0) * (hi - lo) / (H - T0 - B);
+      const line = (idx, get) => idx.map(i => `${X(i).toFixed(1)},${Y(get(i)).toFixed(1)}`).join(" ");
+      const range = (a, b) => Array.from({ length: b - a + 1 }, (_, j) => a + j);
+      let saved = store.get("cio-draw", null); if (saved && saved.date !== today) saved = null;
+      const guess = saved ? saved.guess : Array(n).fill(null); guess[k0] = vals[k0];
+      const ticks = dates.map((d, i) => i % (qtr ? 2 : 3) === 0 ? `<text x="${X(i)}" y="${H - 10}" text-anchor=middle class=tk>${qlabel(d, c.step)}</text>` : "").join("");
+      const yt = [lo0, (lo0 + hi0) / 2, hi0].map(v => `<text x="${L - 6}" y="${Y(v) + 4}" text-anchor=end class=tk>${v.toFixed(0)}</text>`).join("");
+      draw.innerHTML = `<p class=drawq>${c.flag} ${tr("draw.q", { s: T.mat(c.head), c: cname(c), a: qlabel(dates[k0], c.step), b: qlabel(dates[n - 1], c.step) })}</p>
+        <svg viewBox="0 0 ${W} ${H}" class=drawsvg role=img aria-label="${tr("draw.h")}">
+          <rect class=zone x="${X(k0)}" y="${T0}" width="${X(n - 1) - X(k0)}" height="${H - T0 - B}"/><text class=zonet x="${(X(k0) + X(n - 1)) / 2}" y="${T0 + 22}" text-anchor=middle>${tr("draw.hint")}</text>
+          ${yt}${ticks}<polyline class=known points="${line(range(0, k0), i => vals[i])}"/>
+          <polyline class=guess points=""/><polyline class=actual points=""/><polyline class=fcline points=""/></svg>
+        <div class=drawfoot><button class="btn primary" id=reveal disabled>${tr("draw.reveal")}</button><p class=drawres aria-live=polite></p></div>`;
+      const svg = $("svg", draw), gl = $(".guess", svg), btn = $("#reveal");
+      const paint = () => { let last = k0; while (last + 1 < n && guess[last + 1] != null) last++;
+        gl.setAttribute("points", line(range(k0, last), i => guess[i])); btn.disabled = last < n - 1 || !!saved; };
+      function reveal(first) { $(".zonet", svg).textContent = ""; const act = $(".actual", svg);
+        act.setAttribute("points", line(range(k0, n - 1), i => vals[i]));
+        $(".fcline", svg).setAttribute("points", line(range(n - 1, N - 1), i => i < n ? vals[i] : fc[i - n]));
+        const err = range(k0 + 1, n - 1).reduce((s, i) => s + Math.abs(guess[i] - vals[i]) / vals[k0] * 100, 0) / hideN;
+        const score = Math.max(0, Math.round(100 - 25 * err));
+        if (first) { saved = { date: today, guess, score }; store.set("cio-draw", saved); }
+        btn.hidden = true;
+        $(".drawres", draw).innerHTML = `<b>${tr("draw.score", { n: score })}</b> ${tr("draw.off", { x: err.toFixed(1) })} ${tr("draw.fc")}
+          <br><button class=btn id=drawshare>${tr("gm.share")}</button> <span class=muted>${tr("draw.done")}</span>`;
+        $("#drawshare").onclick = async () => { const text = `CiO Draw it ${today}: ${score}/100 on ${cname(c)}'s construction prices.`;
+          try { if (navigator.share) await navigator.share({ text }); else { await navigator.clipboard.writeText(text); $("#drawshare").textContent = tr("gm.copied"); } } catch (e) { /* cancelled */ } }; }
+      if (saved) { paint(); reveal(false); }
+      else {
+        let down = false, prev = null;
+        const at = ev => { const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse());
+          const i = Math.round((q.x - L) / ((W - L - R) / (N - 1))); return { i: Math.max(k0 + 1, Math.min(n - 1, i)), v: V(Math.max(T0, Math.min(H - B, q.y))), x: q.x }; };
+        const put = ev => { const a = at(ev); if (a.x < X(k0) - 10) return;
+          if (prev && prev.i !== a.i) { const s = Math.sign(a.i - prev.i); for (let i = prev.i + s; i !== a.i; i += s) guess[i] = prev.v + (a.v - prev.v) * (i - prev.i) / (a.i - prev.i); }
+          guess[a.i] = a.v; for (let i = k0 + 1; i < a.i; i++) if (guess[i] == null) guess[i] = guess[i - 1]; prev = a; paint(); };
+        svg.addEventListener("pointerdown", ev => { down = true; prev = null; svg.setPointerCapture(ev.pointerId); put(ev); });
+        svg.addEventListener("pointermove", ev => { if (down) put(ev); });
+        svg.addEventListener("pointerup", () => { down = false; });
+        btn.onclick = () => reveal(true); paint(); }
+    }
+  }
+
   const calls = $("#calls"), mine = store.get("cio-weekly-calls", {});
   if (calls) { const cs = Object.entries(DATA.countries).filter(([, c]) => c.official).sort(([a], [b]) => (a === focus ? -1 : b === focus ? 1 : 0));
     calls.innerHTML = cs.map(([k, c]) => { const q = c.paths[c.head][0], p = chance(q), id = k + ":" + q.month, my = mine[id];
