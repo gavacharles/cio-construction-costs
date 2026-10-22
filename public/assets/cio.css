@@ -439,3 +439,4 @@ footer{border-top:1px solid var(--rule)}.footlinks{font-size:12px}
 .dv b{font:600 1.7rem/1.1 var(--mono);letter-spacing:-.03em}.dv-s{font-size:14px;color:var(--ink-2);line-height:1.4}
 .dv .up{color:var(--up);font-weight:600}.dv .down{color:var(--down);font-weight:600}
 @media (max-width:860px){.dv-grid{grid-template-columns:1fr 1fr}.dv:nth-child(2n){border-right:0}.dv:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+.trendtag{font:600 11px var(--mono);letter-spacing:.04em;color:var(--ink-3);border:1px solid var(--line);padding:1px 5px;margin-left:4px;cursor:help}

@@ -113,6 +113,8 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
     # Prices to watch
     watch = []
     for name, pth in paths.items():
+        if name in (d.get("trend") or []):            # notes lead with the modelled series
+            continue
         m, _, _ = _from_today(pth, now, target)
         watch.append((abs(m), f"{_arrow(m)} **{WATCH_NAMES.get(name, name)}** — {_move(m)} by {when}"))
     watch = [w for _, w in sorted(watch, reverse=True)[:5]]

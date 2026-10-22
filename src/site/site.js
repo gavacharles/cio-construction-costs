@@ -122,13 +122,13 @@
     const bar = $("[data-bar]", el); if (bar) bar.style.width = Math.round(p * 100) + "%";
     const sl = $("[data-spark]", el); if (sl && !sl.innerHTML) sl.innerHTML = spark(c);
     const br = $("[data-breakdown]", el);
-    if (br) br.innerHTML = Object.entries(c.paths).map(([n, pth]) => { const x = at(pth, tg); return x ? `<li><span>${T.mat(n)}</span><b>${apct(x.q.median)}</b></li>` : ""; }).join("");
+    if (br) br.innerHTML = Object.entries(c.paths).filter(([n]) => !(c.trend || []).includes(n)).map(([n, pth]) => { const x = at(pth, tg); return x ? `<li><span>${T.mat(n)}</span><b>${apct(x.q.median)}</b></li>` : ""; }).join("");
     money(el, c, tg); needle(el, p);
     el.dataset.trend = q.median > 0.05 ? "rising" : (q.median < -0.05 ? "easing" : "flat");
     const fan = $(".fan", el); if (fan) { const xs = JSON.parse(fan.dataset.xs || "{}"), mk = $(".marker", fan), m = tMonth(tg);
       const x = xs[m] || xs[Object.keys(xs).filter(k => k <= m).pop()]; if (mk && x) { mk.setAttribute("x1", x); mk.setAttribute("x2", x); } }
     $$("tr[data-mat]").forEach(row => { const pth = c.paths[row.dataset.mat] || (row.dataset.mat === "Reinforcement steel" ? c.paths["Rebar"] : null);
-      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.textContent = x ? `${apct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})` : tr("notsep"); } });
+      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.innerHTML = x ? `${apct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})${(c.trend || []).includes(row.dataset.mat) ? ` <span class=trendtag title="${tr("trend.tip")}">${tr("trend")}</span>` : ""}` : tr("notsep"); } });
   }
 
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register(rel + "sw.js").catch(() => {});

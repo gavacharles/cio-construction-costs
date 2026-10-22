@@ -51,6 +51,7 @@ DEFAULT_DB = Path(os.environ.get("CIO_DB", ROOT / "data" / "live" / "exchange.sq
 # Structured copy of each note's forecast, saved as countries/<c>/outputs/forecast_latest.json
 # for the participant app's Forecast page (same numbers as the note, by construction).
 _DATA: dict = {}
+_MAT_LEVELS: dict = {}          # material name -> full level series, for trend forecasts of materials without a model
 
 
 def _rec(**row) -> None:
@@ -97,6 +98,7 @@ def _materials(items, step: str) -> None:
         lv = pd.Series(lv).dropna()
         if len(lv) < 2:
             continue
+        _MAT_LEVELS[name] = (lv, step)
         yr = (lv.iloc[-1] / lv.iloc[-1 - lag] - 1) * 100 if len(lv) > lag else None
         ch = (lv / lv.shift(1) - 1).dropna().tail(24) * 100
         out.append({"name": name, "period": pd.Timestamp(lv.index[-1]).strftime("%Y-%m"),
@@ -104,6 +106,35 @@ def _materials(items, step: str) -> None:
                     "change_year": None if yr is None else round(float(yr), 2),
                     "history": [[pd.Timestamp(d).strftime("%Y-%m"), round(float(v), 2)] for d, v in ch.items()]})
     _DATA["materials"] = {"step": step, "items": out}
+
+
+ALIASES = {"Reinforcement steel": "Rebar"}      # materials already covered by a modelled series of another name
+
+
+def _add_trend_paths() -> None:
+    """Materials in the official table without their own model get a trend forecast from their own history
+    (AR(1) on recent changes, spread from its own past errors; quarterly series stay quarterly). Marked 'trend'."""
+    paths = _DATA.setdefault("paths", {})
+    trend = []
+    for name, (lv, step) in _MAT_LEVELS.items():
+        if name in paths or ALIASES.get(name) in paths:
+            continue
+        ch = (lv / lv.shift(1) - 1).dropna() * 100
+        if len(ch) < (12 if step == "quarter" else 24):
+            continue
+        if step == "quarter":
+            q = _ar1_path(ch, lv.index.max(), H=4, window=40)
+            start = pd.Timestamp(lv.index.max())
+            ent = []
+            for h, e in enumerate(q, 1):                    # each month of the quarter shows that quarter's value
+                for k in range(3):
+                    ent.append(_entry(start + pd.DateOffset(months=3 * h + k), e["lo"], e["median"], e["hi"]))
+            paths[name] = ent
+        else:
+            paths[name] = _ar1_path(ch, lv.index.max(), window=60)
+        trend.append(name)
+    if trend:
+        _DATA["trend"] = trend
 
 
 def _p_up(probs, cuts) -> float:
@@ -554,6 +585,7 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
     weekly = pd.read_csv(ROOT / "data" / "shared" / "weekly_drivers.csv", parse_dates=["date"]).set_index("date")
     today = date.today()
     _DATA.clear()
+    _MAT_LEVELS.clear()
     _DATA.update(country=cfg["country"], key=country, currency=cfg["currency"], generated=today.isoformat())
     ccy_code, col = ccy(country)
     _DATA["drivers"] = {"brent_usd": float(weekly["brent_usd"].dropna().iloc[-1]),
@@ -570,6 +602,7 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
     lines += ["", "## Sources", "",
               "UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), "
               "ERA5 (rainfall). How the forecasts work: see How it works on the CiO site."]
+    _add_trend_paths()
     out = ROOT / "countries" / country / "outputs"
     out.mkdir(parents=True, exist_ok=True)
     clean = json.loads(json.dumps(_DATA, default=lambda x: None if x is None else float(x)).replace("NaN", "null"))

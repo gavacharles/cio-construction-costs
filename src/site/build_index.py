@@ -99,7 +99,7 @@ def country_data(key: str) -> dict | None:
     return {
         "key": key, "country": cfg["country"], "flag": flag(cfg["iso3"]), "currency": cfg["currency"],
         "region": "bench" if key in BENCH else REGION.get(key, ""), "bench": key in BENCH, "bstats": d.get("benchmark"), "kind": d.get("kind"), "official": d.get("kind") != "pressure",
-        "base": d.get("base", ""), "head": head, "paths": paths, "spark": d.get("spark"),
+        "base": d.get("base", ""), "head": head, "paths": paths, "trend": d.get("trend") or [], "spark": d.get("spark"),
         "materials": (d.get("materials") or {}).get("items", []), "step": (d.get("materials") or {}).get("step", "month"),
         "drivers": d.get("drivers", {}), "generated": d.get("generated", ""),
         "source": SOURCE.get(key) or (off["series"].split(",")[0] if off else None),
@@ -777,7 +777,7 @@ def build() -> Path:
     default = f"M:{months[2]}"
     updated = max((c["generated"] for c in cs), default=date.today().isoformat())
     slim = {c["key"]: dict({k: c[k] for k in ("country", "flag", "currency", "region", "kind", "official", "base", "head",
-                                              "paths", "spark", "drivers", "materials", "step", "items", "bench")},
+                                              "paths", "spark", "drivers", "materials", "step", "items", "bench", "trend")},
                            aliases=load_country(c["key"]).get("aliases") or [],
                            office=load_country(c["key"])["settlement"].get("statistics_office", ""),
                            cc=ISO2.get(load_country(c["key"])["iso3"], ""),
