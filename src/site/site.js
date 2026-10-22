@@ -137,12 +137,25 @@
   $$("[data-bt-show]").forEach(b => b.onclick = () => { $$("[data-bt-show]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
     $$("svg[data-bt]").forEach(s => s.hidden = s.dataset.bt !== b.dataset.btShow); });
 
+  /* ---------- "what is moving costs": oil, the currency, official data, last update ---------- */
+  function drivers(k) { const box = $(".drivers"), c = DATA.countries[k]; if (!box || !c) return;
+    const d = c.drivers || {}, set = (n, h) => { const x = $(`[data-dv=${n}]`, box); if (x) x.innerHTML = h; };
+    const chg = (v, up, down) => v == null ? "" : `<span class=${v > 0 ? "up" : "down"}>${arrow(v)} ${Math.abs(v).toFixed(1)}%</span> ${tr(v > 0 ? up : down)}`;
+    set("for", `${c.flag} ${cname(c)}`);
+    set("oil", d.brent_usd ? `US$ ${d.brent_usd.toFixed(0)}` : "–"); set("oilch", chg(d.brent_13w_pct, "dv.up3", "dv.down3"));
+    set("fxk", tr("dv.fx", { ccy: c.currency }));
+    if (d.fx) { set("fx", `${Math.round(d.fx).toLocaleString(T.loc || undefined)} ${c.currency}`); set("fxch", chg(d.fx_13w_pct, "dv.weaker", "dv.stronger")); }
+    else { set("fx", "–"); set("fxch", tr("dv.usd")); }
+    set("off", c.official ? T.base(c.base) : tr("dv.none")); set("offsrc", c.official ? (c.office || "") : tr("dv.est"));
+    const b = Date.parse((($("#updated-ago") || {}).dataset || {}).built || ""), h = Math.max(0, Math.round((Date.now() - b) / 36e5));
+    set("upd", isNaN(h) ? "–" : (h < 1 ? tr("dv.now") : tr("dv.hago", { h }))); }
+
   /* ---------- country-first home ---------- */
   const my = $("#mycountry"), feat = $(".featured:not(.solo)");
   Object.entries(DATA.countries || {}).forEach(([k, c]) => { c.key = k; });
   if (my && feat) {
     $$("option", my).forEach(o => { const c = DATA.countries[o.value]; if (c) o.textContent = `${c.flag} ${cname(c)}`; });
-    const show = k => { const c = DATA.countries[k]; if (!c) return; feat.dataset.key = k;
+    const show = k => { const c = DATA.countries[k]; if (!c) return; feat.dataset.key = k; drivers(k);
       $(".flag", feat).textContent = c.flag; const nm = $("[data-feat-name]", feat); nm.textContent = cname(c); nm.dataset.cc = c.cc;
       $$("[data-feat-name], [data-feat-link]", feat).forEach(a => a.href = `countries/${k}/index.html`);
       $("[data-chart]", feat).innerHTML = ""; };

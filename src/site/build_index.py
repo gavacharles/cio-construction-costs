@@ -292,6 +292,7 @@ def _home(cs, months, default, feat, tab_html, cards):
  <aside class=feat-side><h3><span data-i18n=feat.bymaterial>By material, to</span> <span data-when-label></span></h3><ul class=breakdown data-breakdown></ul></aside>
 </section>
 
+{DRIVERS}
 {QUICK}
 <nav class=tabs id=countries aria-label="Filter countries">{tab_html}</nav>
 <form class=toolbar id=searchform role=search><label class=search><span class=sr-only>Search</span>
@@ -311,6 +312,13 @@ def _home(cs, months, default, feat, tab_html, cards):
 
 BUY = "".join(f"<button type=button class=pill data-buy={k} data-i18n=buy.{k}>{t}</button>" for k, t in
               (("cement", "Cement"), ("steel", "Steel"), ("sand", "Sand"), ("diesel", "Diesel"), ("roofing", "Roofing")))
+DRIVERS = """<section class=drivers aria-labelledby=dv-h><div class=dv-head><h2 id=dv-h data-i18n=dv.h>What is moving costs</h2>
+ <span class=muted data-dv=for></span></div><div class=dv-grid>
+ <div class=dv><span class=dv-k data-i18n=dv.oil>World oil (Brent)</span><b data-dv=oil></b><span class=dv-s data-dv=oilch></span></div>
+ <div class=dv><span class=dv-k data-dv=fxk></span><b data-dv=fx></b><span class=dv-s data-dv=fxch></span></div>
+ <div class=dv><span class=dv-k data-i18n=dv.off>Latest official figures</span><b data-dv=off></b><span class=dv-s data-dv=offsrc></span></div>
+ <div class=dv><span class=dv-k data-i18n=dv.upd>Forecast updated</span><b data-dv=upd></b><span class=dv-s data-i18n=dv.every>Refreshed every 3 hours as oil and currencies move</span></div>
+ </div></section>"""
 WHEN = """<label class=when-paid><span data-i18n=rep.when>When did you pay?</span><select name=months_ago>
  <option value=0 data-i18n=when.0>This month</option><option value=1 data-i18n=when.1>Last month</option>
  <option value=2 data-i18n=when.2>2 months ago</option><option value=3 data-i18n=when.3>3 months ago</option>
@@ -771,6 +779,7 @@ def build() -> Path:
     slim = {c["key"]: dict({k: c[k] for k in ("country", "flag", "currency", "region", "kind", "official", "base", "head",
                                               "paths", "spark", "drivers", "materials", "step", "items", "bench")},
                            aliases=load_country(c["key"]).get("aliases") or [],
+                           office=load_country(c["key"])["settlement"].get("statistics_office", ""),
                            cc=ISO2.get(load_country(c["key"])["iso3"], ""),
                            crowd={r["name"]: r["median"] for r in crowd(c["key"]) if r.get("published")},
                            pitems=[{"code": i["code"], "name": i["name"], "unit": i["unit"]} for i in load_country(c["key"]).get("price_items", [])],
