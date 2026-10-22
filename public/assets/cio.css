@@ -396,3 +396,36 @@ footer{border-top:1px solid var(--rule)}.footlinks{font-size:12px}
 .glance tbody th{font-family:var(--text)!important;text-transform:none;font-size:14px;color:var(--ink);letter-spacing:0;font-weight:600}
 .panel label>span:first-child,.alertform label>span:first-child{font-family:var(--mono);font-size:12.5px;letter-spacing:.02em}
 .drawsvg .tk{font-family:var(--mono)}.drawq{font-family:var(--display)!important;font-weight:400!important;font-size:1.45rem!important}
+/* =====================================================================================================
+   READABILITY PASS: the typewriter face is kept for figures and small section labels only; everything you
+   read or tap is sentence case in the phone's own font; darker secondary text (about 7:1); quieter grid.
+   ===================================================================================================== */
+:root{--ink-3:#57524a;--ink-2:#34312a;--teal:#08695f;--trend:#08695f;--hit:#08695f;--grid:rgba(22,21,15,.035)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--ink-3:#a8a398;--ink-2:#d2cec4;--grid:rgba(255,255,255,.03)}}
+:root[data-theme=dark]{--ink-3:#a8a398;--ink-2:#d2cec4;--grid:rgba(255,255,255,.03)}
+/* buttons, tabs, menus, chips and form labels: normal sentence case, readable size */
+.btn,.tabs button,.horizon button,.pill,.nav a,.chip,.areapick label>span,.bottombar a,.cta,.bm-toggle button,.lang,
+.when>span,.when-box>span,.buy>span,.money b,.qr-form label>span,.when-paid>span,.areapick legend,.panel label>span:first-child,
+.alertform label>span:first-child,.card-top .country,.trust,.fineprint,.pct-l,.facts dt,.count,.footlinks,.stat span,.crumbs,
+.gameline,.moreline,.tool b,.section-h .muted,.bm-small,.bm-src,.bm-legend,.bm-links,.nx-r,.nx-m,.bm-score span{
+ font-family:var(--text)!important;text-transform:none!important;letter-spacing:0!important}
+.btn{font-size:15px;font-weight:600;padding:11px 16px}.btn.big{font-size:16px;padding:14px 20px}
+.nav a{font-size:15px;font-weight:500}.cta{font-size:15px!important}
+.tabs button,.horizon button,.pill,.areapick label>span{font-size:14.5px;font-weight:500}
+.chip{font-size:12.5px}.bm-toggle button{font-size:14px}
+.when>span,.when-box>span,.buy>span,.money b,.qr-form label>span,.when-paid>span,.areapick legend,.panel label>span:first-child,
+.alertform label>span:first-child{font-size:14.5px;font-weight:600}
+.card-top .country{font-size:15.5px;font-weight:600}
+.pct-l,.facts dt,.fineprint,.count,.stat span{font-size:13.5px}.trust,.footlinks,.crumbs{font-size:14px}
+.gameline,.moreline{font-size:15px}.bm-score span,.bm-legend,.bm-src,.bm-small,.nx-r,.nx-m{font-size:13.5px}
+/* small section labels keep the typewriter face, a touch larger */
+.eyebrow,.bm-kick,.nx-h{font-size:12.5px!important}
+/* reading text: upright, not italic */
+.lede,.whatis,.bm-aim,.bm-how ol{font:400 1.12rem/1.55 var(--text)!important;font-style:normal!important}
+.whatis{font-size:15.5px!important;color:var(--ink-2)}.bm-how ol{font-size:1.05rem!important}
+.bm-q{font-size:clamp(1.25rem,2.4vw,1.6rem)}           /* one short italic line is kept as a flourish */
+/* the grid stays in the margins: solid panels hide it behind text */
+.lede,.hero .eyebrow{background:color-mix(in srgb,var(--page) 85%,transparent)}
+/* phones: bigger text and tap targets */
+@media (max-width:760px){body{font-size:17px}.btn,.tabs button,.horizon button,.pill,.areapick label>span{min-height:46px}
+ .pct-l,.facts dt,.fineprint,.count{font-size:14px}.hero h1{font-size:2.5rem}}

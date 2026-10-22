@@ -50,12 +50,13 @@ class Usage:
         self.close()
 
     def record(self, path: str, kind: str, visitor: str, lang: str = "", ref: str = "", country: str = "") -> None:
+        """`day` is the server's local date, the same calendar the visitor id and the monthly report use."""
         if kind not in KINDS:
             raise ValueError("unknown kind")
         now = datetime.now(timezone.utc)
         with self.db:
             self.db.execute("INSERT INTO hits (ts, day, path, kind, visitor, lang, ref, country) VALUES (?,?,?,?,?,?,?,?)",
-                            (now.isoformat(timespec="seconds"), now.date().isoformat(), path[:120], kind, visitor,
+                            (now.isoformat(timespec="seconds"), date.today().isoformat(), path[:120], kind, visitor,
                              lang[:5], ref[:80], country[:30]))
 
     def summary(self, start: str, end: str) -> dict:
