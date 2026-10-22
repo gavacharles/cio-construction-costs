@@ -36,4 +36,6 @@ Latest official reading: ZimStat weighted Building Materials Price Index (BMPI),
 
 [See all the figures for Zimbabwe](../index.html)
 
+Get this note free every week: [follow CiO Costs on WhatsApp](https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L)
+
 _CiO Costs · free weekly note · CiO Lab_

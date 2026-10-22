@@ -37,4 +37,6 @@ Tanzania has no official construction price index yet. This is an estimate from 
 
 [See all the figures for Tanzania](../index.html)
 
+Get this note free every week: [follow CiO Costs on WhatsApp](https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L)
+
 _CiO Costs · free weekly note · CiO Lab_

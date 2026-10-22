@@ -7,7 +7,7 @@ One page per country, same shape everywhere:
 Changes are measured from TODAY (not from the last official month), so "budget X" is usable as is.
 Also produces a short WhatsApp-ready text to paste into a free WhatsApp Channel or broadcast.
 
-    md, txt = plain_note(data, cfg, crowd_rows, today, site_url="")
+    md, txt = plain_note(data, cfg, crowd_rows, today, site_url="", channel="")
 """
 from __future__ import annotations
 
@@ -80,7 +80,8 @@ def _move(x: float) -> str:
     return f"{'up' if x > 0 else 'down'} about {abs(x):.0f}%" if abs(x) >= 3 else f"{'up' if x > 0 else 'down'} about {abs(x):.1f}%"
 
 
-def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url: str = "") -> tuple[str, str]:
+def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url: str = "",
+               channel: str = "") -> tuple[str, str]:
     country, ccy, kind = cfg["country"], cfg["currency"], d.get("kind")
     paths = d.get("paths") or {}
     head = next(iter(paths)) if paths else None
@@ -175,6 +176,7 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         "\"Likely\" means about 7 times in 10; \"almost certain\" about 9 in 10. Changes are measured from today. "
         "These are estimates, not advice.", "",
         f"[See all the figures for {country}]({page})", "",
+        *([f"Get this note free every week: [follow CiO Costs on WhatsApp]({channel})", ""] if channel else []),
         "_CiO Costs · free weekly note · CiO Lab_", ""])
 
     txt = "\n".join([
@@ -185,5 +187,6 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         *[f"• {w}" for w in why], "",
         f"✅ {todo[0]}", "",
         f"More: {page if site_url else 'CiO Costs site'} · Report prices: {(site_url.rstrip('/') + '/report.html') if site_url else 'CiO Costs site'}",
+        *([f"📲 Free every week: {channel}"] if channel else []),
         "_Estimates, not advice._"])
     return md, txt.replace("  ", " ")

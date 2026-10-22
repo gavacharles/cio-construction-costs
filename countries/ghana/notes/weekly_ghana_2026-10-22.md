@@ -38,4 +38,6 @@ Latest official reading: GSS Prime Building Cost Index (PBCI), 2026-08 — +4.6%
 
 [See all the figures for Ghana](../index.html)
 
+Get this note free every week: [follow CiO Costs on WhatsApp](https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L)
+
 _CiO Costs · free weekly note · CiO Lab_

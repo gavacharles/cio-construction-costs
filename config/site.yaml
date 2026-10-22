@@ -7,6 +7,6 @@ glance_featured: [uganda, kenya, south_africa, nigeria, ghana]
 # Free WhatsApp Channel link (WhatsApp Business app > Updates > Channels > create > share link).
 # When set, the site shows "Follow on WhatsApp (free)" buttons. Post the weekly note text there:
 # countries/<country>/notes/weekly_<country>_<date>.txt is ready to paste.
-whatsapp_channel_url: ""
+whatsapp_channel_url: "https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L"
 # Paid WhatsApp alerts (Cloud API) are off: alert sign-ups offer email only until this is true.
 alerts_whatsapp: false

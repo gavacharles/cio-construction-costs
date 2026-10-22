@@ -479,7 +479,10 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
         from reports import Participants
         with Participants(db_path) as pp:
             crowd_rows = pp.crowd_summary(country, cfg.get("price_items", [])).to_dict("records")
-    md, txt = plain_note(clean, cfg, crowd_rows, today, os.environ.get("CIO_SITE_URL", ""))
+    sp = ROOT / "config" / "site.yaml"
+    site_cfg = (yaml.safe_load(sp.read_text()) or {}) if sp.exists() else {}
+    md, txt = plain_note(clean, cfg, crowd_rows, today, os.environ.get("CIO_SITE_URL", ""),
+                         str(site_cfg.get("whatsapp_channel_url") or ""))
     path = _write(country, md, today)
     path.with_suffix(".txt").write_text(txt + "\n", encoding="utf-8")     # paste into the WhatsApp Channel
     return path

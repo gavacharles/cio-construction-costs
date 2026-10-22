@@ -37,4 +37,6 @@ Latest official reading: Statistics Mauritius Construction Price Index (single-f
 
 [See all the figures for Mauritius](../index.html)
 
+Get this note free every week: [follow CiO Costs on WhatsApp](https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L)
+
 _CiO Costs · free weekly note · CiO Lab_
