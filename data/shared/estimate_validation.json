@@ -1,0 +1,14 @@
+{
+ "uganda": {
+  "months": 46,
+  "same_direction": 0.63,
+  "correlation": 0.54,
+  "to": "2026-04"
+ },
+ "south_africa": {
+  "months": 58,
+  "same_direction": 0.638,
+  "correlation": 0.35,
+  "to": "2026-08"
+ }
+}

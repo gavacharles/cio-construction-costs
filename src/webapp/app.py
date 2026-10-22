@@ -177,8 +177,16 @@ def admin(request: Request, err: str = ""):
     months = [(_date.today().replace(day=1) - __import__("datetime").timedelta(days=31 * i)).strftime("%Y-%m") for i in range(6)]
     links = "".join(f"<li><a href='/admin/pilot-report?month={m}'>{m}</a></li>" for m in dict.fromkeys(months))
     live = ", ".join(e(COUNTRIES[c]["country"]) for c in LIVE)
+    chk = ROOT / "data" / "live" / "data_checks.json"
+    checks = json.loads(chk.read_text()) if chk.exists() else {"run": "never", "checks": []}
+    probs = [r for r in checks["checks"] if r["status"] != "ok"]
+    rows = "".join(f"<tr><td class={'err' if r['status'] == 'fail' else 'mut'}>{e(r['status'])}</td><td>{e(r['country'])}</td>"
+                   f"<td>{e(r['check'])}</td><td>{e(r['detail'])}</td></tr>" for r in probs) or "<tr><td colspan=4 class=ok>All checks pass.</td></tr>"
+    ok = sum(r["status"] == "ok" for r in checks["checks"])
     return page("Organiser", f"""<div class=card><h1>Pilot</h1><p>Live countries: {live}.
-Anyone can view the site and report prices; there are no accounts.</p><h2>Monthly pilot reports</h2><ul>{links}</ul></div>""")
+Anyone can view the site and report prices; there are no accounts.</p><h2>Monthly pilot reports</h2><ul>{links}</ul></div>
+<div class=card><h2>Data checks</h2><p class=mut>Last run {e(checks['run'])}: {ok} ok, {len(probs)} to look at.</p>
+<div class=tw><table><tr><th>Status</th><th>Country</th><th>Check</th><th>Detail</th></tr>{rows}</table></div></div>""")
 
 
 @app.post("/admin/login")

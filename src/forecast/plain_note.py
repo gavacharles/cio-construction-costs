@@ -145,6 +145,32 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
     else:
         todo = ["Prices may ease: if you can, wait before bulk buying.", "Ask suppliers for better terms."]
 
+    # Countries without an official index: CiO builds the estimate, so explain it, show it and say how reliable it is
+    est_lines = []
+    if not official and not d.get("benchmark"):
+        import json as _json
+        from pathlib import Path as _P
+        vf = _P(__file__).resolve().parents[2] / "data" / "shared" / "estimate_validation.json"
+        val = _json.loads(vf.read_text()) if vf.exists() else {}
+        sp = d.get("spark") or {}
+        last6 = list(zip(sp.get("dates") or [], sp.get("values") or []))[-6:]
+        chk = [f"{'Uganda' if k == 'uganda' else 'South Africa'} {v['same_direction']:.0%}" for k, v in val.items() if k in ("uganda", "south_africa")]
+        est_lines = [
+            f"{country} has no official construction price index, so **CiO Costs builds an estimate** every few hours:", "",
+            "- **What goes in:** world oil prices in the local currency and the exchange rate against the US dollar, weighted "
+            "like the official construction baskets of Uganda and South Africa.",
+            "- **What it covers:** the imported part of building costs — steel, cement inputs, paint, pipes, fuel and transport.",
+            "- **What it misses:** local materials (sand, stone, blocks, timber) and labour. Your price reports fill this gap.", ""]
+        if last6:
+            est_lines += ["**The CiO estimate index** (100 = two years ago): " + " · ".join(
+                f"{MONTHS[int(m[5:7]) - 1][:3]} {v:.1f}" for m, v in last6) + ".", ""]
+        if chk:
+            est_lines += [f"**How reliable is it?** Where we can check it against an official index, its 3-month direction matched "
+                          f"the official figure about 6 times in 10 ({', '.join(chk)}). Use it as an early signal and a "
+                          "contract reference agreed by both sides, not as a measured price.", ""]
+        est_lines += [f"Using it in a contract: the monthly series is on the CiO Costs contract index page"
+                      + (f" ({site_url.rstrip('/')}/contract-index.html)." if site_url else ".")]
+
     # Benchmark countries: why they are here and how the forecasts have done
     bench = d.get("benchmark") or {}
     b1, b3 = (bench.get("1") or bench.get(1) or {}), (bench.get("3") or bench.get(3) or {})
@@ -161,7 +187,7 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
     # Crowd prices
     pub = [r for r in crowd_rows if r.get("published")]
     crowd = ([f"- {r['name']}: **{r['median']:,.0f} {ccy}** per {r['unit']} ({r['reporters']} people)" for r in pub]
-             if pub else [f"Not enough reports yet this week. Tell us what you pay — it is anonymous: "
+             if pub else [f"Not enough reports yet (3 people in the last 2 months are needed). Tell us what you pay — today or from the last few months; it is anonymous: "
                           f"{(site_url.rstrip('/') + '/report.html') if site_url else 'Report a price on the CiO Costs site'}."])
 
     # Official figures
@@ -187,11 +213,14 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         "## Why", "", *[f"- {w}" for w in why], "",
         "## What to do this week", "", *[f"- {t}" for t in todo], "",
         *(["## How well does the forecast do here?", "", *bench_lines, ""] if bench else ["## What people are paying", "", *crowd, ""]),
-        "## Official figures", "", offl, "",
+        *(["## How CiO builds the estimate for " + country, "", *est_lines, ""] if est_lines else ["## Official figures", "", offl, ""]),
         "## How to read this", "",
         "\"Likely\" means about 7 times in 10; \"almost certain\" about 9 in 10. Changes are measured from today. "
         "CiO Costs is a forecasting tool: these are estimates with a range, not official statistics, a price list or advice.", "",
         f"[See all the figures for {country}]({page})", "",
+        *([f"Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: "
+           f"[Bids & contracts]({(site_url.rstrip('/') + '/calculator.html?c=' + cfg['key']) if site_url else '../../calculator.html?c=' + cfg['key']})", ""]
+          if not bench else []),
         *([f"Get this note free every week: [follow CiO Costs on WhatsApp]({channel})", ""] if channel else []),
         "_CiO Costs · free weekly note · CiO Lab_", ""])
 
@@ -203,6 +232,8 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         *[f"• {w}" for w in why], "",
         *([f"📏 Benchmark: inside the likely range {b1.get('inside', 0):.0%} of the time over the last {b1.get('n', 0)} months.", ""]
           if bench else [f"✅ {todo[0]}", ""]),
+        *([f"ℹ️ No official index in {country}: this is CiO's estimate from oil and the exchange rate. Your price reports make it better.", ""]
+          if est_lines else []),
         f"More: {page if site_url else 'CiO Costs site'} · Report prices: {(site_url.rstrip('/') + '/report.html') if site_url else 'CiO Costs site'}",
         *([f"📲 Free every week: {channel}"] if channel else []),
         "_A forecast, not a guarantee or advice._"])

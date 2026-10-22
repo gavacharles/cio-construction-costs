@@ -117,6 +117,22 @@ and returning contributors, forecasts inside the likely range, the benchmark, an
 `/api/public/hit` (`src/market/usage.py`): no cookies, no IP addresses, a visitor counted once per day, nothing sent when
 the browser asks not to be tracked.
 
+## Data checks and tests (`src/forecast/data_checks.py`)
+
+Run with every refresh (and in the test suite). For each live country: forecast age, official-data lag, complete and
+ordered forecast ranges, plausible history, oil and exchange-rate feeds, benchmark downloads, calibration of the
+benchmark and trend-forecast tests, and the weekly note. Results: `data/live/data_checks.json` and the organiser page
+(`/admin`); `fail` stops nothing but shows in the cron log and fails `pytest`.
+
+How the forecasts are tested:
+- Benchmarks: 48-month walk-forward (only data known at the time); ranges calibrated only from earlier test errors
+  (recent 24, never narrower than 0.85x); results on each benchmark page.
+- Trend forecasts (materials without their own model): damped drift with ranges from the material's own past
+  changes, chosen after AR(1) missed more than "no change"; per-material test shown on hover in the materials table.
+- The import-cost estimate (countries without an official index) is checked against Uganda and South Africa:
+  its 3-month direction matched the official index about 6 times in 10 (`data/shared/estimate_validation.json`);
+  the estimate-country notes say so.
+
 ## Before going live
 
 - Legal: play money only (`regulation.mode` is enforced). Get a one-page opinion per country

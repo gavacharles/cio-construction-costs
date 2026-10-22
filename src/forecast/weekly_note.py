@@ -51,7 +51,8 @@ DEFAULT_DB = Path(os.environ.get("CIO_DB", ROOT / "data" / "live" / "exchange.sq
 # Structured copy of each note's forecast, saved as countries/<c>/outputs/forecast_latest.json
 # for the participant app's Forecast page (same numbers as the note, by construction).
 _DATA: dict = {}
-_MAT_LEVELS: dict = {}          # material name -> full level series, for trend forecasts of materials without a model
+_MAT_LEVELS: dict = {}
+_OFFICIAL: dict = {}            # country -> official headline level series (monthly), to check the estimate method against          # material name -> full level series, for trend forecasts of materials without a model
 
 
 def _rec(**row) -> None:
@@ -111,30 +112,86 @@ def _materials(items, step: str) -> None:
 ALIASES = {"Reinforcement steel": "Rebar"}      # materials already covered by a modelled series of another name
 
 
+def _trend_model(lv: pd.Series, step: str, H: int) -> tuple[list[tuple[float, float, float]], dict]:
+    """Trend forecast for one material from its own history, chosen by a walk-forward test (Oct 2026):
+    centre = half the average change of the last 12 periods (a damped drift: AR(1) on single materials overreacted
+    and missed more than "no change"); range = the material's own past changes around their mean, widened or narrowed
+    so that, in the test, the real change landed inside about 8 times in 10. Returns cumulative (median, lo, hi) for
+    1..H periods ahead and the honest test statistics (calibration learned only from earlier test periods)."""
+    ch = ((lv / lv.shift(1) - 1).dropna() * 100).values
+    w_len, test_len, min_hist = (40, 16, 10) if step == "quarter" else (60, 48, 20)
+
+    def fit(past):
+        win = past[-w_len:]
+        return 0.5 * past[-12:].mean(), win - win.mean()
+
+    rows, errs = [], []
+    for i in range(max(min_hist, len(ch) - test_len), len(ch)):
+        d, res = fit(ch[:i])
+        lo, hi = np.percentile(res, [10, 90])
+        sc = 1.0
+        if len(errs) >= 8:                                     # calibration from earlier test periods only
+            e = np.array(errs)
+            sc = float(np.clip(np.percentile(np.abs(e[:, 0]), 80) / max(1e-6, e[:, 1].mean()), 0.6, 2.5))
+        rows.append((ch[i], d, d + lo * sc, d + hi * sc))
+        errs.append((ch[i] - d, (hi - lo) / 2))
+    a = np.array(rows)
+    stats = {"n": int(len(a)), "inside": float(np.mean((a[:, 0] >= a[:, 2]) & (a[:, 0] <= a[:, 3]))),
+             "mae": float(np.mean(np.abs(a[:, 0] - a[:, 1]))), "mae_nochange": float(np.mean(np.abs(a[:, 0])))}
+    e = np.array(errs)                                         # live forecast: calibration from the whole test
+    sc = float(np.clip(np.percentile(np.abs(e[:, 0]), 80) / max(1e-6, e[:, 1].mean()), 0.6, 2.5))
+    d, res = fit(ch)
+    lo, hi = np.percentile(res, [10, 90])
+    return [(d * h, d * h + lo * sc * np.sqrt(h), d * h + hi * sc * np.sqrt(h)) for h in range(1, H + 1)], stats
+
+
+def check_estimate_method(country: str) -> None:
+    """Where an official monthly index exists, test the import-cost estimate used for countries without one:
+    over the last 5 years, how often did its 3-month change point the same way as the official index, and how
+    closely did they move (correlation)? Saved to data/shared/estimate_validation.json for the estimate notes."""
+    from cost_pressure import pressure_history
+    off = _OFFICIAL.get(country)
+    if off is None:
+        return
+    off = pd.Series(off).dropna()
+    off.index = pd.to_datetime(off.index).to_period("M").to_timestamp()
+    pr = pressure_history(ccy(country)[1])
+    pr.index = pd.to_datetime(pr.index).to_period("M").to_timestamp()
+    o3 = (100 * np.log(off).diff(3)).dropna()
+    p3 = pr.rolling(3).sum().dropna()
+    j = pd.concat([p3, o3], axis=1, keys=["est", "off"]).dropna().tail(60)
+    j = j[(j.est.abs() > 0.1) & (j.off.abs() > 0.1)]                   # direction is only meaningful away from zero
+    if len(j) < 18:
+        return
+    f = ROOT / "data" / "shared" / "estimate_validation.json"
+    cur = json.loads(f.read_text()) if f.exists() else {}
+    cur[country] = {"months": int(len(j)), "same_direction": round(float((np.sign(j.est) == np.sign(j.off)).mean()), 3),
+                    "correlation": round(float(j.corr().iloc[0, 1]), 2), "to": j.index.max().strftime("%Y-%m")}
+    f.write_text(json.dumps(cur, indent=1), encoding="utf-8")
+
+
 def _add_trend_paths() -> None:
-    """Materials in the official table without their own model get a trend forecast from their own history
-    (AR(1) on recent changes, spread from its own past errors; quarterly series stay quarterly). Marked 'trend'."""
+    """Materials in the official table without their own model get a tested trend forecast (see _trend_model).
+    Quarterly series stay quarterly (each month of a quarter shows that quarter's value). Marked 'trend' on the site."""
     paths = _DATA.setdefault("paths", {})
-    trend = []
+    trend, stats = [], {}
     for name, (lv, step) in _MAT_LEVELS.items():
         if name in paths or ALIASES.get(name) in paths:
             continue
-        ch = (lv / lv.shift(1) - 1).dropna() * 100
-        if len(ch) < (12 if step == "quarter" else 24):
+        if len(lv) < (16 if step == "quarter" else 36):
             continue
+        start = pd.Timestamp(lv.index.max())
         if step == "quarter":
-            q = _ar1_path(ch, lv.index.max(), H=4, window=40)
-            start = pd.Timestamp(lv.index.max())
-            ent = []
-            for h, e in enumerate(q, 1):                    # each month of the quarter shows that quarter's value
-                for k in range(3):
-                    ent.append(_entry(start + pd.DateOffset(months=3 * h + k), e["lo"], e["median"], e["hi"]))
-            paths[name] = ent
+            q, st = _trend_model(lv, step, 4)
+            paths[name] = [_entry(start + pd.DateOffset(months=3 * h + k), lo, md, hi)
+                           for h, (md, lo, hi) in enumerate(q, 1) for k in range(3)]
         else:
-            paths[name] = _ar1_path(ch, lv.index.max(), window=60)
+            q, st = _trend_model(lv, step, 12)
+            paths[name] = [_entry(start + pd.DateOffset(months=h), lo, md, hi) for h, (md, lo, hi) in enumerate(q, 1)]
         trend.append(name)
+        stats[name] = st
     if trend:
-        _DATA["trend"] = trend
+        _DATA["trend"], _DATA["trend_stats"] = trend, stats
 
 
 def _p_up(probs, cuts) -> float:
@@ -298,6 +355,7 @@ def uganda_body(weekly) -> list[str]:
     lines += [f"| {r.series} | {r.month} | {r['median']:+.1f}% | {r.lo:+.1f}% to {r.hi:+.1f}% | "
               f"{r.without_new_data:+.1f}% |" for _, r in fc.iterrows()]
     _spark("Overall construction input index (UBOS)", structure.published["ALL"])
+    _OFFICIAL["uganda"] = structure.published["ALL"]
     _DATA.update(kind="structural", basis=f"Change from the last UBOS release ({origin:%B %Y}), "
                  f"with {n_known} months of oil and shilling readings since then built in")
     for _, r in fc.iterrows():
@@ -402,6 +460,7 @@ def south_africa_body(weekly) -> list[str]:
              p_up=_p_up(probs, m["cuts"]) if probs is not None else None)
         if m["code"] == "ZA_CIPI":
             _spark("Construction input index (Stats SA, chained)", h)
+            _OFFICIAL["south_africa"] = h
     _DATA["base"] = f"{latest:%b %Y}"
     _materials([(n, history(rel, f"cipi|{l}", cfg)) for n, l in [
         ("Cement", "cement"), ("Ready-mix concrete", "ready-mix concrete"), ("Reinforcing steel", "reinforcing metal work"),
@@ -494,21 +553,43 @@ def _ar1_path(changes: pd.Series, start, H: int = 12, n: int = 4000, window: int
     return [_entry(m, *np.percentile(cum[:, i], [10, 50, 90])) for i, m in enumerate(months)]
 
 
+def _scale(errs: list, recent: int = 24) -> float:
+    """Width factor so that about 8 in 10 of the last `recent` errors fall inside the half-width. Recent errors only,
+    so a calm spell is not remembered for ever; never narrower than 0.85x (a range should not be squeezed on luck)."""
+    e = np.array(errs[-recent:])
+    return float(np.clip(np.percentile(np.abs(e[:, 0]), 80) / max(1e-6, e[:, 1].mean()), 0.85, 2.5))
+
+
 def walk_forward(levels: pd.Series, months: int = 48, horizons=(1, 3)) -> pd.DataFrame:
     """Test the method as if run in the past: at each month, forecast from the data up to then only,
-    then compare with what happened. Same columns as Uganda's backtest file."""
+    then compare with what happened. Ranges are calibrated only from errors of earlier test months
+    (honest), so the test shows what the published, calibrated range would have done. Same columns as Uganda's file."""
     lv = levels.dropna()
     ch = (lv / lv.shift(1) - 1).dropna() * 100
-    rows = []
+    rows, errs = [], {h: [] for h in horizons}
     for i in range(len(lv) - months - max(horizons), len(lv) - max(horizons)):
         origin = lv.index[i]
         path = _ar1_path(ch[ch.index <= origin], origin, H=max(horizons), n=1500)
         for h in horizons:
             q = path[h - 1]
-            rows.append({"origin": origin.strftime("%Y-%m-%d"), "target": "ALL", "h": h,
-                         "actual": (lv.iloc[i + h] / lv.iloc[i] - 1) * 100, "structural": q["median"],
-                         "lo": q["lo"], "hi": q["hi"], "no_change": 0.0})
-    return pd.DataFrame(rows)
+            sc = _scale(errs[h]) if len(errs[h]) >= 12 else 1.0
+            act = (lv.iloc[i + h] / lv.iloc[i] - 1) * 100
+            rows.append({"origin": origin.strftime("%Y-%m-%d"), "target": "ALL", "h": h, "actual": act, "structural": q["median"],
+                         "lo": q["median"] - (q["median"] - q["lo"]) * sc, "hi": q["median"] + (q["hi"] - q["median"]) * sc, "no_change": 0.0})
+            errs[h].append((act - q["median"], (q["hi"] - q["lo"]) / 2))
+    out = pd.DataFrame(rows)
+    out.attrs["scale"] = {h: (_scale(errs[h]) if len(errs[h]) >= 12 else 1.0) for h in horizons}
+    return out
+
+
+def _calibrate(path: list[dict], scale: dict) -> list[dict]:
+    """Apply the tested width factors to a live path (1 month: scale[1]; 3+ months: scale[3]; in between: linear)."""
+    s1, s3 = scale.get(1, 1.0), scale.get(3, scale.get(1, 1.0))
+    out = []
+    for h, q in enumerate(path, 1):
+        sc = s1 if h <= 1 else s3 if h >= 3 else s1 + (s3 - s1) * (h - 1) / 2
+        out.append(dict(q, lo=round(q["median"] - (q["median"] - q["lo"]) * sc, 3), hi=round(q["median"] + (q["hi"] - q["median"]) * sc, 3)))
+    return out
 
 
 def benchmark_body(weekly, country: str) -> list[str]:
@@ -536,6 +617,7 @@ def benchmark_body(weekly, country: str) -> list[str]:
     if mats:
         _materials(mats, "month")
     bt = walk_forward(head)
+    paths[series[0]["name"]] = _calibrate(paths[series[0]["name"]], bt.attrs["scale"])
     out = ROOT / "countries" / country / "outputs" / "forecast"
     out.mkdir(parents=True, exist_ok=True)
     bt.to_csv(out / "backtest_errors.csv", index=False)
@@ -586,6 +668,7 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
     today = date.today()
     _DATA.clear()
     _MAT_LEVELS.clear()
+    _OFFICIAL.clear()
     _DATA.update(country=cfg["country"], key=country, currency=cfg["currency"], generated=today.isoformat())
     ccy_code, col = ccy(country)
     _DATA["drivers"] = {"brent_usd": float(weekly["brent_usd"].dropna().iloc[-1]),
@@ -603,6 +686,7 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
               "UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), "
               "ERA5 (rainfall). How the forecasts work: see How it works on the CiO site."]
     _add_trend_paths()
+    check_estimate_method(country)
     out = ROOT / "countries" / country / "outputs"
     out.mkdir(parents=True, exist_ok=True)
     clean = json.loads(json.dumps(_DATA, default=lambda x: None if x is None else float(x)).replace("NaN", "null"))

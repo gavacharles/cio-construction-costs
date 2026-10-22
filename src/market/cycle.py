@@ -86,6 +86,7 @@ def refresh(db: str | None) -> None:
     Takes seconds; the forecasts move as the outlook moves. Notes stay weekly."""
     run("drivers", "src/ingest/build_weekly_drivers.py")
     run("forecasts", "src/forecast/weekly_note.py", "--country", "all", "--no-fetch", "--data-only", db=db)
+    run("data checks", "src/forecast/data_checks.py")
     run("site", "src/site/build_index.py")
     run("alerts", "src/market/alerts.py", db=db)
     run("send alerts", "src/market/send_alerts.py", "--send")       # sends only channels configured in cio.env

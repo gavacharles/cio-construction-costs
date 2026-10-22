@@ -316,3 +316,14 @@ def test_prices_can_be_reported_months_later(tmp_path, monkeypatch):
     with Participants(tmp_path / "b.sqlite") as p:
         wk = p.reports("kenya", since_weeks=30)["week"].iloc[0]
         assert wk == week_of(date.today() - timedelta(days=90))
+
+
+
+def test_data_checks_have_no_failures():
+    """The site's data must be complete and consistent: no broken ranges, missing series or impossible values."""
+    sys.path.insert(0, str(ROOT / "src" / "forecast"))
+    import data_checks
+    res = data_checks.run()
+    fails = [f"{r['country']} {r['check']}: {r['detail']}" for r in res if r["status"] == "fail"]
+    assert not fails, fails
+    assert any(r["check"] == "forecast ranges" for r in res)

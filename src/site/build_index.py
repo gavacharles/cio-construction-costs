@@ -99,7 +99,7 @@ def country_data(key: str) -> dict | None:
     return {
         "key": key, "country": cfg["country"], "flag": flag(cfg["iso3"]), "currency": cfg["currency"],
         "region": "bench" if key in BENCH else REGION.get(key, ""), "bench": key in BENCH, "bstats": d.get("benchmark"), "kind": d.get("kind"), "official": d.get("kind") != "pressure",
-        "base": d.get("base", ""), "head": head, "paths": paths, "trend": d.get("trend") or [], "spark": d.get("spark"),
+        "base": d.get("base", ""), "head": head, "paths": paths, "trend": d.get("trend") or [], "trend_stats": d.get("trend_stats") or {}, "spark": d.get("spark"),
         "materials": (d.get("materials") or {}).get("items", []), "step": (d.get("materials") or {}).get("step", "month"),
         "drivers": d.get("drivers", {}), "generated": d.get("generated", ""),
         "source": SOURCE.get(key) or (off["series"].split(",")[0] if off else None),
@@ -167,7 +167,7 @@ FONTS = ("<link rel=preconnect href=https://fonts.googleapis.com><link rel=preco
 
 
 def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc: str = "", head: str = "") -> str:
-    nav = [("index.html#countries", "Prices", "home", "nav.prices"), ("calculator.html", "Plan a bid", "calc", "nav.plan"),
+    nav = [("index.html#countries", "Prices", "home", "nav.prices"), ("calculator.html", "Bids & contracts", "calc", "nav.plan"),
            ("report.html", "Report a price", "report", "nav.reportshort"), ("play.html", "Play", "play", "nav.playshort")]
     minor: set[str] = set()
     links = "".join(f"<a href='{rel}{h}' data-i18n='{k}'{' class=minor' if p in minor else ''}{' aria-current=page' if p == page else ''}>{t}</a>"
@@ -191,7 +191,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
 </div></header>
 <main class=wrap>{body}</main>
 <nav class=bottombar aria-label=Main>{bottom}</nav>
-<footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="{rel}contract-index.html" data-i18n=ci.short>Contract index</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
+<footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="{rel}calculator.html#adjust" data-i18n=ci.short>Contract index</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
 {f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else ""}</p><span data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
 value. Official data: UBOS, KNBS, Stats SA; benchmarks: US BLS, Statistics Austria (Eurostat), PSA Philippines, FGV Brazil; oil and exchange rates from public
 market sources. Updated {e(data.get('updated', ''))}.</span></footer>
@@ -287,6 +287,7 @@ def _home(cs, months, default, feat, tab_html, cards):
  <div class=buy><span data-i18n=buy.q>What are you buying?</span>{BUY}</div>
  {MONEY}
  <div class=actions><a class='btn primary' data-feat-link href="countries/{feat['key']}/index.html" data-i18n=btn.bymaterial>See costs by material</a>
+ <a class=btn data-feat-bid href="calculator.html?c={feat['key']}#bid" data-i18n=bc.pricebid>Price a bid</a>
  <a class=btn href="play.html" data-i18n=btn.play>Play The Cost Call</a>
  <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div></div>
  <aside class=feat-side><h3><span data-i18n=feat.bymaterial>By material, to</span> <span data-when-label></span></h3><ul class=breakdown data-breakdown></ul></aside>
@@ -370,10 +371,18 @@ def chart_svg(c: dict, w: int = 760, h: int = 220) -> str:
     xs = {m: round(X(k0 + 1 + i), 1) for i, (m, *_) in enumerate(fv)}
     ticks = "".join(f"<text x='{X(i):.1f}' y='{h - 6}' text-anchor=middle>{month_label(d)[:3]} {d[2:4]}</text>"
                     for i, d in enumerate(hd + [m for m, *_ in fv]) if i % 6 == 0)
-    return (f"<svg class=fan viewBox='0 0 {w} {h}' role=img aria-label='History and forecast for {e(c['head'])}' data-xs='{json.dumps(xs)}'>"
+    # hover points: every month, with its value (history) or its forecast and range, read by the page script
+    pts = [{"x": round(X(i), 1), "y": round(Y(v), 1), "m": d, "v": round(v, 2),
+            "c": None if i == 0 else round((v / hv[i - 1] - 1) * 100, 2)} for i, (d, v) in enumerate(zip(hd, hv))]
+    pts += [{"x": round(X(k0 + 1 + i), 1), "y": round(Y(a), 1), "m": m, "v": round(a, 2), "f": 1, "e": q["median"], "lo": q["lo"], "hi": q["hi"]}
+            for i, ((m, a, _, _), q) in enumerate(zip(fv, path))]
+    return (f"<div class=fanwrap><svg class=fan viewBox='0 0 {w} {h}' role=img aria-label='History and forecast for {e(c['head'])}' data-xs='{json.dumps(xs)}' "
+            f"data-pts='{json.dumps(pts)}' data-base='{e(c.get('base', ''))}'>"
             f"<line x1='{X(k0):.1f}' x2='{X(k0):.1f}' y1=10 y2='{h - 22}' class=nowline /><text x='{X(k0) + 4:.1f}' y=18 class=nowtext>forecast →</text>"
             f"<polygon points='{band}' class=band /><polyline points='{hist}' class=histline />"
-            f"<polyline points='{med}' class=medline /><line class=marker y1=10 y2='{h - 22}' x1=0 x2=0 />{ticks}</svg>"
+            f"<polyline points='{med}' class=medline /><line class=marker y1=10 y2='{h - 22}' x1=0 x2=0 />{ticks}"
+            f"<line class=hoverline y1=10 y2='{h - 22}' x1=-10 x2=-10 /><circle class=hoverdot r=4.5 cx=-10 cy=-10 /></svg>"
+            f"<div class=fantip role=status hidden></div></div>"
             f"<p class=muted>{e(sp.get('label', ''))}. Shaded: likely range (8 in 10).</p>")
 
 
@@ -394,12 +403,13 @@ def page_country(c: dict, months: list[str], default: str, crowd_rows: list[dict
     def yr(m):
         return "–" if m["change_year"] is None else arrow(m["change_year"]) + " " + format(m["change_year"], "+.1f") + "%"
     mats = "".join(f"<tr data-mat='{e(m['name'])}'><th scope=row data-matname='{e(m['name'])}'>{e(m['name'])}</th><td>{arrow(m['change_period'])} {m['change_period']:+.1f}%</td>"
-                   f"<td>{yr(m)}</td><td data-mexp>–</td><td class=why>{why(m['name'])}</td></tr>" for m in c["materials"])
+                   f"<td>{yr(m)}</td><td data-mexp>–</td><td class=why>{why(m['name'])}</td>"
+                   f"<td><button type=button class=addbill data-addbill='{e(m['name'])}' data-i18n=bc.add>+ Add to my bill</button></td></tr>" for m in c["materials"])
     step = "quarter" if c["step"] == "quarter" else "month"
     if mats:
         mat_html = f"""<section><div class=section-h><h2 data-i18n=sec.materials>Costs by material</h2><span class=muted><span data-i18n=lbl.offlatest{step}>Official figures, latest {step}:</span> {e(c['base'])}</span></div><div class=tablewrap><table class=glance>
 <thead><tr><th scope=col data-i18n=th.material>Material</th><th scope=col data-i18n=th.prev{step}>Change on the previous {step}</th><th scope=col data-i18n=th.year>Change on a year</th>
-<th scope=col><span data-i18n=th.expby>Expected by</span> <span data-when-label></span></th><th scope=col data-i18n=th.why>What moves it</th></tr></thead><tbody>{mats}</tbody></table></div></section>"""
+<th scope=col><span data-i18n=th.expby>Expected by</span> <span data-when-label></span></th><th scope=col data-i18n=th.why>What moves it</th><th><span class=sr-only>Bill</span></th></tr></thead><tbody>{mats}</tbody></table></div></section>"""
     else:
         r = c["reading"]
         reading_txt = "."
@@ -448,7 +458,8 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <div class=chart>{chart_svg(c)}</div><p class='advice big' data-advice></p>
  {track_country(c, crowd_rows)}
  {MONEY}
- <div class=actions><a class='btn primary' href="../../play.html#{c['key']}" data-i18n=link.makecall>Play today's game</a>{note}
+ <div class=actions><a class='btn primary' href="../../calculator.html?c={c['key']}#bid" data-i18n=bc.pricebid>Price a bid</a>
+ <a class=btn href="../../calculator.html?c={c['key']}#adjust" data-i18n=bc.useindex>Use as contract index</a>{note}
  <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div>{src}</div>
 </section>
 {mat_html}
@@ -641,23 +652,15 @@ have a moment. Reports are anonymous: we publish typical prices from at least 3 
 """
 
 
-def page_calc() -> str:
-    return """
-<section class=prose><p class=eyebrow data-i18n=tool.calc.t>Bid escalation calculator</p><h1 data-i18n=calc.h1>How much could input prices move over your contract?</h1>
-<p class=lede data-i18n=calc.lede>Enter your contract and the mix of inputs. You get the expected escalation in your currency, with a likely
-range — a starting point for contingencies and price-adjustment clauses.</p></section>
-<section class=reportgrid><form id=calcform class=panel>
- <label><span data-i18n=th.country>Country</span><select name=country></select></label>
- <div class=row2><label><span data-i18n=calc.value>Contract value</span> (<span data-ccy></span>)<input name=value type=number min=0 step=any value=1000000000 inputmode=decimal></label>
- <label><span data-i18n=calc.share>Inputs share of contract (%)</span><input name=share type=number min=5 max=100 value=60></label></div>
- <div class=row2><label><span data-i18n=calc.start>Work starts</span><select name=start></select></label><label><span data-i18n=calc.end>Work ends</span><select name=end></select></label></div>
- <label><span data-i18n=calc.type>Type of work</span><select name=preset><option value=building data-i18n=calc.building>Building</option><option value=road data-i18n=calc.road>Road</option>
- <option value=water data-i18n=calc.water>Water and drainage</option><option value=custom data-i18n=calc.custom>Custom mix</option></select></label>
- <fieldset id=mix><legend>Mix of inputs (%)</legend></fieldset></form>
- <aside class=panel id=calcout aria-live=polite></aside></section>
-<p class=muted>Assumes spending spread evenly over the contract and prices measured from today. Estimates with ranges, not
-advice. Uses the same forecasts as the country pages, refreshed every few hours.</p>
-
+def page_calc(cs: list[dict]) -> str:
+    """Bids & contracts: price a bid (bill of quantities first, quick estimate for those without one) or adjust a payment."""
+    return f"""
+<section class=prose><p class=eyebrow data-i18n=ci.eyebrow>Free during the pilot</p><h1 data-i18n=bc.h1>Bids &amp; contracts</h1>
+<p class=lede data-i18n=bc.lede>Before the job: price your bid with the expected change in material costs. During the job: adjust payments with a
+monthly index both sides can check.</p></section>
+<div class=bctabs role=tablist><button type=button role=tab data-bc=bid aria-selected=true data-i18n=bc.bid>Price a bid</button>
+<button type=button role=tab data-bc=adjust aria-selected=false data-i18n=bc.adjust>Adjust a payment</button></div>
+<div data-bc-pane=bid>
 <section class=boq id=boq><div class=section-h><div><p class=eyebrow data-i18n=boq.eyebrow>Free during the pilot · up to 10 lines</p>
 <h2 data-i18n=boq.h>Bill of quantities escalation</h2>
 <p class=muted data-i18n=boq.d>Enter your lines at today's rates. Each line is matched to the forecast for that material, and you get the expected
@@ -678,8 +681,27 @@ cost over the work period, with a likely range. Paste straight from Excel: descr
  <p class=boq-sum aria-live=polite data-boq-sum></p>
  <p class=fineprint data-boq-limit data-i18n=boq.limit>Up to 10 lines free during the pilot. Larger bills, saved projects and branded PDFs are planned for CiO Costs Pro.</p>
 </form></section>
-<p class=moreline><a href=contract-index.html data-i18n=ci.link>Price adjustment index for contracts →</a></p>
+<details class=quickcalc><summary data-i18n=bc.quick>No bill of quantities? Quick estimate</summary>
+
+<p class=eyebrow data-i18n=tool.calc.t>Bid escalation calculator</p><h2 data-i18n=calc.h1>How much could input prices move over your contract?</h2>
+<p class=lede data-i18n=calc.lede>Enter your contract and the mix of inputs. You get the expected escalation in your currency, with a likely
+range — a starting point for contingencies and price-adjustment clauses.</p>
+<section class=reportgrid><form id=calcform class=panel>
+ <label><span data-i18n=th.country>Country</span><select name=country></select></label>
+ <div class=row2><label><span data-i18n=calc.value>Contract value</span> (<span data-ccy></span>)<input name=value type=number min=0 step=any value=1000000000 inputmode=decimal></label>
+ <label><span data-i18n=calc.share>Inputs share of contract (%)</span><input name=share type=number min=5 max=100 value=60></label></div>
+ <div class=row2><label><span data-i18n=calc.start>Work starts</span><select name=start></select></label><label><span data-i18n=calc.end>Work ends</span><select name=end></select></label></div>
+ <label><span data-i18n=calc.type>Type of work</span><select name=preset><option value=building data-i18n=calc.building>Building</option><option value=road data-i18n=calc.road>Road</option>
+ <option value=water data-i18n=calc.water>Water and drainage</option><option value=custom data-i18n=calc.custom>Custom mix</option></select></label>
+ <fieldset id=mix><legend>Mix of inputs (%)</legend></fieldset></form>
+ <aside class=panel id=calcout aria-live=polite></aside></section>
+<p class=muted>Assumes spending spread evenly over the contract and prices measured from today. Estimates with ranges, not
+advice. Uses the same forecasts as the country pages, refreshed every few hours.</p>
+</details>
+</div>
+<div data-bc-pane=adjust hidden>{page_contract_index(cs)}</div>
 """
+
 
 
 def contract_series(c: dict) -> list[dict]:
@@ -707,7 +729,7 @@ def contract_series(c: dict) -> list[dict]:
 def page_contract_index(cs: list[dict]) -> str:
     opts = country_options([c for c in cs if not c.get("bench")])
     return f"""
-<section class=prose><p class=eyebrow data-i18n=ci.eyebrow>Free during the pilot</p><h1 data-i18n=ci.h1>A price adjustment index for contracts</h1>
+<section class=prose><h2 data-i18n=ci.h1>A price adjustment index for contracts</h2>
 <p class=lede data-i18n=ci.lede>Many construction contracts adjust payments when input prices move (price adjustment or fluctuation clauses).
 They need an index both sides can look up. Here is one for each pilot country, month by month, with a calculator.</p></section>
 <section class=reportgrid><div class=panel>
@@ -853,7 +875,7 @@ def build() -> Path:
     default = f"M:{months[2]}"
     updated = max((c["generated"] for c in cs), default=date.today().isoformat())
     slim = {c["key"]: dict({k: c[k] for k in ("country", "flag", "currency", "region", "kind", "official", "base", "head",
-                                              "paths", "spark", "drivers", "materials", "step", "items", "bench", "trend")},
+                                              "paths", "spark", "drivers", "materials", "step", "items", "bench", "trend", "trend_stats")},
                            aliases=load_country(c["key"]).get("aliases") or [],
                            office=load_country(c["key"])["settlement"].get("statistics_office", ""),
                            cc=ISO2.get(load_country(c["key"])["iso3"], ""),
@@ -894,9 +916,6 @@ def build() -> Path:
     (OUT / "report.html").write_text(shell("Report prices — CiO Costs", page_report(keys), dict(base, report=items),
                                            page="report", desc="Report construction input prices in 18 African countries."),
                                      encoding="utf-8")
-    (OUT / "calculator.html").write_text(shell("Bid escalation calculator — CiO Costs", page_calc(), base, page="calc",
-                                               desc="Expected input-cost escalation over your contract, with a range."),
-                                         encoding="utf-8")
     cindex = {c["key"]: {"country": c["country"], "flag": c["flag"], "cc": slim[c["key"]]["cc"], "currency": c["currency"],
                          "official": c["official"], "office": load_country(c["key"])["settlement"].get("statistics_office", ""),
                          "step": c["step"], "rows": contract_series(c)} for c in cs if not c.get("bench")}
@@ -904,9 +923,11 @@ def build() -> Path:
     for k, v in cindex.items():                       # free CSV downloads
         (OUT / "data" / f"contract_index_{k}.csv").write_text(
             "month,index,status\n" + "".join(f"{r['m']},{r['v']},{r['s']}\n" for r in v["rows"]), encoding="utf-8")
-    (OUT / "contract-index.html").write_text(shell("Price adjustment index — CiO Costs", page_contract_index(cs), dict(base, cindex=cindex),
-                                                   page="cindex", desc="A monthly index for construction price adjustment clauses."),
-                                             encoding="utf-8")
+    (OUT / "calculator.html").write_text(shell("Bids & contracts — CiO Costs", page_calc(cs), dict(base, cindex=cindex), page="calc",
+                                               desc="Price a bid with expected material cost changes, or adjust a contract payment with a monthly index."),
+                                         encoding="utf-8")
+    (OUT / "contract-index.html").write_text("<!doctype html><meta charset=utf-8><meta http-equiv=refresh content='0; url=calculator.html#adjust'>"
+                                             "<title>Contract index — CiO Costs</title><a href='calculator.html#adjust'>Contract index</a>", encoding="utf-8")
     (OUT / "embed.html").write_text(
         "<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
         "<title>CiO Costs</title><base target=_blank><link rel=stylesheet href='assets/cio.css'></head><body class=embed-body>" + page_embed()

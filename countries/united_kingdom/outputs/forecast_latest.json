@@ -2,7 +2,7 @@
  "country": "United Kingdom",
  "key": "united_kingdom",
  "currency": "GBP",
- "generated": "2026-10-22",
+ "generated": "2026-10-23",
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 35.53699564757087,
@@ -69,74 +69,74 @@
    {
     "month": "2026-09",
     "median": 0.382,
-    "lo": -0.473,
-    "hi": 1.188
+    "lo": -0.345,
+    "hi": 1.067
    },
    {
     "month": "2026-10",
     "median": 0.705,
-    "lo": -0.928,
-    "hi": 2.621
+    "lo": -0.683,
+    "hi": 2.334
    },
    {
     "month": "2026-11",
     "median": 1.109,
-    "lo": -1.286,
-    "hi": 3.996
+    "lo": -0.927,
+    "hi": 3.563
    },
    {
     "month": "2026-12",
     "median": 1.487,
-    "lo": -1.708,
-    "hi": 5.337
+    "lo": -1.229,
+    "hi": 4.759
    },
    {
     "month": "2027-01",
     "median": 1.929,
-    "lo": -2.12,
-    "hi": 6.656
+    "lo": -1.513,
+    "hi": 5.947
    },
    {
     "month": "2027-02",
     "median": 2.377,
-    "lo": -2.5,
-    "hi": 8.029
+    "lo": -1.768,
+    "hi": 7.181
    },
    {
     "month": "2027-03",
     "median": 2.835,
-    "lo": -2.732,
-    "hi": 9.357
+    "lo": -1.897,
+    "hi": 8.379
    },
    {
     "month": "2027-04",
     "median": 3.237,
-    "lo": -2.952,
-    "hi": 10.525
+    "lo": -2.024,
+    "hi": 9.432
    },
    {
     "month": "2027-05",
     "median": 3.573,
-    "lo": -3.172,
-    "hi": 11.642
+    "lo": -2.16,
+    "hi": 10.432
    },
    {
     "month": "2027-06",
     "median": 4.102,
-    "lo": -3.43,
-    "hi": 12.7
+    "lo": -2.3,
+    "hi": 11.41
    },
    {
     "month": "2027-07",
     "median": 4.592,
-    "lo": -3.604,
-    "hi": 13.721
+    "lo": -2.375,
+    "hi": 12.352
    },
    {
     "month": "2027-08",
     "median": 4.936,
-    "lo": -3.792,
-    "hi": 14.752
+    "lo": -2.483,
+    "hi": 13.28
    }
   ],
   "Materials for new housing": [
@@ -505,7 +505,7 @@
  "kind": "benchmark",
  "benchmark": {
   "1": {
-   "inside": 0.8958333333333334,
+   "inside": 0.875,
    "mae": 0.4731736755595894,
    "mae_nochange": 0.4991452089421071,
    "n": 48
@@ -524,22 +524,22 @@
    "series": "Construction materials (all work)",
    "period": "2026-09",
    "median": 0.382,
-   "lo": -0.473,
-   "hi": 1.188
+   "lo": -0.345,
+   "hi": 1.067
   },
   {
    "series": "Construction materials (all work)",
    "period": "2026-10",
    "median": 0.705,
-   "lo": -0.928,
-   "hi": 2.621
+   "lo": -0.683,
+   "hi": 2.334
   },
   {
    "series": "Construction materials (all work)",
    "period": "2026-11",
    "median": 1.109,
-   "lo": -1.286,
-   "hi": 3.996
+   "lo": -0.927,
+   "hi": 3.563
   }
  ]
 }

@@ -451,3 +451,18 @@ footer{border-top:1px solid var(--rule)}.footlinks{font-size:12px}
 .cist.provisional{color:var(--accent);border-color:var(--accent-fill);border-style:dashed}.ci-what{font-size:14.5px;color:var(--ink-2)}
 @media (max-width:760px){.boq-top{grid-template-columns:1fr}}
 @media print{.boq .actions,.boq textarea,.boq-del{display:none!important}}
+
+/* forecast chart hover readout */
+.fanwrap{position:relative}.fan{touch-action:pan-y;cursor:crosshair}.fan .hoverline{stroke:var(--ink-3);stroke-width:1;stroke-dasharray:3 3}
+.fan .hoverdot{fill:var(--rule);stroke:var(--surface);stroke-width:2}.fan .hoverdot.f{fill:var(--teal)}
+.fantip{position:absolute;top:6px;transform:translateX(-50%);background:var(--surface);border:1px solid var(--rule);padding:7px 10px;font:13.5px/1.45 var(--text);
+ pointer-events:none;white-space:nowrap;z-index:3;box-shadow:3px 3px 0 color-mix(in srgb,var(--rule) 18%,transparent)}.fantip b{font-family:var(--mono)}
+
+/* Bids & contracts */
+.bctabs{display:flex;gap:0;border-bottom:1px solid var(--rule);margin:18px 0 0}
+.bctabs button{font:600 16px var(--text);background:transparent;border:1px solid transparent;border-bottom:0;padding:12px 18px;color:var(--ink-2);cursor:pointer}
+.bctabs button[aria-selected=true]{background:var(--surface);border-color:var(--rule);color:var(--ink);box-shadow:0 1px 0 var(--surface)}
+.quickcalc{margin-top:26px;border-top:1px solid var(--rule);padding-top:10px}.quickcalc summary{cursor:pointer;font:400 1.5rem var(--display);padding:6px 0}
+.addbill{font:600 13px var(--text);background:transparent;border:1px dashed var(--line);color:var(--ink-2);padding:5px 8px;cursor:pointer;white-space:nowrap}
+.addbill:hover{border-color:var(--rule);color:var(--ink)}
+@media print{.bctabs,.addbill{display:none!important}}

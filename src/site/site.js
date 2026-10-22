@@ -128,10 +128,36 @@
     const fan = $(".fan", el); if (fan) { const xs = JSON.parse(fan.dataset.xs || "{}"), mk = $(".marker", fan), m = tMonth(tg);
       const x = xs[m] || xs[Object.keys(xs).filter(k => k <= m).pop()]; if (mk && x) { mk.setAttribute("x1", x); mk.setAttribute("x2", x); } }
     $$("tr[data-mat]").forEach(row => { const pth = c.paths[row.dataset.mat] || (row.dataset.mat === "Reinforcement steel" ? c.paths["Rebar"] : null);
-      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.innerHTML = x ? `${apct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})${(c.trend || []).includes(row.dataset.mat) ? ` <span class=trendtag title="${tr("trend.tip")}">${tr("trend")}</span>` : ""}` : tr("notsep"); } });
+      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.innerHTML = x ? `${apct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})${(c.trend || []).includes(row.dataset.mat) ? ` <span class=trendtag title="${esc(tr("trend.tip") + ((c.trend_stats || {})[row.dataset.mat] ? " " + tr("trend.test", { p: Math.round(c.trend_stats[row.dataset.mat].inside * 100), n: c.trend_stats[row.dataset.mat].n }) : ""))}">${tr("trend")}</span>` : ""}` : tr("notsep"); } });
   }
 
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register(rel + "sw.js").catch(() => {});
+
+  /* ---------- forecast charts: hover (or touch) to read the figure for any month ---------- */
+  $$("svg.fan[data-pts]").forEach(svg => { const pts = JSON.parse(svg.dataset.pts || "[]"), wrap = svg.parentElement, tip = $(".fantip", wrap);
+    const ln = $(".hoverline", svg), dot = $(".hoverdot", svg); if (!pts.length || !tip) return;
+    const show = ev => { const r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal, x = (ev.clientX - r.left) * vb.width / r.width;
+      const p = pts.reduce((a, b) => Math.abs(b.x - x) < Math.abs(a.x - x) ? b : a);
+      ln.setAttribute("x1", p.x); ln.setAttribute("x2", p.x); dot.setAttribute("cx", p.x); dot.setAttribute("cy", p.y); dot.classList.toggle("f", !!p.f);
+      tip.innerHTML = p.f ? `<b>${label(p.m)}</b> · ${tr("tip.fc")}<br>${tr("tip.exp", { x: apct(p.e), base: T.base(svg.dataset.base) })}<br><span class=muted>${tr("tip.rng", { lo: pct(p.lo), hi: pct(p.hi) })}</span><br><span class=muted>${tr("tip.lvl")} ${p.v.toFixed(1)}</span>`
+        : `<b>${label(p.m)}</b> · ${tr("tip.off")}<br>${tr("tip.lvl")} <b>${p.v.toFixed(1)}</b>${p.c == null ? "" : `<br>${apct(p.c)} ${tr("tip.mom")}`}`;
+      tip.hidden = false; const left = p.x / vb.width * r.width; tip.style.left = Math.min(Math.max(left, 70), r.width - 70) + "px"; };
+    svg.addEventListener("pointermove", show); svg.addEventListener("pointerdown", show);
+    svg.addEventListener("pointerleave", () => { tip.hidden = true; ln.setAttribute("x1", -10); ln.setAttribute("x2", -10); dot.setAttribute("cx", -10); }); });
+
+  /* ---------- Bids & contracts tabs (#bid / #adjust) ---------- */
+  const bcPanes = $$("[data-bc-pane]");
+  if (bcPanes.length) { const go = t => { $$("[data-bc]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.bc === t)));
+      bcPanes.forEach(p => p.hidden = p.dataset.bcPane !== t); };
+    $$("[data-bc]").forEach(b => b.onclick = () => { go(b.dataset.bc); history.replaceState(null, "", location.pathname + location.search + "#" + b.dataset.bc); });
+    go(location.hash === "#adjust" ? "adjust" : "bid"); window.addEventListener("hashchange", () => go(location.hash === "#adjust" ? "adjust" : "bid")); }
+
+  /* "+ Add to my bill": a material from a country page goes straight into the bill of quantities */
+  $$("[data-addbill]").forEach(b => b.onclick = () => { const k = Object.keys(DATA.countries)[0], c = DATA.countries[k], name = b.dataset.addbill;
+    const series = c.paths[name] ? name : (name === "Reinforcement steel" && c.paths.Rebar ? "Rebar" : undefined);
+    const saved = store.get("cio-boq", null), rows = saved && saved.country === k ? saved.rows : [];
+    if (rows.length < 10) rows.push({ desc: T.mat(name), qty: "", unit: "", rate: "", series, manual: !!series });
+    store.set("cio-boq", { country: k, rows }); track("chip", k); location.href = `${rel}calculator.html?c=${k}#bid`; });
 
   /* benchmark pages: switch the forecast-vs-outcome chart between 1 and 3 months ahead */
   $$("[data-bt-show]").forEach(b => b.onclick = () => { $$("[data-bt-show]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
@@ -158,6 +184,7 @@
     const show = k => { const c = DATA.countries[k]; if (!c) return; feat.dataset.key = k; drivers(k);
       $(".flag", feat).textContent = c.flag; const nm = $("[data-feat-name]", feat); nm.textContent = cname(c); nm.dataset.cc = c.cc;
       $$("[data-feat-name], [data-feat-link]", feat).forEach(a => a.href = `countries/${k}/index.html`);
+      const fb = $("[data-feat-bid]", feat); if (fb) { fb.href = `calculator.html?c=${k}#bid`; fb.hidden = !!c.bench; }
       $("[data-chart]", feat).innerHTML = ""; };
     const k0 = store.get("cio-country", null); my.value = DATA.countries[k0] ? k0 : feat.dataset.key; show(my.value);
     my.onchange = () => { track("country", my.value); store.set("cio-country", my.value); show(my.value); render(); };
@@ -356,7 +383,8 @@
                      water: { Cement: 25, Rebar: 15, "Reinforcement steel": 15, Labour: 30, Diesel: 15, Sand: 10,
                               "Civil engineering cost index": 100, "Civil engineering materials": 60, "Ready-mix concrete": 20, Cement2: 0 } };
     cf.elements.country.innerHTML = Object.entries(DATA.countries).map(([k, c]) => `<option value=${k}>${c.flag} ${cname(c)}</option>`).join("");
-    const want = (location.hash || "").slice(1); cf.elements.country.value = DATA.countries[want] ? want : (DATA.countries.uganda ? "uganda" : cf.elements.country.value);
+    const want = new URLSearchParams(location.search).get("c") || store.get("cio-country", null);
+    cf.elements.country.value = DATA.countries[want] ? want : (DATA.countries.uganda ? "uganda" : cf.elements.country.value);
     cf.elements.start.innerHTML = all.slice(0, -1).map(m => `<option value=${m}>${label(m)}</option>`).join("");
     cf.elements.end.innerHTML = all.slice(1).map(m => `<option value=${m}>${label(m)}</option>`).join("");
     cf.elements.end.value = all[Math.min(9, all.length - 1)];
@@ -398,7 +426,8 @@
   if (bf) {
     const fld = n => bf.querySelector(`[name=${n}]`), body = $("#boqrows"), MAX = 10, ML = nextMonths(24);
     fld("country").innerHTML = Object.entries(DATA.countries).map(([k, c]) => `<option value=${k}>${c.flag} ${cname(c)}</option>`).join("");
-    const k0 = store.get("cio-country", null); fld("country").value = DATA.countries[k0] ? k0 : (DATA.countries.uganda ? "uganda" : fld("country").value);
+    const k0 = new URLSearchParams(location.search).get("c") || store.get("cio-country", null);
+    fld("country").value = DATA.countries[k0] ? k0 : (DATA.countries.uganda ? "uganda" : fld("country").value);
     fld("start").innerHTML = ML.slice(0, -1).map(m => `<option value=${m}>${label(m)}</option>`).join("");
     fld("end").innerHTML = ML.slice(1).map(m => `<option value=${m}>${label(m)}</option>`).join(""); fld("end").value = ML[6];
     const C = () => DATA.countries[fld("country").value];
@@ -454,6 +483,7 @@
       const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "cio-boq-escalation.csv"; a.click(); };
     const saved = store.get("cio-boq", null);
     if (saved && DATA.countries[saved.country] && saved.rows && saved.rows.length) { fld("country").value = saved.country; saved.rows.slice(0, MAX).forEach(r => addRow(r)); }
+    else if (saved && saved.rows && !saved.rows.length && saved.country) { fld("country").value = DATA.countries[saved.country] ? saved.country : fld("country").value; }
     else [{ desc: tr("boq.ex1"), unit: tr("boq.ex1u"), qty: 400 }, { desc: tr("boq.ex2"), unit: "t", qty: 3 }, { desc: tr("boq.ex3"), unit: tr("boq.ex3u"), qty: 10 }].forEach(r => addRow(r));
     compute();
   }
@@ -461,7 +491,7 @@
   /* ---------- price adjustment index for contracts ---------- */
   const cis = $("#ci-country");
   if (cis && DATA.cindex) {
-    const want = (location.hash || "").slice(1), k0 = store.get("cio-country", null);
+    const want = new URLSearchParams(location.search).get("c") || (location.hash || "").slice(1), k0 = store.get("cio-country", null);
     cis.value = DATA.cindex[want] ? want : (DATA.cindex[k0] ? k0 : cis.value);
     const f = $("#ci-form"), out = $("[data-ci-out]");
     function ciCalc() { const X = DATA.cindex[cis.value], g = m => X.rows.find(r => r.m === m), b = g(f.elements.base.value), v = g(f.elements.val.value);
