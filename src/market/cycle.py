@@ -85,6 +85,7 @@ def weekly(db: str | None) -> None:
     run("rainfall", "src/ingest/build_rainfall_block.py")
     run("fx history", "src/ingest/build_fx_history.py")
     run("weekly notes", "src/forecast/weekly_note.py", "--country", "all", db=db)
+    run("front page", "src/site/build_index.py")
 
 
 if __name__ == "__main__":

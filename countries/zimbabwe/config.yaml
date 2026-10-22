@@ -4,7 +4,9 @@ country: Zimbabwe
 iso3: ZWE
 status: reporting
 currency: ZWG
-fx_code: zwg                     # currency-api code; IMF history from ZWE.XDC_USD.PA_RT.M
+fx_code: zwg
+pressure_currency: USD        # inputs are priced in US dollars (ZimStat also publishes a USD BMPI);
+                              # the ZWL->ZWG switch (Apr 2024) makes local-currency history unusable                     # currency-api code; IMF history from ZWE.XDC_USD.PA_RT.M
 regulation:
   mode: play_money
   regulators:

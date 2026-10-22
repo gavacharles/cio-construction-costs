@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>CiO Construction Costs</title>
+<meta name=description content="Weekly forward-looking construction input cost signals for 18 African countries.">
+<style>
+:root{--bg:#f7f5f0;--card:#fff;--fg:#1d1d1b;--mut:#66645e;--line:#e2ded4;--acc:#b5651d;--acc2:#1f5f6b;--pill:#f1e3d3}
+@media (prefers-color-scheme:dark){:root{--bg:#121211;--card:#1c1b19;--fg:#ecebe6;--mut:#a3a29c;--line:#32302c;--acc:#e3a464;--acc2:#6fbcc6;--pill:#3a2c1e}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+a{color:var(--acc2)}main{max-width:1120px;margin:0 auto;padding:0 16px 48px}
+.hero{padding:44px 0 20px;border-bottom:1px solid var(--line)}.eyebrow{color:var(--acc);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.78rem}
+h1{font-size:clamp(1.7rem,4vw,2.6rem);line-height:1.15;margin:.3em 0 .4em;max-width:22ch}.lede{font-size:1.1rem;color:var(--mut);max-width:62ch}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0 4px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}.stat b{display:block;font-size:1.7rem}.stat span{color:var(--mut);font-size:.88rem}
+h2{font-size:1.3rem;margin:38px 0 6px}.sub{color:var(--mut);margin:0 0 14px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.filters button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:6px 14px;cursor:pointer}
+.filters button[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column}
+.card.pilot{border-color:var(--acc)}.card header{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.card h3{margin:0;font-size:1.1rem}.badge{font-size:.72rem;background:var(--pill);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.kind,.lbl,.rng,.off{margin:2px 0;color:var(--mut);font-size:.86rem}.big{font-size:1.9rem;font-weight:700;margin:8px 0 0;color:var(--acc)}
+.links{margin-top:auto;padding-top:10px;font-size:.9rem;display:flex;gap:14px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.step b{color:var(--acc)}.docs{columns:2 260px;padding-left:18px}.docs li{margin:4px 0}
+footer{color:var(--mut);font-size:.85rem;border-top:1px solid var(--line);margin-top:40px;padding-top:14px}
+@media (max-width:640px){.stats{grid-template-columns:1fr 1fr}}
+</style></head><body><main>
+<section class=hero><p class=eyebrow>CiO Lab · Construction Cost Platform</p>
+<h1>Know what construction inputs will cost before you bid</h1>
+<p class=lede>Weekly, forward-looking construction input cost signals for 18 African countries, in local currency:
+official statistics, live drivers (oil, exchange rates, rainfall, public spending, tax measures), prices reported by the
+people who buy materials, and a play-money forecasting challenge.</p>
+<div class=stats><div class=stat><b>18</b><span>countries with weekly notes</span></div>
+<div class=stat><b>3</b><span>with official-index forecasts and contracts</span></div>
+<div class=stat><b>25</b><span>forecasting contracts</span></div>
+<div class=stat><b>Mon</b><span>new notes every week</span></div></div></section>
+
+<h2>Countries</h2><p class=sub>Latest forecast per country (updated 2026-10-22). Cards outlined in orange have
+official-index forecasts and contracts; the others show an imported-cost pressure outlook.</p>
+<div class=filters role=group aria-label="Filter countries"><button data-f=all aria-pressed=true>All</button>
+<button data-f=pilot aria-pressed=false>Contracts + forecast</button><button data-f=reporting aria-pressed=false>Note + outlook</button></div>
+<div class=grid><article class="card pilot" data-status="pilot">
+  <header><h3>Kenya</h3><span class=badge>Contracts + forecast</span></header>
+  <p class=kind>Quarterly model · KES · 7 contracts</p>
+  <p class=big>+0.7%</p><p class=lbl>Overall construction input prices · Q4 2026</p><p class=rng>80% range -1.6% to +3.1%</p>
+  
+  <p class=links><a href='countries/kenya/notes/weekly_kenya_2026-10-22.html'>Weekly note</a> <a href='countries/kenya/README.md'>Country page</a></p>
+</article>
+<article class="card pilot" data-status="pilot">
+  <header><h3>South Africa</h3><span class=badge>Contracts + forecast</span></header>
+  <p class=kind>Contract nowcast · ZAR · 6 contracts</p>
+  <p class=big>+0.3%</p><p class=lbl>Construction input prices (whole industry) · Sep 2026</p><p class=rng></p>
+  
+  <p class=links><a href='countries/south_africa/notes/weekly_south_africa_2026-10-22.html'>Weekly note</a> <a href='countries/south_africa/README.md'>Country page</a></p>
+</article>
+<article class="card pilot" data-status="pilot">
+  <header><h3>Uganda</h3><span class=badge>Contracts + forecast</span></header>
+  <p class=kind>Structural model · UGX · 12 contracts</p>
+  <p class=big>+5.6%</p><p class=lbl>Overall construction inputs · Jan 2027</p><p class=rng>80% range +4.1% to +8.5%</p>
+  
+  <p class=links><a href='countries/uganda/notes/weekly_uganda_2026-10-22.html'>Weekly note</a> <a href='countries/uganda/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Botswana</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · BWP · 0 contracts</p>
+  <p class=big>+0.8%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -3.2% to +5.7%</p>
+  
+  <p class=links><a href='countries/botswana/notes/weekly_botswana_2026-10-22.html'>Weekly note</a> <a href='countries/botswana/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Egypt</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · EGP · 0 contracts</p>
+  <p class=big>+3.4%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -2.6% to +19.9%</p>
+  
+  <p class=links><a href='countries/egypt/notes/weekly_egypt_2026-10-22.html'>Weekly note</a> <a href='countries/egypt/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Ethiopia</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · ETB · 0 contracts</p>
+  <p class=big>+3.5%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -0.2% to +30.1%</p>
+  
+  <p class=links><a href='countries/ethiopia/notes/weekly_ethiopia_2026-10-22.html'>Weekly note</a> <a href='countries/ethiopia/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Ghana</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · GHS · 0 contracts</p>
+  <p class=big>+4.6%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -8.7% to +13.8%</p>
+  <p class=off>Official: GSS Prime Building Cost Index (PBCI), 2026-08, +4.6% y/y</p>
+  <p class=links><a href='countries/ghana/notes/weekly_ghana_2026-10-22.html'>Weekly note</a> <a href='countries/ghana/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Malawi</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · MWK · 0 contracts</p>
+  <p class=big>+2.2%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -2.0% to +16.0%</p>
+  
+  <p class=links><a href='countries/malawi/notes/weekly_malawi_2026-10-22.html'>Weekly note</a> <a href='countries/malawi/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Mauritius</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · MUR · 0 contracts</p>
+  <p class=big>+0.5%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -2.9% to +5.0%</p>
+  <p class=off>Official: Statistics Mauritius Construction Price Index (single-family house), 2026-03, +4.5% y/y</p>
+  <p class=links><a href='countries/mauritius/notes/weekly_mauritius_2026-10-22.html'>Weekly note</a> <a href='countries/mauritius/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Morocco</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · MAD · 0 contracts</p>
+  <p class=big>+0.2%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -4.4% to +5.6%</p>
+  
+  <p class=links><a href='countries/morocco/notes/weekly_morocco_2026-10-22.html'>Weekly note</a> <a href='countries/morocco/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Mozambique</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · MZN · 0 contracts</p>
+  <p class=big>-0.2%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -2.5% to +3.8%</p>
+  
+  <p class=links><a href='countries/mozambique/notes/weekly_mozambique_2026-10-22.html'>Weekly note</a> <a href='countries/mozambique/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Namibia</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · NAD · 0 contracts</p>
+  <p class=big>+0.4%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -4.4% to +5.5%</p>
+  
+  <p class=links><a href='countries/namibia/notes/weekly_namibia_2026-10-22.html'>Weekly note</a> <a href='countries/namibia/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Nigeria</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · NGN · 0 contracts</p>
+  <p class=big>+2.7%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -3.1% to +26.2%</p>
+  
+  <p class=links><a href='countries/nigeria/notes/weekly_nigeria_2026-10-22.html'>Weekly note</a> <a href='countries/nigeria/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Rwanda</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · RWF · 0 contracts</p>
+  <p class=big>+2.0%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -0.8% to +5.5%</p>
+  
+  <p class=links><a href='countries/rwanda/notes/weekly_rwanda_2026-10-22.html'>Weekly note</a> <a href='countries/rwanda/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Senegal</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · XOF · 0 contracts</p>
+  <p class=big>+0.1%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -4.7% to +5.4%</p>
+  <p class=off>Official: ANSD Indice des prix des materiaux de construction (IMC), 2026-04, +2.4% y/y</p>
+  <p class=links><a href='countries/senegal/notes/weekly_senegal_2026-10-22.html'>Weekly note</a> <a href='countries/senegal/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Tanzania</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · TZS · 0 contracts</p>
+  <p class=big>+0.6%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -3.5% to +5.4%</p>
+  
+  <p class=links><a href='countries/tanzania/notes/weekly_tanzania_2026-10-22.html'>Weekly note</a> <a href='countries/tanzania/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Zambia</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · ZMW · 0 contracts</p>
+  <p class=big>+1.0%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -8.0% to +9.7%</p>
+  
+  <p class=links><a href='countries/zambia/notes/weekly_zambia_2026-10-22.html'>Weekly note</a> <a href='countries/zambia/README.md'>Country page</a></p>
+</article>
+<article class="card " data-status="reporting">
+  <header><h3>Zimbabwe</h3><span class=badge>Note + outlook</span></header>
+  <p class=kind>Cost-pressure outlook · ZWG · 0 contracts</p>
+  <p class=big>-0.2%</p><p class=lbl>Imported-input cost pressure · Next 6 months</p><p class=rng>80% range -2.5% to +3.8%</p>
+  <p class=off>Official: ZimStat weighted Building Materials Price Index (BMPI), 2025-12, +7.8% y/y</p>
+  <p class=links><a href='countries/zimbabwe/notes/weekly_zimbabwe_2026-10-22.html'>Weekly note</a> <a href='countries/zimbabwe/README.md'>Country page</a></p>
+</article></div>
+
+<h2>How it works</h2><p class=sub>Full detail in <a href="FORECASTING.md">FORECASTING.md</a>.</p>
+<div class=steps>
+<div class=step><b>1 · Inputs</b><p>Official indices (UBOS, KNBS, Stats SA and others), Brent, 18 exchange rates, rainfall,
+public spending and sourced tax measures, refreshed weekly.</p></div>
+<div class=step><b>2 · Models</b><p>Uganda: structural model on UBOS's own weights. Kenya: quarterly driver model.
+South Africa: contract nowcast. Others: cost-pressure outlook.</p></div>
+<div class=step><b>3 · Checks</b><p>Every model is backtested month by month and kept only if it beats simple
+benchmarks; ranges are calibrated to cover 80% of past outcomes.</p></div>
+<div class=step><b>4 · Outputs</b><p>Weekly notes, the participant app's forecast page, and the opening prices of
+the forecasting contracts.</p></div></div>
+
+<h2>Project documents</h2><ul class=docs>
+<li><a href="PROJECT_OVERVIEW.md">Project overview, hosting and server</a></li>
+<li><a href="FORECASTING.md">How the forecasting works</a></li>
+<li><a href="docs/COUNTRIES.md">Country status and sources</a></li>
+<li><a href="docs/FORECAST_MODEL.md">Uganda structural model: methods and evidence</a></li>
+<li><a href="docs/MARKET_DESIGN.md">Forecasting market design</a></li>
+<li><a href="docs/OPERATIONS.md">Running the pilot</a></li>
+<li><a href="docs/DEPLOY.md">Deployment guide</a></li>
+<li><a href="README.md">Repository README</a></li></ul>
+
+<footer>CiO Lab · Gavamukulya (Gava) Charles · Forecasts are estimates with ranges, not advice. Points in the forecasting
+challenge have no cash value. Sources: UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD, Statistics Mauritius, EIA, IMF,
+currency-api, ERA5. Page built 2026-10-22 by <code>src/site/build_index.py</code>.</footer>
+</main><script>
+const btns=[...document.querySelectorAll('.filters button')];
+btns.forEach(b=>b.onclick=()=>{btns.forEach(x=>x.setAttribute('aria-pressed',x===b));
+ document.querySelectorAll('.card').forEach(c=>c.hidden=!(b.dataset.f==='all'||c.dataset.status===b.dataset.f));});
+</script></body></html>

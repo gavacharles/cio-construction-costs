@@ -1,5 +1,7 @@
 # CiO Construction Cost Platform
 
+Open `index.html` for the project's front page (works straight from disk).
+
 Weekly, forward-looking construction input cost signals for 18 African countries: official
 statistics, live market drivers (oil, exchange rates, rainfall, fiscal and tax data), prices
 reported by participants, and a play-money forecasting challenge.

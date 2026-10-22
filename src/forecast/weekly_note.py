@@ -288,7 +288,10 @@ def official_reading(country: str) -> list[str]:
 
 def pressure_section(country: str) -> list[str]:
     from cost_pressure import pressure_history, forecast
+    from country import load_country
     ccy_code, col = ccy(country)
+    if load_country(country).get("pressure_currency") == "USD":     # dollarised construction pricing
+        ccy_code, col = "USD", None
     try:
         hist, fc = pressure_history(col), forecast(col)
     except Exception:

@@ -212,3 +212,14 @@ def test_cycle_follows_app_database(monkeypatch):
     import run_market
     importlib.reload(run_market)
     assert str(run_market.DEFAULT_DB) == "/tmp/demo.sqlite"
+
+
+def test_front_page_builds(tmp_path, monkeypatch):
+    sys.path.insert(0, str(ROOT / "src" / "site"))
+    import build_index
+    monkeypatch.setattr(build_index, "ROOT", tmp_path)
+    for c in ("countries",):
+        (tmp_path / c).symlink_to(ROOT / c)
+    out = build_index.build()
+    t = out.read_text()
+    assert t.count("<article") == 18 and "Uganda" in t and "Kenya" in t and "https://" not in t.split("<footer")[0]

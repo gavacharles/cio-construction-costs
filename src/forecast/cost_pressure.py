@@ -50,13 +50,17 @@ def _monthly_drivers(fx_col: str) -> pd.DataFrame:
     return pd.DataFrame({"fx": fx, "brent": brent}).dropna()
 
 
-def pressure_history(fx_col: str) -> pd.Series:
-    d = _monthly_drivers(fx_col)
+def pressure_history(fx_col: str | None) -> pd.Series:
+    """fx_col=None: the country prices construction inputs in US dollars (e.g. Zimbabwe), so the
+    exchange-rate terms drop out and only oil in USD moves the indicator."""
+    d = _monthly_drivers(fx_col or "ugx_per_usd")
     dl = 100 * np.log(d).diff()
+    if fx_col is None:
+        dl["fx"] = 0.0
     return (W_FUEL * (dl["brent"] + dl["fx"]) + W_IMPORT * dl["fx"]).dropna().rename("pressure_pct")
 
 
-def forecast(fx_col: str, horizons=(3, 6), n_paths: int = 4000, seed: int = 0) -> dict:
+def forecast(fx_col: str | None, horizons=(3, 6), n_paths: int = 4000, seed: int = 0) -> dict:
     """Cumulative % pressure over the next h months after the latest observed month."""
     p = pressure_history(fx_col).tail(LOOKBACK_MONTHS).values
     if len(p) < 2 * BLOCK:

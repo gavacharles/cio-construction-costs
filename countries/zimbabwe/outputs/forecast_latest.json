@@ -19,22 +19,22 @@
   "source": "https://www.zimstat.co.zw/wp-content/uploads/Macro/Prices/BMPI/2025/BMPI_Weighted_12_2025.pdf"
  },
  "kind": "pressure",
- "basis": "Imported-input cost pressure from oil in ZWG and the exchange rate; an indicator, not a price index",
- "observed_3m": 3.9663846193569174,
+ "basis": "Imported-input cost pressure from oil in USD and the exchange rate; an indicator, not a price index",
+ "observed_3m": 4.000812607638267,
  "rows": [
   {
    "series": "Imported-input cost pressure",
    "period": "Next 3 months",
-   "median": 4.553896553406274,
-   "lo": -1.6674312228906896,
-   "hi": 46.93111067772492
+   "median": -0.2435123441637721,
+   "lo": -1.5972724311088626,
+   "hi": 2.902578861548344
   },
   {
    "series": "Imported-input cost pressure",
    "period": "Next 6 months",
-   "median": 18.087469680148786,
-   "lo": -4.364056715851149,
-   "hi": 70.75892603461419
+   "median": -0.18969746123268294,
+   "lo": -2.4631090071082014,
+   "hi": 3.766708070570841
   }
  ]
 }

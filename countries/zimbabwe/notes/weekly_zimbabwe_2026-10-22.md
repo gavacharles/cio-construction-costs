@@ -18,13 +18,13 @@ Status: available: ZimStat monthly building materials (BMPI) and civil engineeri
 
 ## Cost pressure outlook
 
-**Imported-input cost pressure** (oil in ZWG and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+**Imported-input cost pressure** (oil in USD and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
 
 | Window | Pressure on input costs | 80% range |
 |---|---|---|
 | Last 3 months (observed) | +4.0% | – |
-| Next 3 months | +4.6% | -1.7% to +46.9% |
-| Next 6 months | +18.1% | -4.4% to +70.8% |
+| Next 3 months | -0.2% | -1.6% to +2.9% |
+| Next 6 months | -0.2% | -2.5% to +3.8% |
 
 In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
