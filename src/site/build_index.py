@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import html
 import json
+import os
 import math
 import sys
 from datetime import date
@@ -35,6 +36,7 @@ SITE_CFG = yaml.safe_load((ROOT / "config" / "site.yaml").read_text(encoding="ut
 WA = str(SITE_CFG.get("whatsapp_number") or "").strip().lstrip("+")
 FEATURED = SITE_CFG.get("glance_featured") or ["uganda", "kenya", "south_africa", "nigeria", "ghana"]
 CHANNEL = str(SITE_CFG.get("whatsapp_channel_url") or "").strip()
+SITE_URL = (os.environ.get("CIO_SITE_URL") or str(SITE_CFG.get("site_url") or "")).strip().rstrip("/")
 ALERTS_WA = bool(SITE_CFG.get("alerts_whatsapp"))
 TIP_OFFICIAL = "Built from the country's official construction price statistics, updated with this week's oil and currency moves."
 TIP_ESTIMATE = ("No usable official construction price index yet: an estimate of the pressure on imported materials "
@@ -391,8 +393,14 @@ for a material in {e(c['country'])} reaches your level.</p></div>
 <label class=consent><input type=checkbox name=consent required> <span data-i18n=alert.consent>I agree to receive these alerts from CiO Costs by
 the channel above. Reply STOP at any time to stop them.</span></label>
 <button class='btn primary' type=submit data-i18n=alert.btn>Set alert</button><p class='muted formmsg' role=status></p></form></section>
-<details class=embed><summary data-i18n=embed.s>Put this forecast on your website</summary><p class=muted>Copy this code into any web page:</p>
-<code>&lt;iframe src="https://YOUR-SITE/embed.html?c={c['key']}" width="340" height="230" style="border:0"&gt;&lt;/iframe&gt;</code></details>
+<details class=embed data-key={c['key']}><summary data-i18n=embed.s>Put this forecast on your website</summary>
+<div class=embed-grid><div class=embed-opts>
+ <label><span data-i18n=emb.lang>Language</span><select data-emb=lang><option value="" data-i18n=emb.visitor>Visitor's language</option><option value=en>English</option><option value=sw>Kiswahili</option><option value=fr>Français</option></select></label>
+ <label><span data-i18n=emb.theme>Colours</span><select data-emb=theme><option value=auto data-i18n=emb.match>Match the visitor</option><option value=light data-i18n=emb.light>Light</option><option value=dark data-i18n=emb.dark>Dark</option></select></label>
+ <p class=muted data-i18n=emb.help>Copy this code into any web page. On WordPress, add a “Custom HTML” block and paste it there. It updates by itself.</p>
+ <textarea readonly rows=3 data-emb-code aria-label="Code to copy"></textarea>
+ <p><button class='btn primary' type=button data-emb-copy data-i18n=emb.copy>Copy code</button> <span class=muted data-emb-note></span></p></div>
+ <div><p class=muted data-i18n=emb.preview>Preview</p><iframe data-emb-preview title="Preview" src="../../embed.html?c={c['key']}&amp;id=pv"></iframe></div></div></details>
 """
 
 
@@ -581,12 +589,13 @@ def build() -> Path:
         for m in c["materials"]:
             m.pop("history", None)
     opts = [v for v, _, _ in target_options(months)]
-    base = {"updated": updated, "months": opts, "default": default, "countries": slim}
+    base = {"updated": updated, "months": opts, "default": default, "countries": slim, "site": SITE_URL}
     (OUT / "assets").mkdir(parents=True, exist_ok=True)
     # Body text uses the phone's own font; only the display face is embedded, loaded without blocking the page.
     display = SITE / "vendor" / "clash-grotesk.css"
     (OUT / "assets" / "fonts.css").write_text(display.read_text(encoding="utf-8") if display.exists() else "", encoding="utf-8")
     (OUT / "assets" / "cio.css").write_text((SITE / "site.css").read_text(encoding="utf-8"), encoding="utf-8")
+    (OUT / "widget.js").write_text((SITE / "widget.js").read_text(encoding="utf-8"), encoding="utf-8")
     (OUT / "sw.js").write_text((SITE / "sw.js").read_text(encoding="utf-8").replace("__BUILT__", BUILT), encoding="utf-8")
     (OUT / "assets" / "cio.js").write_text((SITE / "i18n.js").read_text(encoding="utf-8") + "\n"
                                            + (SITE / "site.js").read_text(encoding="utf-8"), encoding="utf-8")
@@ -610,7 +619,7 @@ def build() -> Path:
                                          encoding="utf-8")
     (OUT / "embed.html").write_text(
         "<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
-        "<title>CiO Costs</title><link rel=stylesheet href='assets/cio.css'></head><body class=embed-body>" + page_embed()
+        "<title>CiO Costs</title><base target=_blank><link rel=stylesheet href='assets/cio.css'></head><body class=embed-body>" + page_embed()
         + "<script id=cio-data type='application/json'>" + json.dumps(base, separators=(",", ":")).replace("</", "<\\/")
         + "</script><script src='assets/cio.js'></script></body></html>", encoding="utf-8")
     for c in cs:

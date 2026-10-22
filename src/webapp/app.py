@@ -83,7 +83,10 @@ async def per_request(request: Request, call_next):
         _open.reset(token)
         for obj in reg:
             obj.close()
-    response.headers["X-Frame-Options"] = "DENY"
+    if request.url.path in ("/embed.html", "/widget.js"):          # the website widget is meant to be shown on other sites
+        response.headers["Content-Security-Policy"] = "frame-ancestors *"
+    else:
+        response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "same-origin"
     return response

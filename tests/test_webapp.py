@@ -249,3 +249,19 @@ def test_public_price_and_alert_api(tmp_path, monkeypatch):
         assert len(r) == 1 and r.handle.iloc[0].startswith("anon-") and len(p.active_alerts()) == 1
     if (webapp.ROOT / "public" / "index.html").exists():
         assert "CiO Costs" in c.get("/").text and c.get("/data/live/exchange.sqlite").status_code == 404
+
+
+def test_widget_can_be_framed_but_site_cannot(tmp_path, monkeypatch):
+    if not (ROOT / "public" / "embed.html").exists():
+        pytest.skip("site not built")
+    monkeypatch.setenv("CIO_DB", str(tmp_path / "w.sqlite"))
+    import importlib
+    import app as webapp
+    importlib.reload(webapp)
+    from fastapi.testclient import TestClient
+    c = TestClient(webapp.app)
+    for path in ("/embed.html", "/widget.js"):
+        r = c.get(path)
+        assert r.status_code == 200 and "frame-ancestors *" in r.headers.get("content-security-policy", "")
+        assert "x-frame-options" not in r.headers
+    assert c.get("/").headers["x-frame-options"] == "DENY"

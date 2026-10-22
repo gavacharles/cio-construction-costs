@@ -10,3 +10,5 @@ glance_featured: [uganda, kenya, south_africa, nigeria, ghana]
 whatsapp_channel_url: "https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L"
 # Paid WhatsApp alerts (Cloud API) are off: alert sign-ups offer email only until this is true.
 alerts_whatsapp: false
+# Public address of the site, used in the website-widget code (CIO_SITE_URL on the server overrides it).
+site_url: ""

@@ -311,12 +311,35 @@
   }
 
   /* ---------- embed widget ---------- */
+  /* ---------- website widget (embed.html inside someone else's page) ---------- */
   const em = $("#embed");
-  if (em) { const k = new URLSearchParams(location.search).get("c") || "uganda", c = DATA.countries[k] || Object.values(DATA.countries)[0];
-    const q = at(c.paths[c.head], DATA.default).q, p = chance(q);
-    em.innerHTML = `<div class=card-top><span class=flag>${c.flag}</span><b>${cname(c)}</b><span class=chip>CiO Costs</span></div>
-      <p class=q>${question(c, DATA.default)}</p><span class=pct>${Math.round(p * 100)}%</span><span class=pct-l>${tr("lbl.chance") === "lbl.chance" ? "chance of a rise" : tr("lbl.chance")} · ${pct(q.median)}</span>
-      <div class=pbar><span style="width:${Math.round(p * 100)}%"></span></div><a class=link target=_blank rel=noopener href="countries/${k}/index.html">Full outlook →</a>`; }
+  if (em) { const ps = new URLSearchParams(location.search), th = ps.get("theme");
+    const k = DATA.countries[ps.get("c")] ? ps.get("c") : "uganda", c = DATA.countries[k], tg = DATA.default;
+    if (th === "light" || th === "dark") root.setAttribute("data-theme", th); else root.removeAttribute("data-theme");
+    const q = at(c.paths[c.head], tg).q, p = chance(q), home = (online ? location.origin + location.pathname.replace(/embed\.html$/, "") : "");
+    em.dataset.key = k;
+    em.innerHTML = `<div class=card-top><span class=flag aria-hidden=true>${c.flag}</span><b>${cname(c)}</b><span class=chip>CiO Costs</span></div>
+      <p class=q>${question(c, tg)}</p>
+      <div class=emb-row><div class=needle data-needle aria-hidden=true></div><div><span class="pct verdict">${verdict(q, p)}</span>
+      <span class=pct-l>${tr("v.sub", { x: pct(q.median), when: tLabel(tg) })} · ${Math.round(p * 100)}% ${tr("lbl.chance")}</span></div></div>
+      <p class=emb-adv>${advice(c, q, tg)}</p>
+      <a class=link rel=noopener href="${home}countries/${k}/index.html">${tr("emb.full")}</a>`;
+    em.dataset.trend = q.median > 0.05 ? "rising" : (q.median < -0.05 ? "easing" : "flat"); needle(em, p);
+    const send = () => parent !== window && parent.postMessage({ cio: "h", id: ps.get("id"), h: document.documentElement.scrollHeight }, "*");
+    send(); if (window.ResizeObserver) new ResizeObserver(send).observe(document.body); }
+
+  /* ---------- "put this on your website": options, live preview, copy ---------- */
+  const eb = $("details.embed");
+  if (eb) { const k = eb.dataset.key, code = $("[data-emb-code]", eb), pv = $("[data-emb-preview]", eb), note = $("[data-emb-note]", eb);
+    const site = online ? location.origin + "/" : (DATA.site ? DATA.site + "/" : "");
+    const upd = () => { const lang = $("[data-emb=lang]", eb).value, th = $("[data-emb=theme]", eb).value;
+      code.value = `<div data-cio-costs="${k}"${lang ? ` data-lang="${lang}"` : ""}${th !== "auto" ? ` data-theme="${th}"` : ""}></div>\n<script async src="${site || "https://YOUR-CIO-COSTS-SITE/"}widget.js"></script>`;
+      pv.src = `${rel}embed.html?c=${k}&lang=${lang}&theme=${th}&id=pv`;
+      note.textContent = site ? "" : tr("emb.offline"); };
+    $$("[data-emb]", eb).forEach(x => x.onchange = upd); upd();
+    $("[data-emb-copy]", eb).onclick = async ev => { try { await navigator.clipboard.writeText(code.value); } catch (e) { code.select(); document.execCommand("copy"); }
+      ev.target.textContent = tr("emb.copied"); setTimeout(() => ev.target.textContent = tr("emb.copy"), 2000); };
+    window.addEventListener("message", e => { if (e.data && e.data.cio === "h" && e.data.id === "pv" && e.source === pv.contentWindow) pv.style.height = Math.ceil(e.data.h) + "px"; }); }
 
   /* ---------- The Cost Call ---------- */
   const game = $("#game"); if (!game || !DATA.quiz) return;

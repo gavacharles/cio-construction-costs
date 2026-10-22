@@ -6,6 +6,7 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "emb.lang": "Lugha", "emb.visitor": "Lugha ya mgeni", "emb.theme": "Rangi", "emb.match": "Kulingana na mgeni", "emb.light": "Mwanga", "emb.dark": "Giza", "emb.help": "Nakili msimbo huu kwenye ukurasa wowote wa tovuti. Kwenye WordPress, ongeza kizuizi cha “Custom HTML” na ubandike hapo. Unajisasisha wenyewe.", "emb.copy": "Nakili msimbo", "emb.copied": "Imenakiliwa ✓", "emb.preview": "Hakikisho", "emb.full": "Mtazamo kamili kwenye CiO Costs →", "emb.offline": "Anwani ya tovuti itajazwa yenyewe CiO Costs ikiwa mtandaoni.",
       "needle.down": "Bei chini", "needle.up": "Bei juu", "draw.h": "Chora", "draw.d": "Kisia jinsi fahirisi rasmi ya bei ilivyobadilika. Chora mstari, kisha ona halisi.", "draw.q": "{s} nchini {c} ilibadilikaje kutoka {a} hadi {b}? Chora mstari.", "draw.hint": "Chora hapa →", "draw.reveal": "Onyesha", "draw.score": "Umepata {n}/100.", "draw.off": "Mstari wako ulikosea kwa wastani wa pointi {x}.", "draw.fc": "Mstari wa vitone ni utabiri wetu wa kinachofuata.", "draw.done": "Chati mpya kesho.", "res.h": "Ona matokeo", "res.dist": "Alama zako hadi sasa", "res.next": "Makisio mapya baada ya", "res.close": "Funga",
       "h.1": "Mwezi ujao", "h.3": "Miezi 3", "h.6": "Miezi 6", "h.pick": "Chagua tarehe", "v.sure.up": "Hakika zitapanda", "v.likely.up": "Huenda zikapanda", "v.lean.up": "Zinaelekea kupanda", "v.sure.down": "Hakika zitashuka", "v.likely.down": "Huenda zikashuka", "v.lean.down": "Zinaelekea kushuka", "v.same": "Takriban hazibadiliki", "v.sub": "takriban {x} kufikia {when}", "lbl.chance.cap": "Uwezekano wa kupanda", "buy.q": "Unanunua nini?", "buy.cement": "Saruji", "buy.steel": "Nondo", "buy.sand": "Mchanga", "buy.diesel": "Dizeli", "buy.roofing": "Mabati", "grid.open": "Onyesha nchi zote 18", "glance.link": "Linganisha nchi zote kwenye jedwali moja →", "game.line": "Makisio matano ya haraka kila siku kwa bei halisi.", "track.h": "Rekodi ya usahihi", "track.none": "bado hakuna fahirisi rasmi ya kulinganisha; tunalinganisha na bei zinazoripotiwa zinapoingia.", "track.soon": "tunahifadhi kila utabiri na tutauonyesha hapa kando ya takwimu rasmi zitakapochapishwa.", "join.signin": "Ingia (majaribio)", "rep.needs": "Ripoti {n} kati ya 3 wiki hii — ongeza yako",
       "match.by": "inayotarajiwa kufikia {when}", "match.last": "rasmi, ya karibuni ({p})", "match.ind": "gharama za uagizaji {x} kufikia {when}",
@@ -85,6 +86,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "emb.lang": "Langue", "emb.visitor": "Langue du visiteur", "emb.theme": "Couleurs", "emb.match": "Comme le visiteur", "emb.light": "Clair", "emb.dark": "Sombre", "emb.help": "Copiez ce code dans n'importe quelle page web. Sur WordPress, ajoutez un bloc « HTML personnalisé » et collez-le. Il se met à jour tout seul.", "emb.copy": "Copier le code", "emb.copied": "Copié ✓", "emb.preview": "Aperçu", "emb.full": "Prévision complète sur CiO Costs →", "emb.offline": "L'adresse du site sera remplie automatiquement une fois CiO Costs en ligne.",
       "needle.down": "Prix en baisse", "needle.up": "Prix en hausse", "draw.h": "Dessinez", "draw.d": "Devinez l'évolution d'un indice officiel des prix. Tracez la ligne, puis découvrez la vraie.", "draw.q": "Comment {s} a-t-il évolué au {c} de {a} à {b} ? Tracez la ligne.", "draw.hint": "Dessinez ici →", "draw.reveal": "Révéler", "draw.score": "Votre score : {n}/100.", "draw.off": "Votre ligne s'écartait en moyenne de {x} points.", "draw.fc": "La ligne pointillée montre où notre prévision la mène ensuite.", "draw.done": "Un nouveau graphique demain.", "res.h": "Voir les résultats", "res.dist": "Vos scores jusqu'ici", "res.next": "Prochains pronostics dans", "res.close": "Fermer",
       "h.1": "Mois prochain", "h.3": "3 mois", "h.6": "6 mois", "h.pick": "Choisir une date", "v.sure.up": "Hausse quasi certaine", "v.likely.up": "Hausse probable", "v.lean.up": "Plutôt en hausse", "v.sure.down": "Baisse quasi certaine", "v.likely.down": "Baisse probable", "v.lean.down": "Plutôt en baisse", "v.same": "À peu près stable", "v.sub": "environ {x} d'ici {when}", "lbl.chance.cap": "Probabilité de hausse", "buy.q": "Qu'achetez-vous ?", "buy.cement": "Ciment", "buy.steel": "Acier", "buy.sand": "Sable", "buy.diesel": "Gazole", "buy.roofing": "Tôles", "grid.open": "Afficher les 18 pays", "glance.link": "Comparer tous les pays dans un tableau →", "game.line": "Cinq pronostics rapides par jour sur des prix réels.", "track.h": "Historique de précision", "track.none": "pas encore d'indice officiel pour comparer ; nous comparons avec les prix signalés à mesure qu'ils arrivent.", "track.soon": "nous enregistrons chaque prévision et l'afficherons ici à côté du chiffre officiel dès sa publication.", "join.signin": "Connexion pilote", "rep.needs": "{n} signalements sur 3 cette semaine — ajoutez le vôtre",
       "match.by": "attendu d'ici {when}", "match.last": "officiel, dernier ({p})", "match.ind": "coûts d'importation {x} d'ici {when}",
@@ -164,6 +166,8 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "lbl.chance": "chance of a rise",
+      "emb.lang": "Language", "emb.visitor": "Visitor's language", "emb.theme": "Colours", "emb.match": "Match the visitor", "emb.light": "Light", "emb.dark": "Dark", "emb.help": "Copy this code into any web page. On WordPress, add a “Custom HTML” block and paste it there. It updates by itself.", "emb.copy": "Copy code", "emb.copied": "Copied ✓", "emb.preview": "Preview", "emb.full": "Full outlook on CiO Costs →", "emb.offline": "The site address is filled in automatically once CiO Costs is online.",
       "needle.down": "Prices down", "needle.up": "Prices up", "draw.h": "Draw it", "draw.d": "Guess how an official price index moved. Draw the line, then reveal the real one.", "draw.q": "How did {s} in {c} move from {a} to {b}? Draw the line.", "draw.hint": "Draw here →", "draw.reveal": "Reveal", "draw.score": "You scored {n}/100.", "draw.off": "Your line was off by {x} points on average.", "draw.fc": "The dashed line is where our forecast says it goes next.", "draw.done": "A new chart tomorrow.", "res.h": "See results", "res.dist": "Your scores so far", "res.next": "Next calls in", "res.close": "Close",
       "home.lede": "Choose your country and a date. See whether building material prices are likely to go up, by how much, and what that means for the price you pay — updated every few hours.",
       "h.1": "Next month", "h.3": "3 months", "h.6": "6 months", "h.pick": "Pick a date", "v.sure.up": "Almost certainly up", "v.likely.up": "Likely up", "v.lean.up": "Leaning up", "v.sure.down": "Almost certainly down", "v.likely.down": "Likely down", "v.lean.down": "Leaning down", "v.same": "About the same", "v.sub": "about {x} by {when}", "lbl.chance.cap": "Chance of a rise", "buy.q": "What are you buying?", "buy.cement": "Cement", "buy.steel": "Steel", "buy.sand": "Sand", "buy.diesel": "Diesel", "buy.roofing": "Roofing", "grid.open": "Show all 18 countries", "glance.link": "Compare all countries in one table →", "game.line": "Five quick calls a day on real prices.", "track.h": "Track record", "track.none": "no official index to check against yet; we compare with reported prices as they come in.", "track.soon": "we log every forecast and will show it here next to the official figure once it is published.", "join.signin": "Pilot sign-in", "rep.needs": "{n} of 3 reports this week — add yours",
@@ -196,7 +200,7 @@ window.I18N = (function () {
     },
   };
   let lang = "en";
-  try { lang = localStorage.getItem("cio-lang") || ""; } catch (e) { /* storage unavailable */ }
+  try { lang = new URLSearchParams(location.search).get("lang") || localStorage.getItem("cio-lang") || ""; } catch (e) { /* storage unavailable */ }
   if (!D[lang]) { lang = "en";
     for (const l of (navigator.languages || [navigator.language || "en"])) { const k = (l || "").slice(0, 2); if (D[k]) { lang = k; break; } } }
   const loc = { en: "en-GB", sw: "sw", fr: "fr" }[lang];
@@ -561,12 +565,35 @@ window.I18N = (function () {
   }
 
   /* ---------- embed widget ---------- */
+  /* ---------- website widget (embed.html inside someone else's page) ---------- */
   const em = $("#embed");
-  if (em) { const k = new URLSearchParams(location.search).get("c") || "uganda", c = DATA.countries[k] || Object.values(DATA.countries)[0];
-    const q = at(c.paths[c.head], DATA.default).q, p = chance(q);
-    em.innerHTML = `<div class=card-top><span class=flag>${c.flag}</span><b>${cname(c)}</b><span class=chip>CiO Costs</span></div>
-      <p class=q>${question(c, DATA.default)}</p><span class=pct>${Math.round(p * 100)}%</span><span class=pct-l>${tr("lbl.chance") === "lbl.chance" ? "chance of a rise" : tr("lbl.chance")} · ${pct(q.median)}</span>
-      <div class=pbar><span style="width:${Math.round(p * 100)}%"></span></div><a class=link target=_blank rel=noopener href="countries/${k}/index.html">Full outlook →</a>`; }
+  if (em) { const ps = new URLSearchParams(location.search), th = ps.get("theme");
+    const k = DATA.countries[ps.get("c")] ? ps.get("c") : "uganda", c = DATA.countries[k], tg = DATA.default;
+    if (th === "light" || th === "dark") root.setAttribute("data-theme", th); else root.removeAttribute("data-theme");
+    const q = at(c.paths[c.head], tg).q, p = chance(q), home = (online ? location.origin + location.pathname.replace(/embed\.html$/, "") : "");
+    em.dataset.key = k;
+    em.innerHTML = `<div class=card-top><span class=flag aria-hidden=true>${c.flag}</span><b>${cname(c)}</b><span class=chip>CiO Costs</span></div>
+      <p class=q>${question(c, tg)}</p>
+      <div class=emb-row><div class=needle data-needle aria-hidden=true></div><div><span class="pct verdict">${verdict(q, p)}</span>
+      <span class=pct-l>${tr("v.sub", { x: pct(q.median), when: tLabel(tg) })} · ${Math.round(p * 100)}% ${tr("lbl.chance")}</span></div></div>
+      <p class=emb-adv>${advice(c, q, tg)}</p>
+      <a class=link rel=noopener href="${home}countries/${k}/index.html">${tr("emb.full")}</a>`;
+    em.dataset.trend = q.median > 0.05 ? "rising" : (q.median < -0.05 ? "easing" : "flat"); needle(em, p);
+    const send = () => parent !== window && parent.postMessage({ cio: "h", id: ps.get("id"), h: document.documentElement.scrollHeight }, "*");
+    send(); if (window.ResizeObserver) new ResizeObserver(send).observe(document.body); }
+
+  /* ---------- "put this on your website": options, live preview, copy ---------- */
+  const eb = $("details.embed");
+  if (eb) { const k = eb.dataset.key, code = $("[data-emb-code]", eb), pv = $("[data-emb-preview]", eb), note = $("[data-emb-note]", eb);
+    const site = online ? location.origin + "/" : (DATA.site ? DATA.site + "/" : "");
+    const upd = () => { const lang = $("[data-emb=lang]", eb).value, th = $("[data-emb=theme]", eb).value;
+      code.value = `<div data-cio-costs="${k}"${lang ? ` data-lang="${lang}"` : ""}${th !== "auto" ? ` data-theme="${th}"` : ""}></div>\n<script async src="${site || "https://YOUR-CIO-COSTS-SITE/"}widget.js"></script>`;
+      pv.src = `${rel}embed.html?c=${k}&lang=${lang}&theme=${th}&id=pv`;
+      note.textContent = site ? "" : tr("emb.offline"); };
+    $$("[data-emb]", eb).forEach(x => x.onchange = upd); upd();
+    $("[data-emb-copy]", eb).onclick = async ev => { try { await navigator.clipboard.writeText(code.value); } catch (e) { code.select(); document.execCommand("copy"); }
+      ev.target.textContent = tr("emb.copied"); setTimeout(() => ev.target.textContent = tr("emb.copy"), 2000); };
+    window.addEventListener("message", e => { if (e.data && e.data.cio === "h" && e.data.id === "pv" && e.source === pv.contentWindow) pv.style.height = Math.ceil(e.data.h) + "px"; }); }
 
   /* ---------- The Cost Call ---------- */
   const game = $("#game"); if (!game || !DATA.quiz) return;
