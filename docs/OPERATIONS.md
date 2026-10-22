@@ -41,6 +41,8 @@ CIO_ADMIN_KEY=<secret> uvicorn --app-dir src/webapp app:app --host 0.0.0.0 --por
 |---|---|---|
 | `cycle.py daily` | 06:30 every day | Harvest UBOS and KNBS → settle any contract whose first print appeared → on a new UBOS release refit and re-forecast → open the next contracts. Idempotent |
 | `cycle.py weekly` | Monday 05:00 | Refresh rainfall, Brent and UGX/KES/RWF → write `countries/<country>/notes/weekly_<date>.{md,html}` (the app shows the latest) |
+| `cycle.py refresh` | every 3 hours | Drivers → forecasts → site → alerts; also saves each forecast to `data/live/forecast_log/` for the track record |
+| `cycle.py monthly` | 1st of the month, 07:00 | Pilot report for the month just ended → `data/live/reports/pilot_<month>.html` (also at `/admin/pilot-report?month=YYYY-MM`) |
 
 Every step is logged to `data/live/cycle_log.csv`. A failed step is logged and the others still run.
 
@@ -90,6 +92,17 @@ so a Kenya structural model is possible once more quarters accumulate.
 **Rwanda:** collect prices and run the note. Contracts wait until a settlement series is agreed:
 confirm with NISR whether the PPI includes construction. An index built from participants' own
 reports must not settle contracts, because participants could move it.
+
+## Pilot (first 3 months)
+
+Pilot countries are set in `config/site.yaml` (`pilot_countries`): Uganda, South Africa, Kenya, Rwanda, Zambia,
+Tanzania and Nigeria. They come first in every country list, invites default to them, and the monthly pilot report
+covers them. Forecasts and price reporting stay open for all 18 countries.
+
+The pilot report scores four goals: main items with 3+ reports every week in the capital, members active each week
+(>50%), forecasts inside the likely range (~80%), and site visits. Site visits come from `/api/public/hit`
+(`src/market/usage.py`): no cookies, no IP addresses, a visitor counted once per day, nothing sent when the browser
+asks not to be tracked.
 
 ## Before inviting participants
 

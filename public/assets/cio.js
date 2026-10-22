@@ -6,6 +6,7 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "grp.pilot": "Nchi za majaribio", "grp.more": "Nchi zaidi",
       "qr.h": "Ulilipa kiasi gani wiki hii?", "qr.d": "Tuambie bei moja. Ni siri na inachukua sekunde 20 — watu 3 wakiripoti bidhaa, kila mtu anaona bei ya kawaida.", "qr.need": "Ripoti <b>{n} kati ya 3</b> wiki hii kwa {i} nchini {c}. Ongeza yako ili bei ya kawaida ionekane.", "qr.live": "<b>✓ Inaonekana:</b> bei ya kawaida ya {i} nchini {c} imechapishwa — ripoti yako inaiweka sasa.", "qr.town": "Tafadhali andika mji au eneo.",
       "whatis": "CiO Costs ni chombo cha utabiri. Kinakadiria jinsi bei za vifaa vya ujenzi zinavyoweza kubadilika, pamoja na kiwango. Si takwimu rasmi, orodha ya bei wala ushauri wa kifedha.", "fc.note": "Utabiri, si uhakika: mara 8 kati ya 10 mabadiliko halisi huwa ndani ya kiwango.", "crowd.note": "Bei za kawaida zilizoripotiwa na wanunuzi — si bei rasmi wala za wasambazaji.", "emb.notadvice": "Utabiri · si ushauri",
       "rep.area": "Ni wapi?", "rep.incap": "Ndani ya", "rep.elsewhere": "Kwingineko nchini", "rep.check": "{p} {ccy} ni mbali na bei ya kawaida {u} {ccy}. Ni sahihi?", "rep.yes": "Ndiyo, ni sahihi — tuma", "rep.fix": "Niirekebishe", "th.item": "Bidhaa", "th.typical": "Bei ya kawaida", "th.elsewhere": "Kwingineko", "th.reporters": "Waliripoti", "th.vs4": "dhidi ya wiki 4", "crowd.areas": "Bei za maeneo zinatumia wiki 4 zilizopita na zinaonekana watu 3 wakiripoti kutoka eneo hilo.", "track.crowdsoon": "watu 3 wakiripoti bidhaa kwa wiki 4, tutaonyesha wanacholipa kando ya makadirio yetu hapa.", "track.addyours": "Ripoti bei", "track.vscrowd": "makadirio yetu dhidi ya wanacholipa watu", "track.est": "Makadirio yetu ya gharama za uagizaji, mwezi uliopita",
@@ -89,6 +90,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "grp.pilot": "Pays pilotes", "grp.more": "Autres pays",
       "qr.h": "Combien avez-vous payé cette semaine ?", "qr.d": "Indiquez un prix. C'est anonyme et prend 20 secondes — dès que 3 personnes signalent un article, tout le monde voit le prix habituel.", "qr.need": "<b>{n} sur 3</b> signalements cette semaine pour {i} au {c}. Ajoutez le vôtre pour débloquer le prix habituel.", "qr.live": "<b>✓ En ligne :</b> le prix habituel de {i} au {c} est publié — votre signalement le tient à jour.", "qr.town": "Veuillez indiquer la ville ou la zone.",
       "whatis": "CiO Costs est un outil de prévision. Il estime l'évolution probable des prix des matériaux de construction, avec une fourchette. Ce n'est ni une statistique officielle, ni une liste de prix, ni un conseil financier.", "fc.note": "Prévision, pas une garantie : 8 fois sur 10, la variation réelle tombe dans la fourchette.", "crowd.note": "Prix habituels signalés par des acheteurs — ni prix officiels, ni prix fournisseurs.", "emb.notadvice": "Prévision · pas un conseil",
       "rep.area": "Où ?", "rep.incap": "À", "rep.elsewhere": "Ailleurs dans le pays", "rep.check": "{p} {ccy} est loin du prix habituel de {u} {ccy}. Est-ce exact ?", "rep.yes": "Oui, c'est exact — envoyer", "rep.fix": "Je corrige", "th.item": "Article", "th.typical": "Prix habituel", "th.elsewhere": "Ailleurs", "th.reporters": "Signalements", "th.vs4": "sur 4 semaines", "crowd.areas": "Les prix par zone portent sur les 4 dernières semaines et s'affichent dès que 3 personnes de la zone ont signalé.", "track.crowdsoon": "dès que 3 personnes signalent un article pendant 4 semaines, nous affichons ici ce qu'elles paient à côté de notre estimation.", "track.addyours": "Signaler un prix", "track.vscrowd": "notre estimation vs ce que les gens paient", "track.est": "Notre estimation des coûts d'importation, mois dernier",
@@ -172,6 +174,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "grp.pilot": "Pilot countries", "grp.more": "More countries",
       "qr.h": "What did you pay this week?", "qr.d": "Tell us one price. It is anonymous and takes 20 seconds — and once 3 people report an item, everyone sees the typical price.", "qr.need": "<b>{n} of 3</b> reports this week for {i} in {c}. Add yours to unlock the typical price.", "qr.live": "<b>✓ Live:</b> the typical price for {i} in {c} is published — your report keeps it current.", "qr.town": "Please type the town or area.",
       "whatis": "CiO Costs is a forecasting tool. It estimates how building material prices are likely to move, with a range. It is not an official statistic, a price list or financial advice.", "fc.note": "Forecast, not a guarantee: 8 times in 10 the real change falls inside the range.", "crowd.note": "Typical prices reported by buyers — not official or supplier prices.", "emb.notadvice": "Forecast · not advice",
       "rep.area": "Where is that?", "rep.incap": "In", "rep.elsewhere": "Elsewhere in the country", "rep.check": "{p} {ccy} is far from the usual {u} {ccy}. Is that right?", "rep.yes": "Yes, it's right — send", "rep.fix": "Let me fix it", "th.item": "Item", "th.typical": "Typical price", "th.elsewhere": "Elsewhere", "th.reporters": "Reporters", "th.vs4": "vs 4 weeks", "crowd.areas": "Area prices use the last 4 weeks and appear once 3 people report from that area.", "track.crowdsoon": "once 3 people report an item for 4 weeks, we show what they pay next to our estimate here.", "track.addyours": "Report a price", "track.vscrowd": "our estimate vs what people pay", "track.est": "Our import-cost estimate, last month",
@@ -275,6 +278,7 @@ window.I18N = (function () {
   const label = m => T.month(m);
   const cname = c => T.country(c.cc, c.country);
   T.apply();
+  $$("optgroup[data-grp]").forEach(g => g.label = tr(g.dataset.grp === "pilot" ? "grp.pilot" : "grp.more"));
   const langSel = $("#lang"); if (langSel) { langSel.value = T.lang; langSel.onchange = () => T.set(langSel.value); }
   $$("#when option").forEach(o => { const v = o.value; o.textContent = v[0] === "W" ? tr("weekof.cap", { d: T.dayMonth(v.slice(2)) }) : label(v.slice(2)); });
   $$("#when optgroup").forEach(g => g.label = tr(g.label === "Weeks" ? "grp.weeks" : "grp.months"));
@@ -405,7 +409,7 @@ window.I18N = (function () {
       $$("[data-feat-name], [data-feat-link]", feat).forEach(a => a.href = `countries/${k}/index.html`);
       $("[data-chart]", feat).innerHTML = ""; };
     const k0 = store.get("cio-country", null); my.value = DATA.countries[k0] ? k0 : feat.dataset.key; show(my.value);
-    my.onchange = () => { store.set("cio-country", my.value); show(my.value); render(); };
+    my.onchange = () => { track("country", my.value); store.set("cio-country", my.value); show(my.value); render(); };
   }
   const ago = $("#updated-ago");
   if (ago) { const h = Math.max(0, Math.round((Date.now() - Date.parse(ago.dataset.built)) / 36e5));
@@ -510,6 +514,19 @@ window.I18N = (function () {
     catch (e) { msg.textContent = tr("net.unreach"); return false; }
   }
 
+  /* ---------- anonymous visit counting (no cookies; skipped for "Do Not Track" and offline copies) ---------- */
+  function track(kind, country) {
+    if (!online || navigator.doNotTrack === "1" || window.doNotTrack === "1" || !navigator.sendBeacon) return;
+    try { navigator.sendBeacon(rel + "api/public/hit", JSON.stringify({ path: location.pathname, kind, lang: T.lang, country: country || "",
+      ref: kind === "view" || kind === "embed" ? document.referrer : "" })); } catch (e) { /* never break the page */ }
+  }
+  if (!$("#embed")) track("view", document.body.dataset.page === "country" ? Object.keys(DATA.countries || {})[0] : "");
+  document.addEventListener("click", ev => {
+    const t = ev.target.closest("[data-share],#share,#res-share,#drawshare,[data-buy],[data-emb-copy],a[href*='notes/weekly_']"); if (!t) return;
+    track(t.matches("[data-buy]") ? "chip" : t.matches("[data-emb-copy]") ? "widget_copy" : t.matches("a") ? "note" : "share"); });
+  const once = (el, ev, kind) => el && el.addEventListener(ev, () => track(kind), { once: true });
+  once($(".money input"), "input", "money"); once($("#calcform"), "change", "calc");
+
   /* send a reported price; if it is far from the usual price, ask "is that right?" before saving */
   async function sendPrice(d, msg, ccy, priceField, done) {
     const j = await post(rel + "api/public/price", d, msg); if (!j) return;
@@ -518,7 +535,7 @@ window.I18N = (function () {
         <span class=actions><button type=button class="btn primary" data-yes>${tr("rep.yes")}</button><button type=button class=btn data-fix>${tr("rep.fix")}</button></span>`;
       $("[data-yes]", msg).onclick = () => sendPrice(Object.assign({}, d, { confirm: true }), msg, ccy, priceField, done);
       $("[data-fix]", msg).onclick = () => { msg.textContent = ""; priceField.focus(); priceField.select(); }; return; }
-    msg.textContent = tr("rep.thanks"); priceField.value = ""; if (done) done();
+    msg.textContent = tr("rep.thanks"); priceField.value = ""; track(priceField.closest(".qr-form") ? "quick_report" : "report", d.country); if (done) done();
   }
 
   /* ---------- quick "what did you pay?" form (home + country pages) ---------- */
@@ -544,7 +561,7 @@ window.I18N = (function () {
   $$(".alertbox").forEach(box => { const f = $("form", box), msg = $(".formmsg", box);
     f.onsubmit = async ev => { ev.preventDefault(); const d = Object.fromEntries(new FormData(f));
       d.country = box.dataset.country; d.threshold = +d.threshold; d.consent = !!d.consent;
-      if (await post(rel + "api/public/alert", d, msg)) { msg.textContent = tr("alert.ok"); f.reset(); } }; });
+      if (await post(rel + "api/public/alert", d, msg)) { msg.textContent = tr("alert.ok"); f.reset(); track("alert", box.dataset.country); } }; });
 
   /* ---------- report prices ---------- */
   const rf = $("#reportform");
@@ -611,7 +628,7 @@ window.I18N = (function () {
     const k = DATA.countries[ps.get("c")] ? ps.get("c") : "uganda", c = DATA.countries[k], tg = DATA.default;
     if (th === "light" || th === "dark") root.setAttribute("data-theme", th); else root.removeAttribute("data-theme");
     const q = at(c.paths[c.head], tg).q, p = chance(q), home = (online ? location.origin + location.pathname.replace(/embed\.html$/, "") : "");
-    em.dataset.key = k;
+    em.dataset.key = k; if (ps.get("id") !== "pv") track("embed", k);     // our own preview is not a real embed
     em.innerHTML = `<div class=card-top><span class=flag aria-hidden=true>${c.flag}</span><b>${cname(c)}</b><span class=chip>CiO Costs</span></div>
       <p class=q>${question(c, tg)}</p>
       <div class=emb-row><div class=needle data-needle aria-hidden=true></div><div><span class="pct verdict">${verdict(q, p)}</span>
@@ -669,7 +686,7 @@ window.I18N = (function () {
       $("#next").onclick = ask; }); }
   function finish() { const score = st.answers.filter(Boolean).length, grid = st.answers.map(a => a ? "🟩" : "🟥").join("");
     if (stats.last !== today) { const y = ymd(new Date(Date.now() - 864e5));
-      stats.played++; stats.wins += score; stats.dist = stats.dist || [0, 0, 0, 0, 0, 0]; stats.dist[score]++; stats.streak = (stats.last === y ? stats.streak : 0) + 1; stats.best = Math.max(stats.best, stats.streak); stats.last = today; store.set("cio-call-stats", stats); }
+      track("game"); stats.played++; stats.wins += score; stats.dist = stats.dist || [0, 0, 0, 0, 0, 0]; stats.dist[score]++; stats.streak = (stats.last === y ? stats.streak : 0) + 1; stats.best = Math.max(stats.best, stats.streak); stats.last = today; store.set("cio-call-stats", stats); }
     statsRow(); const text = `CiO Cost Call ${today}\n${grid} ${score}/5\nWill building costs rise? Play: CiO Costs`;
     game.innerHTML = `<div class=qcard>${progress()}<h2>${tr("gm.score", { n: score })}</h2><div class=result-grid>${grid}</div>
       <p class=muted>${tr("gm.newcalls", { s: stats.streak })}</p>
@@ -726,7 +743,7 @@ window.I18N = (function () {
         $(".fcline", svg).setAttribute("points", line(range(n - 1, N - 1), i => i < n ? vals[i] : fc[i - n]));
         const err = range(k0 + 1, n - 1).reduce((s, i) => s + Math.abs(guess[i] - vals[i]) / vals[k0] * 100, 0) / hideN;
         const score = Math.max(0, Math.round(100 - 25 * err));
-        if (first) { saved = { date: today, guess, score }; store.set("cio-draw", saved); }
+        if (first) { saved = { date: today, guess, score }; store.set("cio-draw", saved); track("draw", k); }
         btn.hidden = true;
         $(".drawres", draw).innerHTML = `<b>${tr("draw.score", { n: score })}</b> ${tr("draw.off", { x: err.toFixed(1) })} ${tr("draw.fc")}
           <br><button class=btn id=drawshare>${tr("gm.share")}</button> <span class=muted>${tr("draw.done")}</span>`;

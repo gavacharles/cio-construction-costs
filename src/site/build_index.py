@@ -36,6 +36,16 @@ SITE_CFG = yaml.safe_load((ROOT / "config" / "site.yaml").read_text(encoding="ut
 WA = str(SITE_CFG.get("whatsapp_number") or "").strip().lstrip("+")
 FEATURED = SITE_CFG.get("glance_featured") or ["uganda", "kenya", "south_africa", "nigeria", "ghana"]
 CHANNEL = str(SITE_CFG.get("whatsapp_channel_url") or "").strip()
+PILOT = list(SITE_CFG.get("pilot_countries") or [])
+
+
+def country_options(cs: list[dict]) -> str:
+    """Pilot countries first, then the rest, each alphabetical (with optgroup labels the page translates)."""
+    opt = lambda grp: "".join(f"<option value={c['key']}>{c['flag']} {e(c['country'])}</option>" for c in sorted(grp, key=lambda c: c["country"]))
+    pil, rest = [c for c in cs if c["key"] in PILOT], [c for c in cs if c["key"] not in PILOT]
+    if not pil:
+        return opt(cs)
+    return f"<optgroup label='Pilot countries' data-grp=pilot>{opt(pil)}</optgroup><optgroup label='More countries' data-grp=more>{opt(rest)}</optgroup>"
 SITE_URL = (os.environ.get("CIO_SITE_URL") or str(SITE_CFG.get("site_url") or "")).strip().rstrip("/")
 ALERTS_WA = bool(SITE_CFG.get("alerts_whatsapp"))
 TIP_OFFICIAL = "Built from the country's official construction price statistics, updated with this week's oil and currency moves."
@@ -240,7 +250,7 @@ def _home(cs, months, default, feat, tab_html, cards):
  <p class=whatis data-i18n=whatis>CiO Costs is a forecasting tool. It estimates how building material prices are likely to move, with a range.
  It is not an official statistic, a price list or financial advice.</p></div>
  <div class=hero-side><label class="when-box country-pick"><span data-i18n=pick.country>Your country</span><select id=mycountry aria-label="Your country">
- {''.join(f"<option value={c['key']}>{c['flag']} {e(c['country'])}</option>" for c in sorted(cs, key=lambda c: c['country']))}</select></label>
+ {country_options(cs)}</select></label>
  {picker(months, default)}</div></section>
 <p class=trust><span data-i18n=trust.sources>Official data from UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD and Statistics Mauritius</span>
  · <span id=updated-ago data-built="{BUILT}"></span> · <a href="method.html#track" data-i18n=trust.track>Track record</a>
@@ -564,7 +574,7 @@ is published</span></div><div class=grid id=calls></div></section>
 
 
 def page_report(keys: list[str]) -> str:
-    opts = "".join(f"<option value={k}>{flag(load_country(k)['iso3'])} {e(load_country(k)['country'])}</option>" for k in keys)
+    opts = country_options([{"key": k, "flag": flag(load_country(k)["iso3"]), "country": load_country(k)["country"]} for k in keys])
     return f"""
 <section class=prose><p class=eyebrow data-i18n=nav.report>Report prices</p><h1 data-i18n=rep.h1>What did you pay this week?</h1>
 <p class=lede data-i18n=rep.lede>Tell us the price you paid or were quoted for a construction input, in any of our 18 countries. Reports are
@@ -620,7 +630,7 @@ def build() -> Path:
     from datetime import datetime, timezone
     BUILT = datetime.now(timezone.utc).isoformat(timespec="minutes")
     cs = [c for c in (country_data(k) for k in list_countries()) if c]
-    cs.sort(key=lambda c: (not c["official"], c["country"]))
+    cs.sort(key=lambda c: (c["key"] not in PILOT, not c["official"], c["country"]))
     months = months_ahead(12)
     default = f"M:{months[2]}"
     updated = max((c["generated"] for c in cs), default=date.today().isoformat())

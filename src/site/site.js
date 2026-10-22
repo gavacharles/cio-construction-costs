@@ -12,6 +12,7 @@
   const label = m => T.month(m);
   const cname = c => T.country(c.cc, c.country);
   T.apply();
+  $$("optgroup[data-grp]").forEach(g => g.label = tr(g.dataset.grp === "pilot" ? "grp.pilot" : "grp.more"));
   const langSel = $("#lang"); if (langSel) { langSel.value = T.lang; langSel.onchange = () => T.set(langSel.value); }
   $$("#when option").forEach(o => { const v = o.value; o.textContent = v[0] === "W" ? tr("weekof.cap", { d: T.dayMonth(v.slice(2)) }) : label(v.slice(2)); });
   $$("#when optgroup").forEach(g => g.label = tr(g.label === "Weeks" ? "grp.weeks" : "grp.months"));
@@ -142,7 +143,7 @@
       $$("[data-feat-name], [data-feat-link]", feat).forEach(a => a.href = `countries/${k}/index.html`);
       $("[data-chart]", feat).innerHTML = ""; };
     const k0 = store.get("cio-country", null); my.value = DATA.countries[k0] ? k0 : feat.dataset.key; show(my.value);
-    my.onchange = () => { store.set("cio-country", my.value); show(my.value); render(); };
+    my.onchange = () => { track("country", my.value); store.set("cio-country", my.value); show(my.value); render(); };
   }
   const ago = $("#updated-ago");
   if (ago) { const h = Math.max(0, Math.round((Date.now() - Date.parse(ago.dataset.built)) / 36e5));
@@ -247,6 +248,19 @@
     catch (e) { msg.textContent = tr("net.unreach"); return false; }
   }
 
+  /* ---------- anonymous visit counting (no cookies; skipped for "Do Not Track" and offline copies) ---------- */
+  function track(kind, country) {
+    if (!online || navigator.doNotTrack === "1" || window.doNotTrack === "1" || !navigator.sendBeacon) return;
+    try { navigator.sendBeacon(rel + "api/public/hit", JSON.stringify({ path: location.pathname, kind, lang: T.lang, country: country || "",
+      ref: kind === "view" || kind === "embed" ? document.referrer : "" })); } catch (e) { /* never break the page */ }
+  }
+  if (!$("#embed")) track("view", document.body.dataset.page === "country" ? Object.keys(DATA.countries || {})[0] : "");
+  document.addEventListener("click", ev => {
+    const t = ev.target.closest("[data-share],#share,#res-share,#drawshare,[data-buy],[data-emb-copy],a[href*='notes/weekly_']"); if (!t) return;
+    track(t.matches("[data-buy]") ? "chip" : t.matches("[data-emb-copy]") ? "widget_copy" : t.matches("a") ? "note" : "share"); });
+  const once = (el, ev, kind) => el && el.addEventListener(ev, () => track(kind), { once: true });
+  once($(".money input"), "input", "money"); once($("#calcform"), "change", "calc");
+
   /* send a reported price; if it is far from the usual price, ask "is that right?" before saving */
   async function sendPrice(d, msg, ccy, priceField, done) {
     const j = await post(rel + "api/public/price", d, msg); if (!j) return;
@@ -255,7 +269,7 @@
         <span class=actions><button type=button class="btn primary" data-yes>${tr("rep.yes")}</button><button type=button class=btn data-fix>${tr("rep.fix")}</button></span>`;
       $("[data-yes]", msg).onclick = () => sendPrice(Object.assign({}, d, { confirm: true }), msg, ccy, priceField, done);
       $("[data-fix]", msg).onclick = () => { msg.textContent = ""; priceField.focus(); priceField.select(); }; return; }
-    msg.textContent = tr("rep.thanks"); priceField.value = ""; if (done) done();
+    msg.textContent = tr("rep.thanks"); priceField.value = ""; track(priceField.closest(".qr-form") ? "quick_report" : "report", d.country); if (done) done();
   }
 
   /* ---------- quick "what did you pay?" form (home + country pages) ---------- */
@@ -281,7 +295,7 @@
   $$(".alertbox").forEach(box => { const f = $("form", box), msg = $(".formmsg", box);
     f.onsubmit = async ev => { ev.preventDefault(); const d = Object.fromEntries(new FormData(f));
       d.country = box.dataset.country; d.threshold = +d.threshold; d.consent = !!d.consent;
-      if (await post(rel + "api/public/alert", d, msg)) { msg.textContent = tr("alert.ok"); f.reset(); } }; });
+      if (await post(rel + "api/public/alert", d, msg)) { msg.textContent = tr("alert.ok"); f.reset(); track("alert", box.dataset.country); } }; });
 
   /* ---------- report prices ---------- */
   const rf = $("#reportform");
@@ -348,7 +362,7 @@
     const k = DATA.countries[ps.get("c")] ? ps.get("c") : "uganda", c = DATA.countries[k], tg = DATA.default;
     if (th === "light" || th === "dark") root.setAttribute("data-theme", th); else root.removeAttribute("data-theme");
     const q = at(c.paths[c.head], tg).q, p = chance(q), home = (online ? location.origin + location.pathname.replace(/embed\.html$/, "") : "");
-    em.dataset.key = k;
+    em.dataset.key = k; if (ps.get("id") !== "pv") track("embed", k);     // our own preview is not a real embed
     em.innerHTML = `<div class=card-top><span class=flag aria-hidden=true>${c.flag}</span><b>${cname(c)}</b><span class=chip>CiO Costs</span></div>
       <p class=q>${question(c, tg)}</p>
       <div class=emb-row><div class=needle data-needle aria-hidden=true></div><div><span class="pct verdict">${verdict(q, p)}</span>
@@ -406,7 +420,7 @@
       $("#next").onclick = ask; }); }
   function finish() { const score = st.answers.filter(Boolean).length, grid = st.answers.map(a => a ? "🟩" : "🟥").join("");
     if (stats.last !== today) { const y = ymd(new Date(Date.now() - 864e5));
-      stats.played++; stats.wins += score; stats.dist = stats.dist || [0, 0, 0, 0, 0, 0]; stats.dist[score]++; stats.streak = (stats.last === y ? stats.streak : 0) + 1; stats.best = Math.max(stats.best, stats.streak); stats.last = today; store.set("cio-call-stats", stats); }
+      track("game"); stats.played++; stats.wins += score; stats.dist = stats.dist || [0, 0, 0, 0, 0, 0]; stats.dist[score]++; stats.streak = (stats.last === y ? stats.streak : 0) + 1; stats.best = Math.max(stats.best, stats.streak); stats.last = today; store.set("cio-call-stats", stats); }
     statsRow(); const text = `CiO Cost Call ${today}\n${grid} ${score}/5\nWill building costs rise? Play: CiO Costs`;
     game.innerHTML = `<div class=qcard>${progress()}<h2>${tr("gm.score", { n: score })}</h2><div class=result-grid>${grid}</div>
       <p class=muted>${tr("gm.newcalls", { s: stats.streak })}</p>
@@ -463,7 +477,7 @@
         $(".fcline", svg).setAttribute("points", line(range(n - 1, N - 1), i => i < n ? vals[i] : fc[i - n]));
         const err = range(k0 + 1, n - 1).reduce((s, i) => s + Math.abs(guess[i] - vals[i]) / vals[k0] * 100, 0) / hideN;
         const score = Math.max(0, Math.round(100 - 25 * err));
-        if (first) { saved = { date: today, guess, score }; store.set("cio-draw", saved); }
+        if (first) { saved = { date: today, guess, score }; store.set("cio-draw", saved); track("draw", k); }
         btn.hidden = true;
         $(".drawres", draw).innerHTML = `<b>${tr("draw.score", { n: score })}</b> ${tr("draw.off", { x: err.toFixed(1) })} ${tr("draw.fc")}
           <br><button class=btn id=drawshare>${tr("gm.share")}</button> <span class=muted>${tr("draw.done")}</span>`;

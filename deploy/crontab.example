@@ -11,4 +11,5 @@ ENV=set -a; . /etc/cio/cio.env; set +a
 # Every 3 hours (at :15): latest oil and exchange rates -> all 18 forecasts -> site pages (takes seconds).
 15 */3 * * * cd $REPO && eval "$ENV" && $PY src/market/cycle.py refresh >> data/live/cron.log 2>&1
 # Nightly 02:00: database backup.
+0 7 1 * *   cd $REPO && eval "$ENV" && $PY src/market/cycle.py monthly >> data/live/cron.log 2>&1
 0 2 * * *   cd $REPO && eval "$ENV" && deploy/backup.sh >> data/live/cron.log 2>&1

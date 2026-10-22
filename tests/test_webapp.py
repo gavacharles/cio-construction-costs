@@ -286,3 +286,29 @@ def test_price_typo_check_and_area_prices(tmp_path, monkeypatch):
     assert r["check"] and r["usual"] == 35500 and not r["ok"]                    # queried, not saved
     assert c.post("/api/public/price", json=dict(body, confirm=True)).json()["ok"]    # saved once confirmed
     assert c.post("/api/public/price", json=dict(body, area="moon", confirm=True)).status_code == 400
+
+
+def test_visit_counting_and_pilot_report(tmp_path, monkeypatch):
+    monkeypatch.setenv("CIO_DB", str(tmp_path / "u.sqlite"))
+    monkeypatch.setenv("CIO_ADMIN_KEY", "k")
+    monkeypatch.setenv("CIO_SECURE_COOKIES", "0")
+    import importlib
+    import app as webapp
+    importlib.reload(webapp)
+    from fastapi.testclient import TestClient
+    from usage import Usage
+    c = TestClient(webapp.app)
+    for _ in range(3):
+        assert c.post("/api/public/hit", content='{"path": "/", "kind": "view", "lang": "sw", "ref": "https://www.google.com/x"}').json()["ok"]
+    assert c.post("/api/public/hit", content='{"path": "/report.html", "kind": "quick_report", "country": "uganda"}').json()["ok"]
+    assert c.post("/api/public/hit", content='{"path": "/", "kind": "hack"}').status_code == 400
+    with Usage(tmp_path / "u.sqlite") as u:
+        today = __import__("datetime").date.today().isoformat()
+        s = u.summary(today, today)
+        assert s["views"] == 3 and s["visitor_days"] == 1 and s["refs"][0]["ref"] == "www.google.com"
+        assert s["actions"] == [{"kind": "quick_report", "n": 1}]
+        assert not [r for r in u.db.execute("SELECT * FROM hits") if "testclient" in str(tuple(r))]   # no IP stored
+    assert c.get("/admin/pilot-report", follow_redirects=False).status_code == 303                    # organisers only
+    c.post("/admin/login", data={"key": "k"})
+    page = c.get("/admin/pilot-report").text
+    assert "pilot report" in page and "Uganda" in page and "Nigeria" in page and "Scorecard" in page

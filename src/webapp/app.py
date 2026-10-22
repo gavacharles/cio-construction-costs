@@ -22,6 +22,7 @@ from __future__ import annotations
 import contextvars
 import hashlib
 import hmac
+import json
 import html
 import os
 import sys
@@ -42,6 +43,8 @@ from country import load_country, list_countries        # noqa: E402
 from ledger import Exchange, ExchangeError              # noqa: E402
 from nowcast import expected_change                     # noqa: E402
 from reports import Participants, ReportError           # noqa: E402
+from usage import Usage, visitor_id                      # noqa: E402
+import pilot_report                                      # noqa: E402
 
 DB = Path(os.environ.get("CIO_DB", ROOT / "data" / "live" / "exchange.sqlite"))
 NOTES = ROOT / "countries"
@@ -71,6 +74,10 @@ def ex() -> Exchange:
 
 def people() -> Participants:
     return _track(Participants(DB))
+
+
+def usage() -> Usage:
+    return _track(Usage(DB))
 
 
 @app.middleware("http")
@@ -442,7 +449,10 @@ def admin(request: Request, made: str = "", err: str = ""):
         return page("Organiser login", f"""<div class=card><h1>Organiser login</h1>
 <form method=post action=/admin/login><label>Admin password</label><input name=key type=password required>
 <p><button>Log in</button></p></form>{msg}</div>""")
-    opts = "".join(f"<option value={c}>{e(v['country'])}</option>" for c, v in COUNTRIES.items())
+    pilot = pilot_report.pilot_countries()
+    opt = lambda ks: "".join(f"<option value={c}>{e(COUNTRIES[c]['country'])}</option>" for c in ks if c in COUNTRIES)
+    opts = (f"<optgroup label='Pilot countries'>{opt(pilot)}</optgroup>"
+            f"<optgroup label='Later'>{opt(sorted((c for c in COUNTRIES if c not in pilot), key=lambda c: COUNTRIES[c]['country']))}</optgroup>")
     rows = "".join(f"<tr><td>{e(p['name'])}</td><td>{e(p['org'] or '')}</td><td>{e(p['country'])}</td>"
                    f"<td><code>{e(p['invite_code'])}</code></td><td>{'yes' if p['active'] else ''}</td></tr>"
                    for p in people().all())
@@ -450,7 +460,8 @@ def admin(request: Request, made: str = "", err: str = ""):
     return page("Admin", f"""<div class=card><h1>Invite a participant</h1>
 <form method=post action=/admin/invite><div class=row><div><label>Name</label><input name=name required></div>
 <div><label>Organisation</label><input name=org></div></div><label>Country</label><select name=country>{opts}</select>
-<p><button>Create invite code</button></p></form>{flash}<p><a href=/admin/logout>Log out of admin</a></p></div>
+<p><button>Create invite code</button></p></form>{flash}<p><a href=/admin/pilot-report>Monthly pilot report</a> ·
+<a href=/admin/logout>Log out of admin</a></p></div>
 <div class=card><h2>Participants</h2><div class=tw><table><tr><th>Name</th><th>Organisation</th><th>Country</th>
 <th>Code</th><th>Joined</th></tr>{rows}</table></div></div>""")
 
@@ -473,6 +484,16 @@ def admin_logout():
     r = RedirectResponse("/admin", status_code=303)
     r.delete_cookie(ADMIN_COOKIE)
     return r
+
+
+@app.get("/admin/pilot-report", response_class=HTMLResponse)
+def admin_pilot_report(request: Request, month: str = ""):
+    if not _is_admin(request):
+        return RedirectResponse("/admin", status_code=303)
+    import re
+    from datetime import date as _date
+    month = month if re.fullmatch(r"\d{4}-\d{2}", month or "") else _date.today().strftime("%Y-%m")
+    return HTMLResponse(pilot_report.build(DB, month))
 
 
 @app.post("/admin/invite")
@@ -516,6 +537,30 @@ async def public_price(request: Request):
         return {"ok": True, "id": rid}
     except (ReportError, ValueError, TypeError) as err:
         return JSONResponse({"ok": False, "error": str(err)}, status_code=400)
+
+
+HIT_LIMIT = Limiter(limit=600, window=3600)            # page views + actions per IP per hour
+
+
+@app.post("/api/public/hit")
+async def public_hit(request: Request):
+    """Anonymous visit counting: no cookies, no IP stored (see src/market/usage.py)."""
+    ip = _ip(request)
+    if HIT_LIMIT.blocked(ip):
+        return JSONResponse({"ok": False}, status_code=429)
+    HIT_LIMIT.fail(ip)
+    try:
+        d = json.loads((await request.body()) or b"{}")
+        from urllib.parse import urlparse
+        ref = urlparse(str(d.get("ref", ""))).hostname or ""
+        if ref == request.url.hostname:
+            ref = ""                                         # internal navigation is not a referrer
+        usage().record(str(d.get("path", "/")), str(d.get("kind", "view")),
+                       visitor_id(SALT, ip, request.headers.get("user-agent", "")),
+                       lang=str(d.get("lang", "")), ref=ref, country=str(d.get("country", "")))
+        return {"ok": True}
+    except (ValueError, TypeError):
+        return JSONResponse({"ok": False}, status_code=400)
 
 
 @app.post("/api/public/alert")

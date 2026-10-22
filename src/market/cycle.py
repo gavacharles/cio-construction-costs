@@ -99,10 +99,17 @@ def weekly(db: str | None) -> None:
     run("front page", "src/site/build_index.py")
 
 
+def monthly(db: str | None) -> None:
+    """On the 1st: the pilot report for the month that just ended."""
+    from datetime import date, timedelta
+    last = (date.today().replace(day=1) - timedelta(days=1)).strftime("%Y-%m")
+    run("pilot report", "src/market/pilot_report.py", "--month", last, db=db)
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("job", choices=["daily", "weekly", "refresh"])
+    ap.add_argument("job", choices=["daily", "weekly", "refresh", "monthly"])
     ap.add_argument("--db", default=os.environ.get("CIO_DB"),
                     help="ledger path (default: $CIO_DB, the app's database; else data/live/exchange.sqlite)")
     a = ap.parse_args()
-    {"daily": daily, "weekly": weekly, "refresh": refresh}[a.job](a.db)
+    {"daily": daily, "weekly": weekly, "refresh": refresh, "monthly": monthly}[a.job](a.db)
