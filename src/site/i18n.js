@@ -1,0 +1,230 @@
+/* CiO Costs — translations (English source text lives in the page; Kiswahili and French here).
+   Draft translations: have native speakers review before launch.
+   Static text: elements with data-i18n="key" (data-i18n-ph for placeholders, data-cc for country names).
+   Dynamic text: I18N.t("key", {vars}). Months and country names come from the browser (Intl). */
+window.I18N = (function () {
+  "use strict";
+  const D = {
+    sw: {
+      "nav.countries": "Nchi", "nav.glance": "Gharama kwa muhtasari", "nav.calc": "Kikokotoo cha zabuni", "nav.report": "Ripoti bei",
+      "nav.play": "The Cost Call", "nav.method": "Jinsi inavyofanya kazi", "cta.join": "Jiunge na majaribio",
+      "footer.short": "CiO Lab · Utabiri ni makadirio yenye viwango, si ushauri. The Cost Call ni mchezo: alama hazina thamani ya pesa.",
+      "when.label": "Utabiri hadi", "when.note": "Takwimu za kila wiki zinakadiriwa kutoka utabiri wa kila mwezi, unaosasishwa kila baada ya saa chache. Mabadiliko yanapimwa kutoka takwimu rasmi za karibuni za kila nchi (au kutoka leo kwa viashiria vya gharama za uagizaji).",
+      "home.eyebrow": "Mtazamo wa gharama za ujenzi · nchi 18 za Afrika", "home.h1": "Je, gharama za ujenzi zitapanda unapofanya kazi?",
+      "home.lede": "Chagua mwezi. Ona uwezekano wa bei za vifaa vya ujenzi kupanda, kwa kiasi gani, na kinachosababisha — kutoka takwimu rasmi, mafuta na viwango vya ubadilishaji, zinazosasishwa kila baada ya saa chache.",
+      "tool.calc.t": "Kikokotoo cha ongezeko la bei kwenye zabuni", "tool.calc.d": "Bei zinaweza kubadilika kiasi gani katika kipindi cha mkataba wako? Pata ongezeko linalotarajiwa kwa sarafu yako, pamoja na kiwango.",
+      "tool.report.t": "Ripoti bei", "tool.report.d": "Tuambie ulilipa kiasi gani kwa saruji, chuma, dizeli au mchanga wiki hii. Inachukua dakika moja na inaboresha takwimu za kila mtu.",
+      "tool.play.t": "The Cost Call", "tool.play.d": "Makisio matano kila siku kuhusu bei halisi. Endeleza mfululizo wako.",
+      "tab.all": "Zote", "tab.east": "Afrika Mashariki", "tab.south": "Kusini mwa Afrika", "tab.west": "Afrika Magharibi", "tab.north": "Afrika Kaskazini",
+      "tab.official": "Fahirisi rasmi ya bei", "tab.indicator": "Kiashiria cha gharama za uagizaji", "tab.rising": "Zinapanda", "tab.easing": "Zinashuka",
+      "chip.official": "Fahirisi rasmi ya bei", "chip.indicator": "Kiashiria cha gharama za uagizaji", "chip.featured": "Iliyoangaziwa",
+      "lbl.chance": "uwezekano wa kupanda", "lbl.expected": "mabadiliko yanayotarajiwa", "lbl.range": "kiwango kinachowezekana (8 kati ya 10)",
+      "lbl.expected.cap": "Mabadiliko yanayotarajiwa", "lbl.range.cap": "Kiwango kinachowezekana (8 kati ya 10)",
+      "btn.seecosts": "Ona gharama: {c}", "link.makecall": "Toa kisio lako", "btn.bymaterial": "Ona gharama kwa kila kifaa", "btn.play": "Cheza The Cost Call",
+      "feat.bymaterial": "Kwa kila kifaa, hadi", "search.ph": "Tafuta nchi, kifaa au sarafu — mf. saruji", "empty": "Hakuna nchi inayolingana. Jaribu “saruji”, “Kenya” au “Magharibi”.",
+      "glance.h": "Gharama kwa muhtasari", "glance.sort": "Bofya safu kupanga", "th.country": "Nchi", "th.latest": "Takwimu rasmi za karibuni",
+      "th.offyear": "Mabadiliko rasmi, mwaka", "th.expby": "Yanayotarajiwa kufikia", "th.range": "Kiwango kinachowezekana", "th.chance": "Uwezekano wa kupanda",
+      "th.fx": "Sarafu dhidi ya USD, wiki 13", "game.eyebrow": "Mpya · mchezo wa kila siku",
+      "game.teaser": "Makisio matano ya haraka kila siku kuhusu bei halisi za ujenzi barani Afrika. Je, saruji ilipanda au ilishuka? Endeleza mfululizo wako, shiriki alama zako, na pima hisia zako dhidi ya modeli.",
+      "game.cta": "Cheza makisio ya leo", "how1.t": "Uwezekano wa kupanda", "how1.d": "Jinsi ilivyo uwezekano kwamba bei zitakuwa juu kufikia mwezi uliouchagua. 80% inamaanisha takriban mara 8 kati ya 10.",
+      "how2.t": "Mabadiliko yanayotarajiwa", "how2.d": "Mabadiliko yanayowezekana zaidi. Yatumie kwenye bei yako ya karibuni ya kifaa hicho hicho.",
+      "how3.t": "Kiwango kinachowezekana", "how3.d": "Mahali mabadiliko yanapaswa kuangukia mara 8 kati ya 10. Viwango vipana vinamaanisha kutokuwa na uhakika zaidi.",
+      "how4.t": "Inasasishwa kila baada ya saa chache", "how4.d": "Utabiri hubadilika kulingana na bei za mafuta, viwango vya ubadilishaji na takwimu mpya rasmi.",
+      "join.d": "Wakandarasi, wakadiriaji majenzi, waendelezaji na wakopeshaji: ripoti bei unazolipa kila wiki, cheza The Cost Call upate alama kwenye ubao wa washindi, na upokee ripoti ya Jumatatu ya nchi yako. Bure. Omba msimbo wa mwaliko kutoka CiO Lab.",
+      "join.cta": "Anza na mchezo wa leo", "crumbs.all": "Nchi zote", "sec.materials": "Gharama kwa kila kifaa", "th.material": "Kifaa",
+      "th.prevmonth": "Mabadiliko tangu mwezi uliopita", "th.prevquarter": "Mabadiliko tangu robo iliyopita", "th.year": "Mabadiliko kwa mwaka",
+      "th.why": "Kinachoisukuma", "sec.drivers": "Kinachosukuma gharama", "sec.crowd": "Bei zilizoripotiwa na wanaonunua",
+      "alert.h": "Pata tahadhari ya bei", "alert.d": "Tutakutumia ujumbe mabadiliko yanayotarajiwa ya kifaa yatakapofikia kiwango chako.",
+      "alert.at": "Nijulishe kwa", "alert.by": "Kupitia", "alert.contact": "Namba au barua pepe", "alert.btn": "Weka tahadhari",
+      "embed.s": "Weka utabiri huu kwenye tovuti yako", "rep.h1": "Ulilipa kiasi gani wiki hii?",
+      "rep.lede": "Tuambie bei uliyolipa au uliyonukuliwa kwa kifaa cha ujenzi, katika nchi yoyote kati ya 18. Ripoti hazitaji majina: tunachapisha wastani (median) kwa nchi, kifaa na wiki — kamwe majina, namba au ripoti moja moja.",
+      "rep.item": "Kifaa", "rep.price": "Bei", "rep.unit": "Kipimo", "rep.town": "Mji au eneo", "rep.from": "Ulinunua kutoka",
+      "rep.contact": "Simu au barua pepe yako", "rep.contact.note": "(si lazima, haichapishwi kamwe — ikiwa tu unataka tukufuatilie)",
+      "rep.send": "Tuma bei", "rep.others": "Wengine wanaripoti nini", "rep.median": "Wastani wa ripoti za kila mtu, hivyo ripoti zinazojirudia au zisizo za kawaida haziwezi kubadilisha takwimu.",
+      "calc.h1": "Bei za vifaa zinaweza kubadilika kiasi gani katika mkataba wako?",
+      "calc.lede": "Weka mkataba wako na mchanganyiko wa vifaa. Utapata ongezeko linalotarajiwa kwa sarafu yako, pamoja na kiwango — mwanzo mzuri wa akiba na vifungu vya marekebisho ya bei.",
+      "calc.value": "Thamani ya mkataba", "calc.share": "Sehemu ya vifaa katika mkataba (%)", "calc.start": "Kazi inaanza", "calc.end": "Kazi inaisha",
+      "calc.type": "Aina ya kazi", "calc.building": "Jengo", "calc.road": "Barabara", "calc.water": "Maji na mifereji", "calc.custom": "Mchanganyiko maalum",
+      "game.eyebrow2": "Mchezo wa kila siku", "game.lede": "Makisio matano kuhusu bei halisi za ujenzi. Je, kila moja ilipanda au ilishuka? Makisio mapya kila siku.",
+      "calls.h": "Makisio ya wiki hii", "calls.d": "Kuhusu matoleo yajayo ya takwimu rasmi — yanapimwa takwimu zitakapochapishwa",
+      "m.h1": "Kutoka takwimu rasmi hadi utabiri unaoweza kutumia", "m.read": "Kusoma namba", "m.limits": "Mipaka",
+      "m.in": "Kinachoingia", "m.how": "Jinsi inavyotabiriwa", "m.check": "Jinsi inavyokaguliwa", "m.often": "Inasasishwa mara ngapi",
+      /* dynamic */
+      "q.official": "Je, bei za vifaa vya ujenzi nchini {c} zitapanda kufikia {when}?",
+      "q.indicator": "Je, gharama za uagizaji zitapandisha bei za ujenzi nchini {c} kufikia {when}?",
+      "adv.up": "Ongeza takriban {x} kwenye bei za kazi zinazopangwa hadi {when}, ukilinganisha na bei za {base}.",
+      "adv.down": "Bei zinaweza kushuka takriban {x} kufikia {when} — fikiria kuchelewesha manunuzi makubwa.",
+      "adv.flat": "Mabadiliko madogo yanatarajiwa hadi {when} — bei za {base} ni mwongozo mzuri.",
+      "adv.ind": "Gharama za uagizaji zinaelekea {dir} takriban {x} kufikia {when} — hakiki bei za wasambazaji kabla ya kupanga bei.",
+      "adv.indflat": "Gharama za uagizaji zinaonekana tulivu hadi {when}, lakini kiwango ni kipana — hakiki bei za wasambazaji kabla ya kupanga bei.",
+      "dir.up": "kupanda", "dir.down": "kushuka", "furthest": "(utabiri wa mbali zaidi: {m})", "count": "Nchi {n} kati ya {m}",
+      "notsep": "Haitabiriwi peke yake", "weekof": "wiki ya {d}", "weekof.cap": "Wiki ya {d}", "grp.weeks": "Wiki", "grp.months": "Miezi",
+      "quarter": "Robo ya {q} {y}", "month.word": "mwezi", "quarter.word": "robo",
+      "gm.q": "Katika {when}, je, bei za {m} nchini {c} zilipanda au zilishuka?", "gm.up": "↑ Zilipanda", "gm.down": "↓ Zilishuka",
+      "gm.right": "✅ Sahihi.", "gm.wrong": "❌ Si safari hii.", "gm.official": "Takwimu rasmi: {v} ukilinganisha na {p} uliopita.",
+      "gm.next": "Kisio kinachofuata →", "gm.seescore": "Ona alama zangu", "gm.score": "Umepata {n} kati ya 5", "gm.newcalls": "Makisio mapya kesho. Mfululizo: siku {s}.",
+      "gm.share": "Shiriki matokeo", "gm.copied": "Imenakiliwa ✓", "gm.see": "Ona gharama: {c}", "gm.report": "Ripoti bei",
+      "st.played": "Umecheza", "st.avg": "Wastani", "st.streak": "Mfululizo", "st.best": "Bora",
+      "call.q": "Je, {s} itakuwa juu zaidi {when} kuliko {base}?", "call.higher": "↑ Juu zaidi", "call.lower": "↓ Chini zaidi",
+      "call.sure": "Una uhakika kiasi gani?", "call.yours": "Kisio lako: {a} kwa uhakika wa {c}%.", "call.model": "Modeli: uwezekano wa {p} kuwa juu zaidi. Itapimwa takwimu rasmi zitakapochapishwa.",
+      "call.next": "Toleo rasmi lijalo", "call.see": "Ona vinavyosukuma gharama: {c} →",
+      "rep.none": "Bado hakuna ripoti kwa {c}. Kuwa wa kwanza.", "rep.needs": "Inahitaji watu 3 — {n} hadi sasa wiki hii",
+      "rep.thanks": "Asante ✓ Bei yako imeingia kwenye wastani wa wiki hii.", "net.offline": "Kuhifadhi kunafunguka tovuti ikiwa mtandaoni. Taarifa zako hazijatumwa.",
+      "net.notsent": "Haijatumwa: {e}", "net.unreach": "Hatukuweza kufikia seva. Tafadhali jaribu tena baadaye.", "alert.ok": "Tahadhari imewekwa ✓ Tutakutumia ujumbe itakapotimia.",
+      "calc.escal": "ongezeko linalotarajiwa la bei za vifaa (8 kati ya 10: {lo} hadi {hi})", "calc.money": "{v} linatarajiwa · kiwango {lo} hadi {hi}",
+      "calc.input": "Kifaa", "calc.shr": "Sehemu", "calc.avg": "Mabadiliko ya wastani yanayotarajiwa", "calc.print": "Chapisha au hifadhi kama PDF",
+      "calc.order": "Chagua mwezi wa mwisho baada ya mwanzo.", "calc.mix": "Mchanganyiko wa vifaa (%)",
+      "alert.consent": "Ninakubali kupokea tahadhari hizi kutoka CiO Costs kupitia njia iliyochaguliwa hapo juu. Jibu STOP wakati wowote kuzisimamisha.",
+      "btn.note": "Soma ripoti ya wiki", "lbl.officialdata": "Takwimu rasmi:", "lbl.offlatestmonth": "Takwimu rasmi, mwezi wa karibuni:",
+      "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
+    },
+    fr: {
+      "nav.countries": "Pays", "nav.glance": "Coûts en un coup d'œil", "nav.calc": "Calculateur d'offre", "nav.report": "Signaler des prix",
+      "nav.play": "The Cost Call", "nav.method": "Comment ça marche", "cta.join": "Rejoindre le pilote",
+      "footer.short": "CiO Lab · Les prévisions sont des estimations avec des fourchettes, pas des conseils. The Cost Call est un jeu : les points n'ont aucune valeur monétaire.",
+      "when.label": "Prévision jusqu'à", "when.note": "Les valeurs hebdomadaires sont interpolées à partir de la prévision mensuelle, mise à jour toutes les quelques heures. Les variations sont mesurées depuis la dernière donnée officielle de chaque pays (ou depuis aujourd'hui pour les indicateurs de coûts d'importation).",
+      "home.eyebrow": "Perspectives des coûts de construction · 18 pays africains", "home.h1": "Les coûts de construction vont-ils augmenter là où vous travaillez ?",
+      "home.lede": "Choisissez un mois. Voyez la probabilité que les prix des intrants de construction augmentent, de combien, et pourquoi — à partir des statistiques officielles, du pétrole et des taux de change, mis à jour toutes les quelques heures.",
+      "tool.calc.t": "Calculateur d'actualisation des offres", "tool.calc.d": "De combien les prix pourraient-ils évoluer pendant votre contrat ? Obtenez l'actualisation attendue dans votre monnaie, avec une fourchette.",
+      "tool.report.t": "Signaler un prix", "tool.report.d": "Dites-nous combien vous avez payé le ciment, l'acier, le gazole ou le sable cette semaine. Une minute suffit, et tout le monde y gagne.",
+      "tool.play.t": "The Cost Call", "tool.play.d": "Cinq pronostics par jour sur des prix réels. Gardez votre série.",
+      "tab.all": "Tous", "tab.east": "Afrique de l'Est", "tab.south": "Afrique australe", "tab.west": "Afrique de l'Ouest", "tab.north": "Afrique du Nord",
+      "tab.official": "Indice officiel des prix", "tab.indicator": "Indicateur des coûts d'importation", "tab.rising": "En hausse", "tab.easing": "En baisse",
+      "chip.official": "Indice officiel des prix", "chip.indicator": "Indicateur des coûts d'importation", "chip.featured": "À la une",
+      "lbl.chance": "probabilité de hausse", "lbl.expected": "variation attendue", "lbl.range": "fourchette probable (8 sur 10)",
+      "lbl.expected.cap": "Variation attendue", "lbl.range.cap": "Fourchette probable (8 sur 10)",
+      "btn.seecosts": "Voir les coûts : {c}", "link.makecall": "Faire votre pronostic", "btn.bymaterial": "Voir les coûts par matériau", "btn.play": "Jouer à The Cost Call",
+      "feat.bymaterial": "Par matériau, jusqu'à", "search.ph": "Rechercher un pays, un matériau ou une monnaie — ex. ciment", "empty": "Aucun pays ne correspond. Essayez « ciment », « Kenya » ou « Ouest ».",
+      "glance.h": "Coûts en un coup d'œil", "glance.sort": "Cliquez sur une colonne pour trier", "th.country": "Pays", "th.latest": "Dernière donnée officielle",
+      "th.offyear": "Variation officielle sur un an", "th.expby": "Attendu d'ici", "th.range": "Fourchette probable", "th.chance": "Probabilité de hausse",
+      "th.fx": "Monnaie face à l'USD, 13 semaines", "game.eyebrow": "Nouveau · jeu quotidien",
+      "game.teaser": "Cinq pronostics rapides par jour sur les prix réels de la construction en Afrique. Le ciment a-t-il augmenté ou baissé ? Gardez votre série, partagez votre score et mesurez votre flair face au modèle.",
+      "game.cta": "Jouer les pronostics du jour", "how1.t": "Probabilité de hausse", "how1.d": "La probabilité que les prix soient plus élevés au mois choisi. 80 % signifie environ 8 fois sur 10.",
+      "how2.t": "Variation attendue", "how2.d": "L'évolution la plus probable. Appliquez-la à votre dernier devis pour le même article.",
+      "how3.t": "Fourchette probable", "how3.d": "Là où la variation devrait se situer 8 fois sur 10. Une fourchette plus large signifie plus d'incertitude.",
+      "how4.t": "Mis à jour toutes les quelques heures", "how4.d": "Les prévisions évoluent avec les prix du pétrole, les taux de change et les nouvelles données officielles.",
+      "join.d": "Entrepreneurs, métreurs, promoteurs et prêteurs : signalez les prix que vous payez chaque semaine, jouez à The Cost Call pour des points au classement et recevez la note du lundi pour votre pays. Gratuit. Demandez un code d'invitation à CiO Lab.",
+      "join.cta": "Commencer par le jeu du jour", "crumbs.all": "Tous les pays", "sec.materials": "Coûts par matériau", "th.material": "Matériau",
+      "th.prevmonth": "Variation sur le mois précédent", "th.prevquarter": "Variation sur le trimestre précédent", "th.year": "Variation sur un an",
+      "th.why": "Ce qui le fait bouger", "sec.drivers": "Ce qui fait bouger les coûts", "sec.crowd": "Prix signalés par ceux qui achètent",
+      "alert.h": "Recevoir une alerte de prix", "alert.d": "Nous vous préviendrons quand la variation attendue d'un matériau atteindra votre seuil.",
+      "alert.at": "M'alerter à", "alert.by": "Par", "alert.contact": "Numéro ou e-mail", "alert.btn": "Créer l'alerte",
+      "embed.s": "Afficher cette prévision sur votre site", "rep.h1": "Combien avez-vous payé cette semaine ?",
+      "rep.lede": "Indiquez-nous le prix payé ou proposé pour un intrant de construction, dans l'un de nos 18 pays. Les signalements sont anonymes : nous publions des médianes par pays, article et semaine — jamais de noms, de numéros ni de signalements individuels.",
+      "rep.item": "Article", "rep.price": "Prix", "rep.unit": "Unité", "rep.town": "Ville ou quartier", "rep.from": "Acheté auprès de",
+      "rep.contact": "Votre téléphone ou e-mail", "rep.contact.note": "(facultatif, jamais publié — seulement si vous souhaitez être recontacté)",
+      "rep.send": "Envoyer le prix", "rep.others": "Ce que signalent les autres", "rep.median": "Médianes des signalements de chaque personne : les doublons ou valeurs aberrantes ne peuvent pas fausser les chiffres.",
+      "calc.h1": "De combien les prix des intrants pourraient-ils évoluer pendant votre contrat ?",
+      "calc.lede": "Indiquez votre contrat et la répartition des intrants. Vous obtenez l'actualisation attendue dans votre monnaie, avec une fourchette — un point de départ pour les provisions et les clauses de révision des prix.",
+      "calc.value": "Montant du contrat", "calc.share": "Part des intrants dans le contrat (%)", "calc.start": "Début des travaux", "calc.end": "Fin des travaux",
+      "calc.type": "Type de travaux", "calc.building": "Bâtiment", "calc.road": "Route", "calc.water": "Eau et assainissement", "calc.custom": "Répartition personnalisée",
+      "game.eyebrow2": "Jeu quotidien", "game.lede": "Cinq pronostics sur des prix réels de la construction. Chacun a-t-il augmenté ou baissé ? De nouveaux pronostics chaque jour.",
+      "calls.h": "Les pronostics de la semaine", "calls.d": "Sur les prochaines publications officielles — notés à la publication des données",
+      "m.h1": "Des statistiques officielles à une prévision utile", "m.read": "Lire les chiffres", "m.limits": "Limites",
+      "m.in": "Les données", "m.how": "La prévision", "m.check": "Les contrôles", "m.often": "La fréquence de mise à jour",
+      /* dynamic */
+      "q.official": "{c} : les prix des intrants de construction vont-ils augmenter d'ici {when} ?",
+      "q.indicator": "{c} : les coûts d'importation vont-ils faire monter les prix de la construction d'ici {when} ?",
+      "adv.up": "Prévoyez environ {x} sur les devis des travaux chiffrés jusqu'à {when}, par rapport aux prix de {base}.",
+      "adv.down": "Les prix pourraient baisser d'environ {x} d'ici {when} — envisagez de reporter les gros achats.",
+      "adv.flat": "Peu de changement attendu jusqu'à {when} — les prix de {base} restent un bon repère.",
+      "adv.ind": "Les coûts d'importation tendent à la {dir} d'environ {x} d'ici {when} — vérifiez les devis des fournisseurs avant de fixer vos prix.",
+      "adv.indflat": "Les coûts d'importation semblent stables jusqu'à {when}, mais la fourchette est large — vérifiez les devis des fournisseurs avant de fixer vos prix.",
+      "dir.up": "hausse", "dir.down": "baisse", "furthest": "(prévision la plus lointaine : {m})", "count": "{n} pays sur {m}",
+      "notsep": "Pas de prévision séparée", "weekof": "la semaine du {d}", "weekof.cap": "Semaine du {d}", "grp.weeks": "Semaines", "grp.months": "Mois",
+      "quarter": "T{q} {y}", "month.word": "mois", "quarter.word": "trimestre",
+      "gm.q": "En {when}, le prix {m} a-t-il augmenté ou baissé — {c} ?", "gm.up": "↑ Hausse", "gm.down": "↓ Baisse",
+      "gm.right": "✅ Bien joué.", "gm.wrong": "❌ Pas cette fois.", "gm.official": "Chiffre officiel : {v} par rapport au {p} précédent.",
+      "gm.next": "Pronostic suivant →", "gm.seescore": "Voir mon score", "gm.score": "{n} sur 5", "gm.newcalls": "Nouveaux pronostics demain. Série : {s} jour(s).",
+      "gm.share": "Partager le résultat", "gm.copied": "Copié ✓", "gm.see": "Voir les coûts : {c}", "gm.report": "Signaler un prix",
+      "st.played": "Parties", "st.avg": "Score moyen", "st.streak": "Série", "st.best": "Record",
+      "call.q": "{s} sera-t-il plus élevé en {when} qu'en {base} ?", "call.higher": "↑ Plus élevé", "call.lower": "↓ Plus bas",
+      "call.sure": "Quelle est votre certitude ?", "call.yours": "Votre pronostic : {a} à {c} % de certitude.", "call.model": "Modèle : {p} de chances d'être plus élevé. Noté à la publication du chiffre officiel.",
+      "call.next": "Prochaine publication officielle", "call.see": "Voir ce qui fait bouger les coûts : {c} →",
+      "rep.none": "Aucun signalement pour {c} pour l'instant. Soyez le premier.", "rep.needs": "Il faut 3 personnes — {n} cette semaine",
+      "rep.thanks": "Merci ✓ Votre prix compte dans les médianes de la semaine.", "net.offline": "L'envoi est possible une fois le site en ligne. Vos informations n'ont pas été envoyées.",
+      "net.notsent": "Non envoyé : {e}", "net.unreach": "Serveur injoignable. Réessayez dans un instant.", "alert.ok": "Alerte créée ✓ Nous vous préviendrons dès qu'elle se déclenche.",
+      "calc.escal": "actualisation attendue des intrants (8 sur 10 : {lo} à {hi})", "calc.money": "{v} attendus · fourchette {lo} à {hi}",
+      "calc.input": "Intrant", "calc.shr": "Part", "calc.avg": "Variation moyenne attendue", "calc.print": "Imprimer ou enregistrer en PDF",
+      "calc.order": "Choisissez une fin postérieure au début.", "calc.mix": "Répartition des intrants (%)",
+      "alert.consent": "J'accepte de recevoir ces alertes de CiO Costs par le canal choisi ci-dessus. Répondez STOP à tout moment pour les arrêter.",
+      "btn.note": "Lire la note hebdomadaire", "lbl.officialdata": "Données officielles :", "lbl.offlatestmonth": "Chiffres officiels, dernier mois :",
+      "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
+    },
+    en: {
+      "q.official": "Will {c}'s construction input prices rise by {when}?", "q.indicator": "Will import costs push {c}'s building prices up by {when}?",
+      "adv.up": "Allow about {x} on quotes for work priced to {when}, compared with {base} prices.",
+      "adv.down": "Prices may ease about {x} by {when} — consider delaying bulk buying.",
+      "adv.flat": "Little change expected to {when} — {base} prices are a fair guide.",
+      "adv.ind": "Import costs point {dir} about {x} by {when} — check supplier quotes before fixing prices.",
+      "adv.indflat": "Import costs look roughly flat to {when}, but the range is wide — check supplier quotes before fixing prices.",
+      "dir.up": "up", "dir.down": "down", "furthest": "(furthest forecast: {m})", "count": "{n} of {m} countries", "notsep": "Not forecast separately",
+      "weekof": "the week of {d}", "weekof.cap": "Week of {d}", "grp.weeks": "Weeks", "grp.months": "Months", "quarter": "Q{q} {y}",
+      "month.word": "month", "quarter.word": "quarter",
+      "gm.q": "In {when}, did {m} prices in {c} go up or down?", "gm.up": "↑ Up", "gm.down": "↓ Down", "gm.right": "✅ Right.", "gm.wrong": "❌ Not this time.",
+      "gm.official": "Official figure: {v} on the previous {p}.", "gm.next": "Next call →", "gm.seescore": "See my score", "gm.score": "You called {n} of 5",
+      "gm.newcalls": "New calls tomorrow. Streak: {s} day(s).", "gm.share": "Share result", "gm.copied": "Copied ✓", "gm.see": "See {c}'s costs", "gm.report": "Report a price",
+      "st.played": "Played", "st.avg": "Avg score", "st.streak": "Streak", "st.best": "Best",
+      "call.q": "Will {s} be higher in {when} than in {base}?", "call.higher": "↑ Higher", "call.lower": "↓ Lower", "call.sure": "How sure are you?",
+      "call.yours": "Your call: {a} at {c}% confidence.", "call.model": "Model: {p} chance it is higher. Scored when the official figure is published.",
+      "call.next": "Next official release", "call.see": "See the inputs driving {c}'s costs →",
+      "rep.none": "No reports yet for {c}. Be the first.", "rep.needs": "Needs 3 people — {n} so far this week",
+      "rep.thanks": "Thank you ✓ Your price is in this week's medians.", "net.offline": "Saving opens when the site is online. Your details have not been sent.",
+      "net.notsent": "Not sent: {e}", "net.unreach": "Could not reach the server. Please try again shortly.", "alert.ok": "Alert set ✓ We'll message you when it triggers.",
+      "calc.escal": "expected escalation on inputs (8 in 10: {lo} to {hi})", "calc.money": "{v} expected · range {lo} to {hi}",
+      "calc.input": "Input", "calc.shr": "Share", "calc.avg": "Average expected move", "calc.print": "Print or save as PDF",
+      "calc.order": "Choose an end month after the start.", "calc.mix": "Mix of inputs (%)",
+    },
+  };
+  let lang = "en";
+  try { lang = localStorage.getItem("cio-lang") || ""; } catch (e) { /* storage unavailable */ }
+  if (!D[lang]) { lang = "en";
+    for (const l of (navigator.languages || [navigator.language || "en"])) { const k = (l || "").slice(0, 2); if (D[k]) { lang = k; break; } } }
+  const loc = { en: "en-GB", sw: "sw", fr: "fr" }[lang];
+  function t(key, v = {}) { const s = (D[lang] && D[lang][key]) || D.en[key] || key;
+    return s.replace(/\{(\w+)\}/g, (_, k) => (v[k] !== undefined ? v[k] : "")); }
+  function month(m) { const d = new Date(Date.UTC(+m.slice(0, 4), +m.slice(5, 7) - 1, 15));
+    try { return new Intl.DateTimeFormat(loc, { month: "short", year: "numeric", timeZone: "UTC" }).format(d); }
+    catch (e) { return m; } }
+  function dayMonth(iso) { const d = new Date(iso + "T12:00:00Z");
+    try { return new Intl.DateTimeFormat(loc, { day: "numeric", month: "short", timeZone: "UTC" }).format(d); } catch (e) { return iso; } }
+  let names = null; try { names = new Intl.DisplayNames([loc], { type: "region" }); } catch (e) { /* older browser */ }
+  function country(cc, fallback) { if (lang === "en" || !cc || !names) return fallback; try { return names.of(cc) || fallback; } catch (e) { return fallback; } }
+  /* English base labels from the data ("Apr 2026", "Q2 2026") */
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  function base(b) { if (!b) return b; const q = b.match(/^Q(\d) (\d{4})$/); if (q) return t("quarter", { q: q[1], y: q[2] });
+    const m = b.match(/^(\w{3}) (\d{4})$/); if (m && MON.indexOf(m[1]) >= 0) return month(`${m[2]}-${String(MON.indexOf(m[1]) + 1).padStart(2, "0")}`); return b; }
+  function apply(root) {
+    document.documentElement.lang = lang;
+    if (lang === "en") return;
+    (root || document).querySelectorAll("[data-i18n]").forEach(el => { const k = el.dataset.i18n; if (!D[lang][k]) return;
+      const card = el.closest("[data-key]"), cc = card && card.querySelector("[data-cc]");
+      el.textContent = t(k, { c: el.dataset.c ? country(cc && cc.dataset.cc, el.dataset.c) : "" }); });
+    (root || document).querySelectorAll("[data-i18n-ph]").forEach(el => { const k = el.dataset.i18nPh; if (D[lang][k]) el.placeholder = t(k); });
+    (root || document).querySelectorAll("[data-cc]").forEach(el => { el.textContent = country(el.dataset.cc, el.textContent); });
+    (root || document).querySelectorAll("[data-matname]").forEach(el => { el.textContent = mat(el.dataset.matname); });
+  }
+  /* materials and series names (Kiswahili, French) */
+  const MAT = {
+    sw: { "Cement": "Saruji", "Diesel": "Dizeli", "Rebar": "Nondo", "Reinforcement steel": "Nondo (chuma cha kuimarisha)", "Reinforcing steel": "Nondo",
+      "Sand": "Mchanga", "Labour": "Nguvu kazi", "Roofing sheets": "Mabati", "Aggregate": "Kokoto", "Aggregate stone": "Kokoto",
+      "Concrete blocks": "Matofali ya saruji", "Timber": "Mbao", "Paint": "Rangi", "Plastic pipes": "Mabomba ya plastiki", "Tiles": "Vigae",
+      "Bricks": "Matofali", "Asphalt": "Lami", "Ready-mix concrete": "Zege tayari", "Steel and reinforcement": "Chuma na nondo",
+      "Fuel and lubricants": "Mafuta na vilainishi", "Ballast and crushed stone": "Kokoto na mawe yaliyosagwa", "Hardcore": "Mawe ya msingi",
+      "Overall construction inputs": "Vifaa vyote vya ujenzi", "Overall construction input prices": "Bei za jumla za vifaa vya ujenzi",
+      "Building cost index": "Fahirisi ya gharama za majengo", "Civil engineering cost index": "Fahirisi ya gharama za uhandisi wa kiraia",
+      "Construction input prices (whole industry)": "Bei za vifaa vya ujenzi (sekta nzima)", "Construction stone and sand": "Mawe na mchanga wa ujenzi",
+      "Civil engineering materials": "Vifaa vya uhandisi wa kiraia", "Imported-input cost pressure": "Shinikizo la gharama za vifaa vinavyoagizwa" },
+    fr: { "Cement": "Ciment", "Diesel": "Gazole", "Rebar": "Fer à béton", "Reinforcement steel": "Acier d'armature", "Reinforcing steel": "Acier d'armature",
+      "Sand": "Sable", "Labour": "Main-d'œuvre", "Roofing sheets": "Tôles de toiture", "Aggregate": "Granulats", "Aggregate stone": "Granulats",
+      "Concrete blocks": "Parpaings", "Timber": "Bois", "Paint": "Peinture", "Plastic pipes": "Tuyaux en plastique", "Tiles": "Carreaux",
+      "Bricks": "Briques", "Asphalt": "Enrobé", "Ready-mix concrete": "Béton prêt à l'emploi", "Steel and reinforcement": "Acier et armatures",
+      "Fuel and lubricants": "Carburants et lubrifiants", "Ballast and crushed stone": "Ballast et pierre concassée", "Hardcore": "Hérisson (remblai)",
+      "Overall construction inputs": "Ensemble des intrants", "Overall construction input prices": "Prix des intrants de construction",
+      "Building cost index": "Indice du coût du bâtiment", "Civil engineering cost index": "Indice du coût du génie civil",
+      "Construction input prices (whole industry)": "Prix des intrants (ensemble du secteur)", "Construction stone and sand": "Pierre et sable de construction",
+      "Civil engineering materials": "Matériaux de génie civil", "Imported-input cost pressure": "Pression des coûts d'importation" },
+  };
+  const mat = n => (MAT[lang] && MAT[lang][n]) || n;
+  return { lang, t, mat, month, dayMonth, country, base, apply, set(v) { try { localStorage.setItem("cio-lang", v); } catch (e) { /* ignore */ } location.reload(); } };
+})();

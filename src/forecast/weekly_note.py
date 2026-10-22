@@ -208,7 +208,7 @@ def crowd_section(db_path: Path, country: str) -> list[str]:
             continue
         out += [f"Prices in {cfg['currency']}.", "",
                 "| Item | Median price | Reporters | Change vs 4 weeks |", "|---|---|---|---|"]
-        out += [f"| {r['name']} | {_fmt(r['median'], 0)} per {r['unit']} | {r['reporters']} | "
+        out += [f"| {r['name']} | {(_fmt(r['median'], 0) + ' per ' + r['unit']) if r['published'] else 'waiting for 3 reporters'} | {r['reporters']} | "
                 f"{_fmt(r['change_pct'], pct=True)} |" for _, r in s.iterrows()]
         out.append("")
     return out or ["_No price reports in the last 12 weeks._"]

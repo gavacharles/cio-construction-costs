@@ -7,7 +7,7 @@ change in <series> for <country> reaches <threshold> %". Each refresh, this comp
 active alert with the next-3-month expected change in countries/<c>/outputs/forecast_latest.json
 and, when the threshold is reached (and nothing was sent in the last 7 days), writes a message
 to data/live/alerts_outbox.csv. A sender (WhatsApp Business API / Twilio, or SMTP) reads the
-outbox; until one is configured, the organiser can send these by hand.
+outbox (src/market/send_alerts.py); until one is configured, the organiser can send these by hand.
 
     python src/market/alerts.py [--db data/live/exchange.sqlite]
 """
@@ -61,8 +61,11 @@ def run(db: Path) -> int:
             with open(OUTBOX, "a", newline="") as fh:
                 w = csv.writer(fh)
                 if new:
-                    w.writerow(["queued_utc", "alert_id", "channel", "contact", "message"])
-                w.writerow([datetime.now(timezone.utc).isoformat(timespec="seconds"), a["id"], a["channel"], a["contact"], msg])
+                    w.writerow(["queued_utc", "alert_id", "channel", "contact", "message",
+                                "series", "country", "change", "month", "url"])
+                w.writerow([datetime.now(timezone.utc).isoformat(timespec="seconds"), a["id"], a["channel"], a["contact"], msg,
+                            a["series"], a["country"].replace("_", " ").title(), f"{exp:+.1f}%", month,
+                            f"{SITE}/countries/{a['country']}/"])
             p.mark_sent(a["id"])
             n += 1
     return n

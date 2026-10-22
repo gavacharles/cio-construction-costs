@@ -89,6 +89,7 @@ def refresh(db: str | None) -> None:
     run("forecasts", "src/forecast/weekly_note.py", "--country", "all", "--no-fetch", "--data-only", db=db)
     run("site", "src/site/build_index.py")
     run("alerts", "src/market/alerts.py", db=db)
+    run("send alerts", "src/market/send_alerts.py", "--send")       # sends only channels configured in cio.env
 
 
 def weekly(db: str | None) -> None:

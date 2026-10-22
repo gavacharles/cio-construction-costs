@@ -30,9 +30,9 @@ def test_crowd_summary_uses_one_median_per_reporter():
         db.add_report("a", "uganda", "cement_50kg", p, "Kampala", on=now)
     db.add_report("b", "uganda", "cement_50kg", 33000, "Jinja", on=now)
     s = db.crowd_summary("uganda", ITEMS).iloc[0]
-    assert s.reporters == 2
-    assert s["median"] == pytest.approx((99000 + 33000) / 2)   # median of per-person medians
-    assert s.change_pct == pytest.approx(((99000 + 33000) / 2 / 30000 - 1) * 100)
+    assert not s.published and s["median"] is None and s.pending == 2    # 2 people < the minimum of 3
+    s = db.crowd_summary("uganda", ITEMS, min_reporters=2).iloc[0]
+    assert s.reporters == 2 and s["median"] == pytest.approx((99000 + 33000) / 2)   # median of per-person medians
     with pytest.raises(ReportError):
         db.add_report("a", "uganda", "cement_50kg", -5, "Kampala")
     with pytest.raises(ReportError):
@@ -65,7 +65,7 @@ def test_app_flow(tmp_path, monkeypatch):
     assert c.get(f"/api/quote?m={mid}&o=1&s=10").json()["cost"] > 0
     assert "Done" in c.post(f"/m/{mid}/trade", data={"outcome": 1, "shares": 10}).text
     r = c.post("/prices", data={"item": "cement_50kg", "price": 34500, "location": "Kampala"})
-    assert "recorded" in r.text and "34,500" in r.text
+    assert "recorded" in r.text and "needs 3 people (1 so far)" in r.text
     assert "Jane Okello" in c.get("/leaderboard").text
     c.get("/logout")
     assert c.get("/home", follow_redirects=False).status_code == 303
@@ -238,8 +238,10 @@ def test_public_price_and_alert_api(tmp_path, monkeypatch):
     assert c.post("/api/public/price", json={"country": "kenya", "item": "gold", "price": 1, "location": "x"}).status_code == 400
     assert c.post("/api/public/price", json={"country": "mars", "item": "cement_50kg", "price": 1, "location": "x"}).status_code == 400
     assert c.post("/api/public/alert", json={"country": "uganda", "series": "Diesel", "threshold": 10,
+                                             "channel": "email", "contact": "a@b.co"}).status_code == 400   # no consent
+    assert c.post("/api/public/alert", json={"country": "uganda", "series": "Diesel", "threshold": 10, "consent": True,
                                              "channel": "email", "contact": "a@b.co"}).json()["ok"]
-    assert c.post("/api/public/alert", json={"country": "uganda", "series": "Diesel", "threshold": 10,
+    assert c.post("/api/public/alert", json={"country": "uganda", "series": "Diesel", "threshold": 10, "consent": True,
                                              "channel": "email", "contact": "nope"}).status_code == 400
     from reports import Participants
     with Participants(tmp_path / "pub.sqlite") as p:

@@ -39,6 +39,7 @@ settings. Any prize or cash element needs a legal opinion per country first.
 |---|---|---|---|
 | 1 | **Public site** | `public/` (built by `src/site/build_index.py`), served at `/`: front page with forecast-to picker (next 8 weeks, then months), a page per country, Costs at a glance, bid escalation calculator, report prices, price alerts, The Cost Call game, How it works, embeddable widget | Yes |
 | 1b | **Participant web app** | Same FastAPI process (`src/webapp/app.py`), login at `/app`: contracts and trading, price reports, weekly note, leaderboard, organiser admin page | Yes, invite only |
+| 1d | **Languages** | English, Kiswahili and French (switcher in the top bar; months and country names from the browser). Draft translations: review with native speakers before launch | Yes |
 | 1c | **Public API** | `POST /api/public/price` (anonymous price reports; salted-hash reporter id; 30 per IP per hour) and `POST /api/public/alert` (alert sign-ups) | Yes |
 | 2 | **Weekly notes and forecast pages** | Per country, written every Monday: the note (HTML) and the in-app **Forecast** page (from `countries/<c>/outputs/forecast_latest.json`) with range charts | Inside the app (notes optionally public) |
 | 3 | **Daily job** | Harvests UBOS, KNBS and Stats SA; settles contracts when official figures appear; refits forecasts; opens new contracts | No (scheduled job) |
@@ -129,6 +130,7 @@ key** (see `docs/DEPLOY.md` §1). No personal GitHub password or token goes on t
 | Daily 06:30 | `cycle.py daily` | Harvest official releases, settle contracts, refit on a new UBOS release, open new contracts |
 | Monday 05:00 | `cycle.py weekly` | Refresh drivers and write the 18 weekly notes |
 | Every 3 hours | `cycle.py refresh` | Latest oil and exchange rates → all 18 forecasts → public site pages (seconds) |
+| Every 3 hours | `send_alerts.py` (in refresh) | Sends queued alerts by WhatsApp Cloud API / SMTP when configured in `cio.env`; logs to `data/live/alerts_sent.csv` |
 | Every 3 hours | `alerts.py` (in refresh) | Alerts whose threshold is reached are queued in `data/live/alerts_outbox.csv` for WhatsApp/email sending |
 | Nightly 02:00 | `deploy/backup.sh` | Consistent SQLite backup, kept 30 days |
 

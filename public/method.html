@@ -4,39 +4,40 @@
 <link rel=stylesheet href="assets/cio.css"></head><body data-page="method" data-rel="">
 <header class=topbar><div class=wrap>
  <a class=mark href="index.html"><svg class=logo viewBox='0 0 24 24' width=24 height=24 aria-hidden=true><circle class=ring cx=12 cy=12 r=9.5 fill=none stroke='var(--accent-fill)' stroke-width=2 stroke-linecap=round pathLength=100 stroke-dasharray='62 38'/><circle class=orbit cx=12 cy=2.5 r=1.6 fill='var(--teal)'/><circle class=core cx=12 cy=12 r=4 fill='var(--accent-fill)'/></svg>CiO <span>Costs</span></a>
- <nav class=nav aria-label=Main><a href='index.html#countries'>Countries</a><a href='index.html#glance'>Costs at a glance</a><a href='calculator.html'>Bid calculator</a><a href='report.html'>Report prices</a><a href='play.html'>The Cost Call</a><a href='method.html' aria-current=page>How it works</a></nav>
- <a class="btn primary cta" href="index.html#join">Join the pilot</a>
+ <nav class=nav aria-label=Main><a href='index.html#countries' data-i18n='nav.countries'>Countries</a><a href='index.html#glance' data-i18n='nav.glance' class=minor>Costs at a glance</a><a href='calculator.html' data-i18n='nav.calc'>Bid calculator</a><a href='report.html' data-i18n='nav.report'>Report prices</a><a href='play.html' data-i18n='nav.play'>The Cost Call</a><a href='method.html' data-i18n='nav.method' class=minor aria-current=page>How it works</a></nav>
+ <a class="btn primary cta" href="index.html#join" data-i18n=cta.join>Join the pilot</a>
+ <select class=lang id=lang aria-label="Language"><option value=en>EN</option><option value=sw>Kiswahili</option><option value=fr>Français</option></select>
  <button class=theme id=theme type=button aria-label=Theme>◐</button>
 </div></header>
 <main class=wrap>
-<section class=prose><p class=eyebrow>How it works</p><h1>From official statistics to a forecast you can use</h1>
+<section class=prose><p class=eyebrow data-i18n=nav.method>How it works</p><h1 data-i18n=m.h1>From official statistics to a forecast you can use</h1>
 <p class=lede>CiO Costs combines official construction price statistics with the things that move construction costs
 week to week, and turns them into a chance, an expected change and a likely range for each country.</p>
 <div class=howto>
-<div class=tile><span class=num>1</span><b>What goes in</b><p>Official construction price indices where they exist
+<div class=tile><span class=num>1</span><b data-i18n=m.in>What goes in</b><p>Official construction price indices where they exist
 (Uganda, Kenya and South Africa in full; latest readings for Ghana, Zimbabwe, Senegal and Mauritius), world oil prices,
 exchange rates for 18 currencies, rainfall, and published tax changes such as fuel and cement duties.</p></div>
-<div class=tile><span class=num>2</span><b>How it is forecast</b><p>Where a country publishes a detailed index, each
+<div class=tile><span class=num>2</span><b data-i18n=m.how>How it is forecast</b><p>Where a country publishes a detailed index, each
 material is forecast from the drivers that move it — oil for diesel, the currency for imported steel, rainfall for sand
 — and added back up the way the statistics office does. Elsewhere, an import-cost indicator tracks the share of costs
 that moves with oil and the exchange rate.</p></div>
-<div class=tile><span class=num>3</span><b>How it is checked</b><p>Every method is tested on years of past data, as if
+<div class=tile><span class=num>3</span><b data-i18n=m.check>How it is checked</b><p>Every method is tested on years of past data, as if
 it had been run at the time, and kept only if it beats simple rules of thumb. In Uganda the forecasts have been about
 11–14% more accurate than a simple trend, and the likely ranges are set so that 8 in 10 past outcomes fell inside.</p></div>
-<div class=tile><span class=num>4</span><b>How often it updates</b><p>Oil and exchange rates are refreshed every few hours
+<div class=tile><span class=num>4</span><b data-i18n=m.often>How often it updates</b><p>Oil and exchange rates are refreshed every few hours
 and the forecasts with them. Official data is added within a day of publication. A written note for each country comes
 out every Monday.</p></div></div>
 <h2>Track record</h2><p>Uganda, overall construction input index, tested month by month since 2021 using only the data available at each point:</p><div class=tablewrap><table class=glance><thead><tr><th>Horizon</th><th>Errors vs a simple trend</th><th>Outcomes inside the likely range</th></tr></thead><tbody><tr><td>1 month ahead</td><td>13% smaller</td><td>89% raw → about 80% after calibration</td></tr><tr><td>3 months ahead</td><td>11% smaller</td><td>76% raw → about 80% after calibration</td></tr><tr><td>6 months ahead</td><td>11% smaller</td><td>69% raw → about 80% after calibration</td></tr><tr><td>12 months ahead</td><td>13% smaller</td><td>67% raw → about 80% after calibration</td></tr></tbody></table></div><p class=muted>Each month we will also publish our forecast next to the official figure.</p>
-<h2>Reading the numbers</h2><ul class=plain>
+<h2 data-i18n=m.read>Reading the numbers</h2><ul class=plain>
 <li><b>Chance of a rise</b>: how likely prices are to be higher by the month you pick.</li>
 <li><b>Expected change</b>: the most likely move, measured from the latest official reading (or from today for
 import-cost indicators).</li><li><b>Likely range</b>: where the change should land 8 times in 10.</li></ul>
-<h2>Limits</h2><ul class=plain><li>Forecasts are estimates, not certainties. Always use the range.</li>
+<h2 data-i18n=m.limits>Limits</h2><ul class=plain><li>Forecasts are estimates, not certainties. Always use the range.</li>
 <li>Import-cost indicators see oil and currency effects only, not local materials or labour.</li>
 <li>Where official statistics are published late, the forecast bridges the gap with the latest market data.</li>
 <li>Nothing here is financial or contractual advice.</li></ul></section>
 </main>
-<footer class=wrap>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
+<footer class=wrap data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
 value. Official data: UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD, Statistics Mauritius; oil and exchange rates from public
 market sources. Updated 2026-10-22.</footer>
 <script id=cio-data type="application/json">{"updated":"2026-10-22"}</script>

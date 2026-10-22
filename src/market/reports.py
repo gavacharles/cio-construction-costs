@@ -37,6 +37,9 @@ CREATE TABLE IF NOT EXISTS alerts (
 """
 
 
+MIN_REPORTERS = 3          # an item's median is published only once this many different people reported it
+
+
 class ReportError(ValueError):
     pass
 
@@ -146,26 +149,28 @@ class Participants:
         return pd.read_sql_query("SELECT * FROM price_reports WHERE country=? AND week>=? ORDER BY ts",
                                  self.db, params=(country, since))
 
-    def crowd_summary(self, country: str, items: list[dict], weeks_back: int = 4) -> pd.DataFrame:
-        """Per item: median of the latest week with reports, number of reports, distinct
-        reporters, and the % change against the median `weeks_back` weeks earlier.
-        Medians resist a single wrong or strategic report; one reporter per item-week
-        counts once (their median) so nobody can move the series by reporting repeatedly."""
+    def crowd_summary(self, country: str, items: list[dict], weeks_back: int = 4,
+                      min_reporters: int = MIN_REPORTERS) -> pd.DataFrame:
+        """Per item: the median of the latest week with at least `min_reporters` different
+        reporters (`published`), its reporter count, the % change against the published median
+        `weeks_back` weeks earlier, and how many reporters the current week has so far
+        (`pending`). Below the minimum nothing is published, so one or two people cannot set
+        a public price. Each reporter counts once per item-week (their own median)."""
         df = self.reports(country, since_weeks=weeks_back + 8)
         rows = []
         for it in items:
             g = df[df["item"] == it["code"]]
-            if g.empty:
-                rows.append({"item": it["code"], "name": it["name"], "unit": it["unit"], "week": None,
-                             "median": None, "reports": 0, "reporters": 0, "change_pct": None})
-                continue
-            per = g.groupby(["week", "handle"])["price"].median().groupby("week")
-            med, n_rep = per.median(), per.size()
-            last = med.index.max()
-            prior_week = week_of(date.fromisoformat(last) - timedelta(weeks=weeks_back))
-            prior = med[med.index <= prior_week]
-            rows.append({"item": it["code"], "name": it["name"], "unit": it["unit"], "week": last,
-                         "median": float(med[last]), "reports": int((g["week"] == last).sum()),
-                         "reporters": int(n_rep[last]),
-                         "change_pct": (float(med[last] / prior.iloc[-1] - 1) * 100) if len(prior) else None})
+            row = {"item": it["code"], "name": it["name"], "unit": it["unit"], "week": None, "median": None,
+                   "reports": int(len(g)), "reporters": 0, "change_pct": None, "published": False, "pending": 0}
+            if not g.empty:
+                per = g.groupby(["week", "handle"])["price"].median().groupby("week")
+                med, n_rep = per.median(), per.size()
+                row["pending"] = int(n_rep[n_rep.index.max()])
+                ok = med[n_rep >= min_reporters]
+                if len(ok):
+                    last = ok.index.max()
+                    prior = ok[ok.index <= week_of(date.fromisoformat(last) - timedelta(weeks=weeks_back))]
+                    row.update(week=last, median=float(ok[last]), reporters=int(n_rep[last]), published=True,
+                               change_pct=(float(ok[last] / prior.iloc[-1] - 1) * 100) if len(prior) else None)
+            rows.append(row)
         return pd.DataFrame(rows)

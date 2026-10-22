@@ -287,10 +287,13 @@ def prices(request: Request, msg: str = "", err: str = ""):
     items = cfg.get("price_items", [])
     opts = "".join(f"<option value='{e(i['code'])}'>{e(i['name'])} (per {e(i['unit'])})</option>" for i in items)
     s = people().crowd_summary(user["country"], items)
+    def shown(r):
+        return num(r["median"], ",.0f") if r["published"] else f"needs 3 people ({r['pending']} so far)"
+
     def num(x, fmt):
         return "" if x is None or x != x else format(x, fmt)
     rows = "".join(
-        f"<tr><td>{e(r['name'])}</td><td>{num(r['median'], ',.0f')}</td><td>{r['reporters']}</td>"
+        f"<tr><td>{e(r['name'])}</td><td>{shown(r)}</td><td>{r['reporters']}</td>"
         f"<td>{num(r['change_pct'], '+.1f')}{'%' if num(r['change_pct'], '+.1f') else ''}</td></tr>"
         for _, r in s.iterrows())
     note = f"<p class=ok>{e(msg)}</p>" if msg else (f"<p class=err>{e(err)}</p>" if err else "")
@@ -517,6 +520,8 @@ async def public_alert(request: Request):
         country = str(d.get("country", ""))
         if country not in COUNTRIES:
             raise ReportError("unknown country")
+        if not d.get("consent"):
+            raise ReportError("please tick the box to agree to receive alerts")
         aid = people().add_alert(country, str(d.get("series", ""))[:80], float(d.get("threshold", 0)),
                                  str(d.get("channel", "")), str(d.get("contact", ""))[:120])
         return {"ok": True, "id": aid}
