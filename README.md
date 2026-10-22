@@ -54,5 +54,5 @@ python src/market/cycle.py weekly                                # refresh drive
 CIO_SECURE_COOKIES=0 CIO_ADMIN_KEY=dev uvicorn --app-dir src/webapp app:app --port 8000
 pytest -q
 ```
-Deployment: `docs/DEPLOY.md`. Operations: `docs/OPERATIONS.md`. Methods: `docs/FORECAST_MODEL.md`,
+How the forecasts work: `FORECASTING.md`. Deployment: `docs/DEPLOY.md`. Operations: `docs/OPERATIONS.md`. Methods: `docs/FORECAST_MODEL.md`,
 `docs/MARKET_DESIGN.md`. Country status: `docs/COUNTRIES.md`.
