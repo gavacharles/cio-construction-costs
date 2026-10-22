@@ -174,7 +174,7 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         "## Official figures", "", offl, "",
         "## How to read this", "",
         "\"Likely\" means about 7 times in 10; \"almost certain\" about 9 in 10. Changes are measured from today. "
-        "These are estimates, not advice.", "",
+        "CiO Costs is a forecasting tool: these are estimates with a range, not official statistics, a price list or advice.", "",
         f"[See all the figures for {country}]({page})", "",
         *([f"Get this note free every week: [follow CiO Costs on WhatsApp]({channel})", ""] if channel else []),
         "_CiO Costs · free weekly note · CiO Lab_", ""])
@@ -188,5 +188,5 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         f"✅ {todo[0]}", "",
         f"More: {page if site_url else 'CiO Costs site'} · Report prices: {(site_url.rstrip('/') + '/report.html') if site_url else 'CiO Costs site'}",
         *([f"📲 Free every week: {channel}"] if channel else []),
-        "_Estimates, not advice._"])
+        "_A forecast, not a guarantee or advice._"])
     return md, txt.replace("  ", " ")

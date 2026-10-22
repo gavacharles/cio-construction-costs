@@ -236,7 +236,9 @@ def _home(cs, months, default, feat, tab_html, cards):
 <section class=hero><div><p class=eyebrow data-i18n=home.eyebrow>Construction cost outlook · 18 African countries</p>
  <h1 data-i18n=home.h1>Will building costs rise where you work?</h1>
  <p class=lede data-i18n=home.lede>Choose your country and a date. See whether building material prices are likely to go up, by how much,
- and what that means for the price you pay — updated every few hours.</p></div>
+ and what that means for the price you pay — updated every few hours.</p>
+ <p class=whatis data-i18n=whatis>CiO Costs is a forecasting tool. It estimates how building material prices are likely to move, with a range.
+ It is not an official statistic, a price list or financial advice.</p></div>
  <div class=hero-side><label class="when-box country-pick"><span data-i18n=pick.country>Your country</span><select id=mycountry aria-label="Your country">
  {''.join(f"<option value={c['key']}>{c['flag']} {e(c['country'])}</option>" for c in sorted(cs, key=lambda c: c['country']))}</select></label>
  {picker(months, default)}</div></section>
@@ -250,6 +252,7 @@ def _home(cs, months, default, feat, tab_html, cards):
  <div class=feat-odds><div class=needle data-needle aria-hidden=true></div><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div>
  <div><span class='pct small' data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
+ <p class=fineprint data-i18n=fc.note>Forecast, not a guarantee: 8 times in 10 the real change falls inside the range.</p>
  <div class=chart data-chart></div>
  <p class='advice big' data-advice></p>
  <div class=buy><span data-i18n=buy.q>What are you buying?</span>{BUY}</div>
@@ -379,6 +382,7 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <div class=feat-odds><div class=needle data-needle aria-hidden=true></div><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div>
  <div><span class='pct small' data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
+ <p class=fineprint data-i18n=fc.note>Forecast, not a guarantee: 8 times in 10 the real change falls inside the range.</p>
  <div class=chart>{chart_svg(c)}</div><p class='advice big' data-advice></p>
  {track_country(c, crowd_rows)}
  {MONEY}
@@ -394,6 +398,7 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <div class=tile><b>Official data</b><p>{e(c['base'])} is the latest period in the forecast's base. New official releases are
  added within a day of publication.</p></div></div></section>
 <section><div class=section-h><h2 data-i18n=sec.crowd>Prices reported by people who buy them</h2>
+<p class=fineprint data-i18n=crowd.note>Typical prices reported by buyers — not official or supplier prices.</p>
 <a class='btn primary' href="../../report.html#{c['key']}" data-i18n=tool.report.t>Report a price</a></div>{crowd_sec}</section>
 <section class=alertbox data-country={c['key']}><div><h2 data-i18n=alert.h>Get a price alert</h2><p data-i18n=alert.d>We'll message you when the expected change
 for a material in {e(c['country'])} reaches your level.</p></div>
@@ -563,6 +568,7 @@ anonymous: we publish medians by country, item and week — never names, numbers
  <label><span data-i18n=rep.contact>Your phone or email</span> <span class=muted data-i18n=rep.contact.note>(optional, never published — only if you want follow-ups)</span><input name=contact></label>
  <button class='btn primary big' type=submit data-i18n=rep.send>Send price</button><p class='formmsg muted' role=status></p></form>
  <aside class=panel><h2 data-i18n=rep.others>What others report</h2><div id=crowdview></div>
+ <p class=fineprint data-i18n=crowd.note>Typical prices reported by buyers — not official or supplier prices.</p>
  <p class=muted data-i18n=rep.median>Medians of each person's reports, so repeated or wild entries can't move the numbers.</p></aside></section>
 """
 

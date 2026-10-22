@@ -331,7 +331,7 @@
       <div class=emb-row><div class=needle data-needle aria-hidden=true></div><div><span class="pct verdict">${verdict(q, p)}</span>
       <span class=pct-l>${tr("v.sub", { x: pct(q.median), when: tLabel(tg) })} · ${Math.round(p * 100)}% ${tr("lbl.chance")}</span></div></div>
       <p class=emb-adv>${advice(c, q, tg)}</p>
-      <a class=link rel=noopener href="${home}countries/${k}/index.html">${tr("emb.full")}</a>`;
+      <div class=emb-foot><a class=link rel=noopener href="${home}countries/${k}/index.html">${tr("emb.full")}</a><span class=fineprint>${tr("emb.notadvice")}</span></div>`;
     em.dataset.trend = q.median > 0.05 ? "rising" : (q.median < -0.05 ? "easing" : "flat"); needle(em, p);
     const send = () => parent !== window && parent.postMessage({ cio: "h", id: ps.get("id"), h: document.documentElement.scrollHeight }, "*");
     send(); if (window.ResizeObserver) new ResizeObserver(send).observe(document.body); }

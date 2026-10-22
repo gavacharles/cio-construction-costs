@@ -33,7 +33,7 @@ Latest official reading: ANSD Indice des prix des materiaux de construction (IMC
 
 ## How to read this
 
-"Likely" means about 7 times in 10; "almost certain" about 9 in 10. Changes are measured from today. These are estimates, not advice.
+"Likely" means about 7 times in 10; "almost certain" about 9 in 10. Changes are measured from today. CiO Costs is a forecasting tool: these are estimates with a range, not official statistics, a price list or advice.
 
 [See all the figures for Senegal](../index.html)
 
