@@ -27,7 +27,7 @@ sudo -iu cio bash -c '
 sudo mkdir -p /etc/cio
 sudo cp /srv/cio-construction-costs/deploy/cio.env.example /etc/cio/cio.env
 sudo nano /etc/cio/cio.env          # set CIO_ADMIN_KEY to a long random password
-sudo chmod 600 /etc/cio/cio.env
+sudo chown root:cio /etc/cio/cio.env && sudo chmod 640 /etc/cio/cio.env   # readable by the app user's jobs
 ```
 
 Generate a password with `openssl rand -base64 24`. Keep it in a password manager.
@@ -104,6 +104,8 @@ sudo systemctl restart cio-app
 - Cookies are HTTPS-only and http-only.
 - The organiser password lives in `/etc/cio/cio.env`; it never appears in URLs.
 - Failed logins are limited to 10 per IP per 15 minutes.
+- The scheduled jobs read `CIO_DB` from `/etc/cio/cio.env`, so on a demo server they update the
+  demo database and on the live server the live one.
 - Participant data (names, organisations, prices) stays on the server and in backups. It is never
   committed to git: `data/live/` is ignored.
 - Before a live pilot, publish a short privacy notice saying what is collected and why.

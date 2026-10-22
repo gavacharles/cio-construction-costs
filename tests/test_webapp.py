@@ -185,3 +185,30 @@ def test_cost_pressure_indicator():
     f = forecast("ugx_per_usd", horizons=(3, 6))
     assert f[3][1] <= f[3][0] <= f[3][2] and f[6][2] >= f[3][2]          # wider range further out
     assert 0 < W_FUEL < W_IMPORT < 1
+
+
+def test_forecast_page(tmp_path, monkeypatch):
+    if not (ROOT / "countries" / "uganda" / "outputs" / "forecast_latest.json").exists():
+        pytest.skip("no forecast_latest.json yet (run weekly_note.py)")
+    monkeypatch.setenv("CIO_DB", str(tmp_path / "f.sqlite"))
+    monkeypatch.setenv("CIO_ADMIN_KEY", "k")
+    monkeypatch.setenv("CIO_SECURE_COOKIES", "0")
+    import importlib
+    import app as webapp
+    importlib.reload(webapp)
+    from fastapi.testclient import TestClient
+    c = TestClient(webapp.app)
+    c.post("/admin/login", data={"key": "k"})
+    code = c.post("/admin/invite", data={"name": "A", "org": "", "country": "uganda"},
+                  follow_redirects=False).headers["location"].split("made=")[1]
+    c.post("/login", data={"code": code})
+    html = c.get("/forecast").text
+    assert "Forecast — Uganda" in html and "<svg" in html and "Overall construction inputs" in html
+
+
+def test_cycle_follows_app_database(monkeypatch):
+    import importlib, sys as _s
+    monkeypatch.setenv("CIO_DB", "/tmp/demo.sqlite")
+    import run_market
+    importlib.reload(run_market)
+    assert str(run_market.DEFAULT_DB) == "/tmp/demo.sqlite"

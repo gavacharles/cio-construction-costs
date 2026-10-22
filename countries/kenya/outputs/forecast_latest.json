@@ -1,0 +1,58 @@
+{
+ "country": "Kenya",
+ "key": "kenya",
+ "currency": "KES",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 129.83,
+  "fx_13w_pct": 0.4245786893830594
+ },
+ "rows": [
+  {
+   "series": "Overall construction input prices",
+   "period": "Q3 2026",
+   "median": -1.537461370071648,
+   "lo": -2.9891418021963316,
+   "hi": -0.08578093794696406
+  },
+  {
+   "series": "Overall construction input prices",
+   "period": "Q4 2026",
+   "median": 0.704248147413728,
+   "lo": -1.6448798817398909,
+   "hi": 3.053376176567347
+  },
+  {
+   "series": "Building cost index",
+   "period": "Q3 2026",
+   "median": -0.8226698655085327,
+   "lo": -2.3647781303941824,
+   "hi": 0.719438399377117
+  },
+  {
+   "series": "Building cost index",
+   "period": "Q4 2026",
+   "median": 0.8558043979221528,
+   "lo": -1.3621463356555437,
+   "hi": 3.0737551314998495
+  },
+  {
+   "series": "Civil engineering cost index",
+   "period": "Q3 2026",
+   "median": -1.680579182431949,
+   "lo": -3.1675125030536257,
+   "hi": -0.19364586181027188
+  },
+  {
+   "series": "Civil engineering cost index",
+   "period": "Q4 2026",
+   "median": 0.6862768332981495,
+   "lo": -1.8988845794325684,
+   "hi": 3.2714382460288673
+  }
+ ],
+ "kind": "quarterly",
+ "basis": "Change from the latest KNBS print (Q2 2026), conditioned on the oil and shilling months already observed"
+}

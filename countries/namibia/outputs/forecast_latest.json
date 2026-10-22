@@ -1,0 +1,31 @@
+{
+ "country": "Namibia",
+ "key": "namibia",
+ "currency": "NAD",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 16.4345,
+  "fx_13w_pct": -0.17857251319552958
+ },
+ "kind": "pressure",
+ "basis": "Imported-input cost pressure from oil in NAD and the exchange rate; an indicator, not a price index",
+ "observed_3m": 4.234846938681365,
+ "rows": [
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 3 months",
+   "median": 0.3816270753479456,
+   "lo": -2.901969040474892,
+   "hi": 3.9444013982963666
+  },
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 6 months",
+   "median": 0.40309779959292413,
+   "lo": -4.432323820464549,
+   "hi": 5.454418006189847
+  }
+ ]
+}

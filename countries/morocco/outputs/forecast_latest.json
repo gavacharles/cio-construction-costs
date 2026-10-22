@@ -1,0 +1,31 @@
+{
+ "country": "Morocco",
+ "key": "morocco",
+ "currency": "MAD",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 9.7422,
+  "fx_13w_pct": 4.565945388974746
+ },
+ "kind": "pressure",
+ "basis": "Imported-input cost pressure from oil in MAD and the exchange rate; an indicator, not a price index",
+ "observed_3m": 6.421775618895582,
+ "rows": [
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 3 months",
+   "median": 0.07246571347494957,
+   "lo": -2.9622107010940857,
+   "hi": 4.882535316169729
+  },
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 6 months",
+   "median": 0.1577754959413613,
+   "lo": -4.399332289619492,
+   "hi": 5.649860784582498
+  }
+ ]
+}

@@ -145,6 +145,8 @@ error comes from forecasting the economy itself. Details: `countries/uganda/outp
   - participants' prices and the open contracts,
   - method and sources.
   A contractor applies the expected % to their own latest quote for the same item.
+- **Forecast page in the app** (`/forecast`): the same numbers as the note, from
+  `countries/<country>/outputs/forecast_latest.json`, with a range chart per row.
 - **Forecast tables:** `countries/uganda/outputs/forecast/`: forecast paths for every scenario, each
   component's contribution, coefficients, backtest results, range calibration, stability.
 - **Contract opening prices.** Each contract opens at the forecast's probabilities, using whichever

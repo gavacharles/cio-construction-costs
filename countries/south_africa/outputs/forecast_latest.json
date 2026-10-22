@@ -1,0 +1,70 @@
+{
+ "country": "South Africa",
+ "key": "south_africa",
+ "currency": "ZAR",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 16.4345,
+  "fx_13w_pct": -0.17857251319552958
+ },
+ "rows": [
+  {
+   "series": "Construction input prices (whole industry)",
+   "period": "Sep 2026",
+   "median": 0.30245524866581236,
+   "lo": null,
+   "hi": null,
+   "last_change": 0.18,
+   "year_change": 8.26210826210827
+  },
+  {
+   "series": "Cement",
+   "period": "Sep 2026",
+   "median": 0.22315050332025993,
+   "lo": null,
+   "hi": null,
+   "last_change": -0.25,
+   "year_change": 3.412969283276457
+  },
+  {
+   "series": "Ready-mix concrete",
+   "period": "Sep 2026",
+   "median": 0.0681743219214298,
+   "lo": null,
+   "hi": null,
+   "last_change": 3.59,
+   "year_change": 15.99642537980339
+  },
+  {
+   "series": "Reinforcing steel",
+   "period": "Sep 2026",
+   "median": -0.23278897979386098,
+   "lo": null,
+   "hi": null,
+   "last_change": 0.5,
+   "year_change": 9.10075839653306
+  },
+  {
+   "series": "Construction stone and sand",
+   "period": "Sep 2026",
+   "median": -0.0856779996123187,
+   "lo": null,
+   "hi": null,
+   "last_change": -2.34,
+   "year_change": 2.3642732049036885
+  },
+  {
+   "series": "Civil engineering materials",
+   "period": "Sep 2026",
+   "median": 0.2034400790129179,
+   "lo": null,
+   "hi": null,
+   "last_change": -0.52,
+   "year_change": 4.678899082568799
+  }
+ ],
+ "kind": "nowcast",
+ "basis": "Stats SA August 2026 release; expected change next month from recent patterns (contract opening price)"
+}

@@ -1,0 +1,31 @@
+{
+ "country": "Nigeria",
+ "key": "nigeria",
+ "currency": "NGN",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 1331.0284,
+  "fx_13w_pct": -3.5261770805556703
+ },
+ "kind": "pressure",
+ "basis": "Imported-input cost pressure from oil in NGN and the exchange rate; an indicator, not a price index",
+ "observed_3m": 2.461947552301842,
+ "rows": [
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 3 months",
+   "median": 0.8465757878220348,
+   "lo": -2.9267986163500836,
+   "hi": 13.508503835037544
+  },
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 6 months",
+   "median": 2.6646594950233826,
+   "lo": -3.1138318010149812,
+   "hi": 26.192236765381487
+  }
+ ]
+}

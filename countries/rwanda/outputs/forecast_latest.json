@@ -1,0 +1,31 @@
+{
+ "country": "Rwanda",
+ "key": "rwanda",
+ "currency": "RWF",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 1475.6034,
+  "fx_13w_pct": 0.21286696018727458
+ },
+ "kind": "pressure",
+ "basis": "Imported-input cost pressure from oil in RWF and the exchange rate; an indicator, not a price index",
+ "observed_3m": 4.301948878312185,
+ "rows": [
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 3 months",
+   "median": 0.8619758125810417,
+   "lo": -0.720541470569076,
+   "hi": 3.8810954231217387
+  },
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 6 months",
+   "median": 1.9752502886868362,
+   "lo": -0.7503541644973439,
+   "hi": 5.450373579352998
+  }
+ ]
+}

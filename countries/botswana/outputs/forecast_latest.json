@@ -1,0 +1,31 @@
+{
+ "country": "Botswana",
+ "key": "botswana",
+ "currency": "BWP",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 13.7446,
+  "fx_13w_pct": 1.3015919811320886
+ },
+ "kind": "pressure",
+ "basis": "Imported-input cost pressure from oil in BWP and the exchange rate; an indicator, not a price index",
+ "observed_3m": 5.107251664323971,
+ "rows": [
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 3 months",
+   "median": 0.2809129138794386,
+   "lo": -2.056351719930145,
+   "hi": 3.75760494792845
+  },
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 6 months",
+   "median": 0.7983910431959873,
+   "lo": -3.2009221856579155,
+   "hi": 5.669343026005027
+  }
+ ]
+}

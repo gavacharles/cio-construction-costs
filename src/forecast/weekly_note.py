@@ -26,6 +26,8 @@ The participant app shows the latest note for the participant's country.
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import html
 import sys
 from datetime import date
@@ -44,7 +46,15 @@ from index_structure import read_release, latest_weighted_release            # n
 from model import ForecastModel, load_macro, load_policy_events, known_primitives  # noqa: E402
 
 NOTES = ROOT / "countries"
-DEFAULT_DB = ROOT / "data" / "live" / "exchange.sqlite"
+DEFAULT_DB = Path(os.environ.get("CIO_DB", ROOT / "data" / "live" / "exchange.sqlite"))
+
+# Structured copy of each note's forecast, saved as countries/<c>/outputs/forecast_latest.json
+# for the participant app's Forecast page (same numbers as the note, by construction).
+_DATA: dict = {}
+
+
+def _rec(**row) -> None:
+    _DATA.setdefault("rows", []).append(row)
 KEY = {"ALL": "Overall construction inputs", "diesel": "Diesel", "cement": "Cement",
        "high tensile steel bars": "Rebar", "sand": "Sand", "labour": "Labour"}
 
@@ -178,6 +188,10 @@ def uganda_body(weekly) -> list[str]:
              "| Series | Month | Expected | Range | Without new data |", "|---|---|---|---|---|"]
     lines += [f"| {r.series} | {r.month} | {r['median']:+.1f}% | {r.lo:+.1f}% to {r.hi:+.1f}% | "
               f"{r.without_new_data:+.1f}% |" for _, r in fc.iterrows()]
+    _DATA.update(kind="structural", basis=f"Change from the last UBOS release ({origin:%B %Y}), "
+                 f"with {n_known} months of oil and shilling readings since then built in")
+    for _, r in fc.iterrows():
+        _rec(series=r.series, period=r.month, median=r["median"], lo=r.lo, hi=r.hi, without=r.without_new_data)
     lines += ["", "July 2026 excise changes (fuel +Shs200/l, cement, paint) are included at 50% pass-through."]
     return lines
 
@@ -219,6 +233,10 @@ def kenya_body(weekly) -> list[str]:
             months = int(D["months"].get(futq[h - 1], 0)) if futq[h - 1] in D.index else 0
             lines.append(f"| {m['title']} | Q{futq[h - 1].quarter} {futq[h - 1].year} | {med:+.1f}% | "
                          f"{med - half:+.1f}% to {med + half:+.1f}% | {months} of 3 |")
+            _rec(series=m["title"], period=f"Q{futq[h - 1].quarter} {futq[h - 1].year}", median=med,
+                 lo=med - half, hi=med + half)
+    _DATA.update(kind="quarterly", basis=f"Change from the latest KNBS print (Q{latest.quarter} {latest.year}), "
+                 "conditioned on the oil and shilling months already observed")
     return lines
 
 
@@ -244,6 +262,10 @@ def south_africa_body(weekly) -> list[str]:
         exp = expected_change(predictive_probs(r, nxt, m["cuts"], 1, 0.02), m["cuts"]) if len(r) > 24 else np.nan
         lines.append(f"| {m['title']} | {_fmt(fp['value'] if fp else None, 2, pct=True)} | "
                      f"{_fmt(y1, pct=True)} | {_fmt(exp, 2, pct=True)} |")
+        _rec(series=m["title"], period=f"{nxt:%b %Y}", median=None if pd.isna(exp) else exp, lo=None, hi=None,
+             last_change=fp["value"] if fp else None, year_change=None if pd.isna(y1) else y1)
+    _DATA.update(kind="nowcast", basis=f"Stats SA {latest:%B %Y} release; expected change next month "
+                 "from recent patterns (contract opening price)")
     lines += ["", f"Expected = the opening price of the {nxt:%B %Y} contract (recent change patterns; backtest over "
               "43 months beat plain frequencies for 7 of 12 contract-horizons, none significantly). A driver-based "
               "South Africa model is next."]
@@ -259,6 +281,7 @@ def official_reading(country: str) -> list[str]:
              f"{r['change_period_pct']:+.1f}% on the previous period" if r.get("change_period_pct") is not None else None,
              f"{r['change_year_pct']:+.1f}% on a year earlier" if r.get("change_year_pct") is not None else None]
     q = "" if r.get("quality") == "official" else " (official figure as reported in the press; verify)"
+    _DATA["official"] = r
     return [f"**Latest official reading:** {r['series']}, {r['period']}: "
             + ", ".join(x for x in parts if x) + f"{q}. Source: {r['source']}", ""]
 
@@ -277,8 +300,11 @@ def pressure_section(country: str) -> list[str]:
              "official baskets in the pilot countries; an indicator, not a price index):", "",
              "| Window | Pressure on input costs | 80% range |", "|---|---|---|",
              f"| Last 3 months (observed) | {last3:+.1f}% | – |"]
+    _DATA.update(kind="pressure", basis=f"Imported-input cost pressure from oil in {ccy_code} and the exchange "
+                 "rate; an indicator, not a price index", observed_3m=last3)
     for h, (med, lo, hi) in fc.items():
         lines.append(f"| Next {h} months | {med:+.1f}% | {lo:+.1f}% to {hi:+.1f}% |")
+        _rec(series="Imported-input cost pressure", period=f"Next {h} months", median=med, lo=lo, hi=hi)
     lines += ["", "In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official "
               "construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of "
               "cost moves, not local materials or labour. Price reports from participants fill that gap."]
@@ -303,6 +329,13 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
     cfg = load_country(country)
     weekly = pd.read_csv(ROOT / "data" / "shared" / "weekly_drivers.csv", parse_dates=["date"]).set_index("date")
     today = date.today()
+    _DATA.clear()
+    _DATA.update(country=cfg["country"], key=country, currency=cfg["currency"], generated=today.isoformat())
+    ccy_code, col = ccy(country)
+    _DATA["drivers"] = {"brent_usd": float(weekly["brent_usd"].dropna().iloc[-1]),
+                        "brent_13w_pct": _chg(weekly["brent_usd"], 91),
+                        "fx": float(weekly[col].dropna().iloc[-1]) if col in weekly and weekly[col].notna().any() else None,
+                        "fx_13w_pct": _chg(weekly[col], 91) if col in weekly else None}
     lines = [f"# {cfg['country']} construction cost note — week of {today:%d %B %Y}", "", HEADER, "",
              "## This week's drivers", ""] + drivers_section(weekly, country) + [""]
     lines += BODIES[country](weekly) if country in BODIES else generic_body(weekly, country)
@@ -311,6 +344,10 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
     lines += ["", "## Sources", "",
               "UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), "
               "ERA5 (rainfall); methods in docs/FORECAST_MODEL.md and docs/OPERATIONS.md."]
+    out = ROOT / "countries" / country / "outputs"
+    out.mkdir(parents=True, exist_ok=True)
+    clean = json.loads(json.dumps(_DATA, default=lambda x: None if x is None else float(x)).replace("NaN", "null"))
+    (out / "forecast_latest.json").write_text(json.dumps(clean, indent=1), encoding="utf-8")
     return _write(country, "\n".join(lines) + "\n", today)
 
 

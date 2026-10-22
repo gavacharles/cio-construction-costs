@@ -1,0 +1,112 @@
+{
+ "country": "Uganda",
+ "key": "uganda",
+ "currency": "UGX",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 4177.5965,
+  "fx_13w_pct": 13.136941528062774
+ },
+ "kind": "structural",
+ "basis": "Change from the last UBOS release (April 2026), with 6 months of oil and shilling readings since then built in",
+ "rows": [
+  {
+   "series": "Overall construction inputs",
+   "period": "Oct 2026",
+   "median": 2.9269605550464846,
+   "lo": 2.008012764736627,
+   "hi": 5.249819000031632,
+   "without": 3.115651056487053
+  },
+  {
+   "series": "Overall construction inputs",
+   "period": "Jan 2027",
+   "median": 5.604961707101808,
+   "lo": 4.077434942952827,
+   "hi": 8.507725612573875,
+   "without": 4.079226310254569
+  },
+  {
+   "series": "Diesel",
+   "period": "Oct 2026",
+   "median": 11.75204916833249,
+   "lo": 5.522888407099363,
+   "hi": 22.87259567710646,
+   "without": 12.094195494653007
+  },
+  {
+   "series": "Diesel",
+   "period": "Jan 2027",
+   "median": 24.334714239587562,
+   "lo": 15.025337538284765,
+   "hi": 39.17761367334706,
+   "without": 14.226806468901216
+  },
+  {
+   "series": "Cement",
+   "period": "Oct 2026",
+   "median": 2.506819156207577,
+   "lo": -2.186757240701324,
+   "hi": 8.061037778008421,
+   "without": 3.572245563798333
+  },
+  {
+   "series": "Cement",
+   "period": "Jan 2027",
+   "median": 4.796767131387064,
+   "lo": -2.1166320603137194,
+   "hi": 12.398297498426743,
+   "without": 4.268297556648946
+  },
+  {
+   "series": "Rebar",
+   "period": "Oct 2026",
+   "median": 4.17975286704074,
+   "lo": 1.8330480535978397,
+   "hi": 8.593478263043082,
+   "without": 2.1560601849570844
+  },
+  {
+   "series": "Rebar",
+   "period": "Jan 2027",
+   "median": 6.729497150270561,
+   "lo": 2.9485876647264435,
+   "hi": 12.086995803415098,
+   "without": 3.8094190026158827
+  },
+  {
+   "series": "Sand",
+   "period": "Oct 2026",
+   "median": 1.2879097189359996,
+   "lo": -1.008571100601202,
+   "hi": 11.286163976300243,
+   "without": 1.4828851333250128
+  },
+  {
+   "series": "Sand",
+   "period": "Jan 2027",
+   "median": 2.6431742304066574,
+   "lo": -0.9703083035243991,
+   "hi": 12.795842350202705,
+   "without": 2.509085759465094
+  },
+  {
+   "series": "Labour",
+   "period": "Oct 2026",
+   "median": 0.9319982566341025,
+   "lo": -0.16609055780682666,
+   "hi": 2.489776601223389,
+   "without": 0.9303201254557933
+  },
+  {
+   "series": "Labour",
+   "period": "Jan 2027",
+   "median": 1.5193838929036971,
+   "lo": 0.05318503441213807,
+   "hi": 4.2670365753469,
+   "without": 1.4729398829249192
+  }
+ ]
+}

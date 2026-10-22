@@ -38,7 +38,7 @@ settings. Any prize or cash element needs a legal opinion per country first.
 | # | Service | What it is | Public? |
 |---|---|---|---|
 | 1 | **Participant web app** | FastAPI app (`src/webapp/app.py`): invite-code login, contracts and trading, price reports, weekly note, leaderboard, organiser admin page | Yes, over HTTPS on your domain |
-| 2 | **Weekly notes** | HTML pages per country, written every Monday; shown inside the app. They can also be published as open pages for sharing | Inside the app (optionally public) |
+| 2 | **Weekly notes and forecast pages** | Per country, written every Monday: the note (HTML) and the in-app **Forecast** page (from `countries/<c>/outputs/forecast_latest.json`) with range charts | Inside the app (notes optionally public) |
 | 3 | **Daily job** | Harvests UBOS, KNBS and Stats SA; settles contracts when official figures appear; refits forecasts; opens new contracts | No (scheduled job) |
 | 4 | **Weekly job** | Refreshes Brent, 18 exchange rates, IMF history and rainfall; writes the 18 notes | No (scheduled job) |
 | 5 | **Database** | One SQLite file: participants, invite codes, trades, positions, contracts, price reports | No, never exposed |
@@ -90,7 +90,7 @@ outreach material (local only).
 | **Users** | `cio` (system user that owns the app and runs cron); your admin login with sudo |
 | **App directory** | `/srv/cio-construction-costs` |
 | **Backups directory** | `/srv/cio_backups` |
-| **Secrets file** | `/etc/cio/cio.env` (root-owned, chmod 600) |
+| **Secrets file** | `/etc/cio/cio.env` (owner root, group `cio`, chmod 640; the app and its jobs read it) |
 
 **Capacity:** the pilot (hundreds of participants, 18 countries) uses well under 1 GB of disk for
 the database and notes; the official PDFs add about 60 MB. Expected load is light. If it grows to

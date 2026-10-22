@@ -1,0 +1,31 @@
+{
+ "country": "Tanzania",
+ "key": "tanzania",
+ "currency": "TZS",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 2640.5241,
+  "fx_13w_pct": 0.32209919711518875
+ },
+ "kind": "pressure",
+ "basis": "Imported-input cost pressure from oil in TZS and the exchange rate; an indicator, not a price index",
+ "observed_3m": 4.206368892681285,
+ "rows": [
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 3 months",
+   "median": 0.262107719499598,
+   "lo": -2.6824952873020536,
+   "hi": 3.8521317139318167
+  },
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 6 months",
+   "median": 0.6283746786906086,
+   "lo": -3.5154496592470164,
+   "hi": 5.438540635793573
+  }
+ ]
+}

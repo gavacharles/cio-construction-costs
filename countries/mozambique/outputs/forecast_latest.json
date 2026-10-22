@@ -1,0 +1,31 @@
+{
+ "country": "Mozambique",
+ "key": "mozambique",
+ "currency": "MZN",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 63.8655,
+  "fx_13w_pct": 0.06345475910691789
+ },
+ "kind": "pressure",
+ "basis": "Imported-input cost pressure from oil in MZN and the exchange rate; an indicator, not a price index",
+ "observed_3m": 4.058028945320364,
+ "rows": [
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 3 months",
+   "median": -0.2356882302286767,
+   "lo": -1.5894483171737672,
+   "hi": 2.9076492647868157
+  },
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 6 months",
+   "median": -0.18703785327885303,
+   "lo": -2.469989689619121,
+   "hi": 3.798682946774772
+  }
+ ]
+}

@@ -139,7 +139,8 @@ button{background:var(--acc);color:#fff;border:0;cursor:pointer;font-weight:600}
 
 
 def page(title: str, body: str, user: dict | None = None) -> HTMLResponse:
-    nav = ("<nav><a href='/home'>Contracts</a><a href='/prices'>Report prices</a><a href='/note'>Weekly note</a>"
+    nav = ("<nav><a href='/home'>Contracts</a><a href='/forecast'>Forecast</a><a href='/prices'>Report prices</a>"
+           "<a href='/note'>Weekly note</a>"
            "<a href='/leaderboard'>Leaderboard</a><a href='/logout'>Log out</a></nav>") if user else ""
     who = f"<span class=mut>{e(user['name'])} · {e(COUNTRIES[user['country']]['country'])}</span>" if user else ""
     return HTMLResponse(f"<!doctype html><html lang=en><head><meta charset=utf-8>"
@@ -317,6 +318,73 @@ def add_price(request: Request, item: str = Form(...), price: float = Form(...),
         return RedirectResponse("/prices?msg=Thank+you+-+recorded", status_code=303)
     except ReportError as err:
         return RedirectResponse(f"/prices?err={e(str(err))}", status_code=303)
+
+
+# -------------------------------------------------------------- forecast --
+def _range_svg(rows: list[dict]) -> dict[int, str]:
+    """One small range chart per row on a shared scale: bar = 80% range, dot = expected change."""
+    vals = [v for r in rows for v in (r.get("lo"), r.get("hi"), r.get("median")) if v is not None] + [0.0]
+    lo_all, hi_all = min(vals), max(vals)
+    pad = (hi_all - lo_all) * 0.05 or 1.0
+    lo_all, hi_all = lo_all - pad, hi_all + pad
+    x = lambda v: 4 + 232 * (v - lo_all) / (hi_all - lo_all)
+    out = {}
+    for i, r in enumerate(rows):
+        parts = [f"<line x1='{x(0):.1f}' y1='2' x2='{x(0):.1f}' y2='22' stroke='var(--mut)' stroke-dasharray='2 2'/>"]
+        if r.get("lo") is not None and r.get("hi") is not None:
+            parts.append(f"<rect x='{x(r['lo']):.1f}' y='8' width='{max(1.5, x(r['hi']) - x(r['lo'])):.1f}' height='8' "
+                         "rx='4' fill='var(--bar)'/>")
+        if r.get("median") is not None:
+            parts.append(f"<circle cx='{x(r['median']):.1f}' cy='12' r='5' fill='var(--acc)'/>")
+        out[i] = (f"<svg viewBox='0 0 240 24' width='100%' style='max-width:240px' role='img' "
+                  f"aria-label='range chart'>{''.join(parts)}</svg>")
+    return out
+
+
+def _pct(v, nd=1):
+    return "–" if v is None else f"{v:+.{nd}f}%"
+
+
+@app.get("/forecast", response_class=HTMLResponse)
+def forecast_page(request: Request):
+    user, redirect = need_login(request)
+    if redirect:
+        return redirect
+    import json
+    f = ROOT / "countries" / user["country"] / "outputs" / "forecast_latest.json"
+    cfg = COUNTRIES[user["country"]]
+    if not f.exists():
+        return page("Forecast", f"<div class=card><h1>Forecast — {e(cfg['country'])}</h1>"
+                                "<p>No forecast yet; it is produced with the weekly note.</p></div>", user)
+    d = json.loads(f.read_text(encoding="utf-8"))
+    rows, dr = d.get("rows", []), d.get("drivers", {})
+    svg = _range_svg(rows)
+    extra = any("last_change" in r for r in rows)
+    head = ("<tr><th>Series</th><th>Period</th><th>Expected</th><th>80% range</th><th></th>"
+            + ("<th>Last month</th><th>Year</th>" if extra else "")
+            + ("<th>Without new data</th>" if any("without" in r for r in rows) else "") + "</tr>")
+    body = "".join(
+        f"<tr><td>{e(r['series'])}</td><td>{e(r['period'])}</td><td><b>{_pct(r.get('median'))}</b></td>"
+        f"<td>{'–' if r.get('lo') is None else _pct(r['lo']) + ' to ' + _pct(r['hi'])}</td><td style='min-width:150px'>{svg[i]}</td>"
+        + (f"<td>{_pct(r.get('last_change'), 2)}</td><td>{_pct(r.get('year_change'))}</td>" if extra else "")
+        + (f"<td class=mut>{_pct(r.get('without'))}</td>" if "without" in r else "") + "</tr>"
+        for i, r in enumerate(rows))
+    off = d.get("official")
+    official = (f"<p><b>Latest official reading:</b> {e(off['series'])}, {e(str(off['period']))}"
+                + (f" — {off['change_year_pct']:+.1f}% on a year earlier" if off.get("change_year_pct") is not None else "")
+                + f". <a href='{e(off['source'])}'>Source</a></p>") if off else ""
+    observed = (f"<p>Observed over the last 3 months: <b>{_pct(d['observed_3m'])}</b></p>"
+                if d.get("observed_3m") is not None else "")
+    fx = (f"{dr['fx']:,.1f} {e(cfg['currency'])}/USD ({_pct(dr.get('fx_13w_pct'))} over 13 weeks)"
+          if dr.get("fx") else "–")
+    return page("Forecast", f"""<div class=card><h1>Forecast — {e(cfg['country'])}</h1>
+<p class=mut>{e(d.get('basis', ''))}. Updated {e(d.get('generated', ''))}. Dot = expected change; bar = 80% range;
+dashed line = no change.</p>{official}{observed}
+<div class=tw><table>{head}{body}</table></div></div>
+<div class=card><h2>Drivers this week</h2><p>Brent crude: <b>{dr.get('brent_usd', 0):,.1f} USD</b>
+({_pct(dr.get('brent_13w_pct'))} over 13 weeks) · Exchange rate: <b>{fx}</b></p>
+<p class=mut>Apply the expected % to your own latest quote for the same item. Forecasts are estimates with ranges,
+not certainties. Method: FORECASTING.md.</p></div>""", user)
 
 
 # -------------------------------------------------------- note, ranking --

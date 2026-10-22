@@ -11,6 +11,7 @@ data/live/cycle_log.csv; a failing step is logged and the rest still run.
 from __future__ import annotations
 
 import argparse
+import os
 import csv
 import subprocess
 import sys
@@ -89,6 +90,7 @@ def weekly(db: str | None) -> None:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("job", choices=["daily", "weekly"])
-    ap.add_argument("--db", help="ledger path (default data/live/exchange.sqlite)")
+    ap.add_argument("--db", default=os.environ.get("CIO_DB"),
+                    help="ledger path (default: $CIO_DB, the app's database; else data/live/exchange.sqlite)")
     a = ap.parse_args()
     (daily if a.job == "daily" else weekly)(a.db)

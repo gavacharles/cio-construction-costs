@@ -19,6 +19,7 @@ Outputs: countries/<country>/outputs/market/backtest_{scores,metrics}_<country>.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -40,7 +41,7 @@ def out_dir(cfg: dict) -> Path:
     d = ROOT / "countries" / cfg["key"] / "outputs" / "market"
     d.mkdir(parents=True, exist_ok=True)
     return d
-DEFAULT_DB = ROOT / "data" / "live" / "exchange.sqlite"
+DEFAULT_DB = Path(os.environ.get("CIO_DB", ROOT / "data" / "live" / "exchange.sqlite"))  # same as the app
 
 
 def cmd_backtest(args) -> None:

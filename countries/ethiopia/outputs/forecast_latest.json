@@ -1,0 +1,31 @@
+{
+ "country": "Ethiopia",
+ "key": "ethiopia",
+ "currency": "ETB",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 162.5134,
+  "fx_13w_pct": 0.7412706363099764
+ },
+ "kind": "pressure",
+ "basis": "Imported-input cost pressure from oil in ETB and the exchange rate; an indicator, not a price index",
+ "observed_3m": 4.429927621197933,
+ "rows": [
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 3 months",
+   "median": 1.7777578377972159,
+   "lo": -0.5237339137402408,
+   "hi": 5.103847028191835
+  },
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 6 months",
+   "median": 3.5309027202800625,
+   "lo": -0.21122829729461667,
+   "hi": 30.068242656882948
+  }
+ ]
+}

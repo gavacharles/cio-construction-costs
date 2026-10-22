@@ -1,0 +1,40 @@
+{
+ "country": "Senegal",
+ "key": "senegal",
+ "currency": "XOF",
+ "generated": "2026-10-22",
+ "drivers": {
+  "brent_usd": 115.22,
+  "brent_13w_pct": 35.53699564757087,
+  "fx": 583.7165,
+  "fx_13w_pct": 1.787482045575861
+ },
+ "official": {
+  "series": "ANSD Indice des prix des materiaux de construction (IMC), 2022 = 100, monthly",
+  "period": "2026-04",
+  "level": null,
+  "change_period_pct": 1.1,
+  "change_year_pct": 2.4,
+  "quality": "official",
+  "source": "https://www.ansd.sn/Indicateur/indice-des-prix-des-materiaux-de-construction-imc"
+ },
+ "kind": "pressure",
+ "basis": "Imported-input cost pressure from oil in XOF and the exchange rate; an indicator, not a price index",
+ "observed_3m": 4.788474737683108,
+ "rows": [
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 3 months",
+   "median": -0.23536474590956757,
+   "lo": -2.8531185899567824,
+   "hi": 4.389777421920238
+  },
+  {
+   "series": "Imported-input cost pressure",
+   "period": "Next 6 months",
+   "median": 0.051056092451453594,
+   "lo": -4.672018990968381,
+   "hi": 5.393750006516811
+  }
+ ]
+}
