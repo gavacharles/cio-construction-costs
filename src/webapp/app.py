@@ -504,10 +504,15 @@ async def public_price(request: Request):
         if country not in COUNTRIES:
             raise ReportError("unknown country")
         items = [i["code"] for i in COUNTRIES[country].get("price_items", [])]
+        price = float(d.get("price", 0))
+        if price > 0 and not d.get("confirm"):
+            usual = people().check_price(country, str(d.get("item", "")), price)
+            if usual:                                    # likely a typo: ask before saving
+                return {"ok": False, "check": True, "usual": round(usual)}
         rid = people().add_report(_anon(request), country, str(d.get("item", "")), float(d.get("price", 0)),
                                   str(d.get("location", ""))[:80], str(d.get("supplier", ""))[:60],
                                   note=("public; contact: " + str(d.get("contact", ""))[:80]) if d.get("contact") else "public",
-                                  items=items)
+                                  items=items, area=str(d.get("area", ""))[:10])
         return {"ok": True, "id": rid}
     except (ReportError, ValueError, TypeError) as err:
         return JSONResponse({"ok": False, "error": str(err)}, status_code=400)

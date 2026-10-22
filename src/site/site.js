@@ -243,7 +243,7 @@
   async function post(url, body, msg) {
     if (!online) { msg.textContent = tr("net.offline"); return false; }
     try { const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-      const j = await r.json(); if (!j.ok) { msg.textContent = tr("net.notsent", { e: j.error || "" }); return false; } return true; }
+      const j = await r.json(); if (j.check) return j; if (!j.ok) { msg.textContent = tr("net.notsent", { e: j.error || "" }); return false; } return j; }
     catch (e) { msg.textContent = tr("net.unreach"); return false; }
   }
 
@@ -261,14 +261,22 @@
     const want = (location.hash || "").slice(1); if (DATA.report[want]) cs.value = want;
     function refresh() { const R = DATA.report[cs.value];
       it.innerHTML = R.items.map(i => `<option value="${i.code}">${i.name}</option>`).join(""); $$("[data-ccy]").forEach(x => x.textContent = R.currency);
-      unit.value = "per " + (R.items[0] || {}).unit; it.onchange = () => { const i = R.items.find(x => x.code === it.value); unit.value = "per " + (i ? i.unit : ""); };
+      unit.value = "per " + (R.items[0] || {}).unit; $$("[data-capital]", rf).forEach(x => x.textContent = R.capital || "");
+      fld("location").placeholder = R.capital ? `e.g. ${R.capital}` : ""; it.onchange = () => { const i = R.items.find(x => x.code === it.value); unit.value = "per " + (i ? i.unit : ""); };
       cv.innerHTML = R.crowd.length ? `<table class=glance><thead><tr><th>Item</th><th>Median</th><th>Reporters</th></tr></thead><tbody>${R.crowd.map(r =>
         `<tr><td>${r.name}</td><td>${r.published ? Math.round(r.median).toLocaleString() + " " + R.currency + " / " + r.unit
           : `<span class=muted>${tr("rep.needs", { n: r.pending })}</span>`}</td><td>${r.published ? r.reporters : "–"}</td></tr>`).join("")}</tbody></table>`
         : `<p>${tr("rep.none", { c: R.flag + " " + T.country(R.cc, R.country) })}</p>`; }
     cs.onchange = refresh; refresh();
-    rf.onsubmit = async ev => { ev.preventDefault(); const d = Object.fromEntries(new FormData(rf)); d.price = +d.price;
-      if (await post(rel + "api/public/price", d, msg)) { msg.textContent = tr("rep.thanks"); fld("price").value = ""; } };
+    const send = async d => { const j = await post(rel + "api/public/price", d, msg); if (!j) return;
+      if (j.check) {                                  /* far from the usual price: probably a typo, so ask first */
+        const R = DATA.report[cs.value];
+        msg.innerHTML = `${tr("rep.check", { p: Math.round(d.price).toLocaleString(), u: Math.round(j.usual).toLocaleString(), ccy: R.currency })}
+          <span class=actions><button type=button class="btn primary" data-yes>${tr("rep.yes")}</button><button type=button class=btn data-fix>${tr("rep.fix")}</button></span>`;
+        $("[data-yes]", msg).onclick = () => send(Object.assign({}, d, { confirm: true }));
+        $("[data-fix]", msg).onclick = () => { msg.textContent = ""; fld("price").focus(); fld("price").select(); }; return; }
+      msg.textContent = tr("rep.thanks"); fld("price").value = ""; };
+    rf.onsubmit = ev => { ev.preventDefault(); const d = Object.fromEntries(new FormData(rf)); d.price = +d.price; send(d); };
   }
 
   /* ---------- bid escalation calculator ---------- */

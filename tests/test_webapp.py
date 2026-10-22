@@ -265,3 +265,24 @@ def test_widget_can_be_framed_but_site_cannot(tmp_path, monkeypatch):
         assert r.status_code == 200 and "frame-ancestors *" in r.headers.get("content-security-policy", "")
         assert "x-frame-options" not in r.headers
     assert c.get("/").headers["x-frame-options"] == "DENY"
+
+
+def test_price_typo_check_and_area_prices(tmp_path, monkeypatch):
+    monkeypatch.setenv("CIO_DB", str(tmp_path / "p.sqlite"))
+    import importlib
+    import app as webapp
+    importlib.reload(webapp)
+    from fastapi.testclient import TestClient
+    from reports import Participants
+    c = TestClient(webapp.app)
+    with Participants(tmp_path / "p.sqlite") as p:
+        for h, a, v in (("a", "capital", 35000), ("b", "capital", 36000), ("c", "capital", 34000), ("d", "other", 38000)):
+            p.add_report(h, "uganda", "cement_50kg", v, "Kampala", area=a)
+        assert p.check_price("uganda", "cement_50kg", 350000) == 35500 and p.check_price("uganda", "cement_50kg", 37000) is None
+        row = p.crowd_summary("uganda", [{"code": "cement_50kg", "name": "Cement", "unit": "bag"}]).iloc[0]
+        assert row["capital"] == 35000 and row["other"] is None and row["other_n"] == 1
+    body = {"country": "uganda", "item": "cement_50kg", "price": 350000, "location": "Gulu", "area": "other"}
+    r = c.post("/api/public/price", json=body).json()
+    assert r["check"] and r["usual"] == 35500 and not r["ok"]                    # queried, not saved
+    assert c.post("/api/public/price", json=dict(body, confirm=True)).json()["ok"]    # saved once confirmed
+    assert c.post("/api/public/price", json=dict(body, area="moon", confirm=True)).status_code == 400

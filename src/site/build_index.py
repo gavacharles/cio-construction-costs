@@ -98,6 +98,12 @@ def country_data(key: str) -> dict | None:
     }
 
 
+try:
+    from reports import CAPITALS                      # noqa: E402
+except Exception:                                     # the site still builds without the market package
+    CAPITALS = {}
+
+
 def crowd(key: str) -> list[dict]:
     db = ROOT / "data" / "live" / "exchange.sqlite"
     if not db.exists():
@@ -346,10 +352,16 @@ Prices reported by participants (below) fill the gap, material by material.</p><
             return f"{r['median']:,.0f} {e(c['currency'])} per {e(r['unit'])}"
         return (f"<span class=progress-line><b>{r.get('pending', 0)} of 3</b> reports this week · "
                 f"<a href='../../report.html#{c['key']}'>add yours</a></span>")
-    crowd_html = "".join(f"<tr><th scope=row>{e(r['name'])}</th><td>{price(r)}</td>"
+    def area(r, a):
+        v = r.get(a)
+        return f"{v:,.0f}" if v is not None and v == v else f"<span class=muted>{r.get(a + '_n', 0) or 0} of 3</span>"
+    cap = CAPITALS.get(c["key"], "capital")
+    crowd_html = "".join(f"<tr><th scope=row>{e(r['name'])}</th><td>{price(r)}</td><td>{area(r, 'capital')}</td><td>{area(r, 'other')}</td>"
                          f"<td>{r['reporters'] if r.get('published') else '–'}</td><td>{ch(r)}</td></tr>" for r in crowd_rows)
-    crowd_sec = (f"<div class=tablewrap><table class=glance><thead><tr><th>Item</th><th>Median price</th><th>Reporters</th>"
-                 f"<th>vs 4 weeks</th></tr></thead><tbody>{crowd_html}</tbody></table></div>") if crowd_rows else (
+    crowd_sec = (f"<div class=tablewrap><table class=glance><thead><tr><th data-i18n=th.item>Item</th><th data-i18n=th.typical>Typical price</th>"
+                 f"<th>{e(cap)}</th><th data-i18n=th.elsewhere>Elsewhere</th><th data-i18n=th.reporters>Reporters</th>"
+                 f"<th data-i18n=th.vs4>vs 4 weeks</th></tr></thead><tbody>{crowd_html}</tbody></table></div>"
+                 f"<p class=muted data-i18n=crowd.areas>Area prices use the last 4 weeks and appear once 3 people report from that area.</p>") if crowd_rows else (
         f"<div class=tile><p><b>0 of 3</b> reports this week for {e(c['country'])}. Prices appear here once 3 people report "
         f"what they pay for an item ({e(', '.join(c['items'][:4]).lower())}…). "
         f"<a href='../../report.html#{c['key']}'>Be the first — it takes a minute and is anonymous</a>.</p></div>")
@@ -368,7 +380,7 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <div><span class='pct small' data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
  <div class=chart>{chart_svg(c)}</div><p class='advice big' data-advice></p>
- {track_country(c)}
+ {track_country(c, crowd_rows)}
  {MONEY}
  <div class=actions><a class='btn primary' href="../../play.html#{c['key']}" data-i18n=link.makecall>Make your call</a>{note}
  <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div>{src}</div>
@@ -419,12 +431,22 @@ def arrow(v: float) -> str:
     return "⬆" if v >= 0.25 else ("⬇" if v <= -0.25 else "➡")
 
 
-def track_country(c: dict) -> str:
-    """'Last time we said X, it came in at Y': logged live forecasts once they mature, else Uganda's back-test."""
+def track_country(c: dict, crowd_rows: list[dict] = ()) -> str:
+    """'Last time we said X, it came in at Y': logged live forecasts once they mature, else Uganda's back-test.
+    Countries without an official index compare the estimate with what people report paying."""
     import csv
     if not c["official"]:
-        return ("<p class='track muted'><b data-i18n=track.h>Track record</b>: "
-                "<span data-i18n=track.none>no official index to check against yet; we compare with reported prices as they come in.</span></p>")
+        v = (c.get("spark") or {}).get("values") or []
+        est = (v[-1] / v[-2] - 1) * 100 if len(v) >= 2 and v[-2] else None
+        got = [r for r in crowd_rows if r.get("published") and r.get("change_pct") is not None]
+        if not got or est is None:
+            return (f"<p class='track muted'><b data-i18n=track.h>Track record</b>: <span data-i18n=track.crowdsoon>once 3 people report an item "
+                    f"for 4 weeks, we show what they pay next to our estimate here.</span> <a href='../../report.html#{c['key']}' data-i18n=track.addyours>Report a price</a></p>")
+        li = "".join(f"<li>{e(r['name'])}: {arrow(r['change_pct'])} <b>{r['change_pct']:+.1f}%</b> <span class=muted>"
+                     f"({r['reporters']} people, 4 weeks)</span></li>" for r in got[:4])
+        return (f"<div class=track><b data-i18n=track.h>Track record</b> <span class=muted>· <span data-i18n=track.vscrowd>our estimate vs "
+                f"what people pay</span></span><ul><li><span data-i18n=track.est>Our import-cost estimate, last month</span>: {arrow(est)} "
+                f"<b>{est:+.1f}%</b></li>{li}</ul></div>")
     sp = c.get("spark") or {}
     lvl = dict(zip(sp.get("dates") or [], sp.get("values") or []))
     rows, label = [], "Live forecasts"
@@ -535,6 +557,9 @@ anonymous: we publish medians by country, item and week — never names, numbers
  <div class=row2><label><span data-i18n=rep.town>Town or area</span><input name=location required placeholder="e.g. Kampala – Nakawa"></label>
  <label><span data-i18n=rep.from>Bought from</span><select name=supplier><option>Hardware shop</option><option>Factory or depot</option><option>Quarry</option>
  <option>Fuel station</option><option>Contractor or site</option><option>Other</option></select></label></div>
+ <fieldset class=areapick><legend data-i18n=rep.area>Where is that?</legend>
+  <label><input type=radio name=area value=capital checked> <span data-i18n=rep.incap>In</span> <b data-capital></b></label>
+  <label><input type=radio name=area value=other> <span data-i18n=rep.elsewhere>Elsewhere in the country</span></label></fieldset>
  <label><span data-i18n=rep.contact>Your phone or email</span> <span class=muted data-i18n=rep.contact.note>(optional, never published — only if you want follow-ups)</span><input name=contact></label>
  <button class='btn primary big' type=submit data-i18n=rep.send>Send price</button><p class='formmsg muted' role=status></p></form>
  <aside class=panel><h2 data-i18n=rep.others>What others report</h2><div id=crowdview></div>
@@ -610,6 +635,7 @@ def build() -> Path:
                                           desc="A daily game on real construction prices across Africa."), encoding="utf-8")
     keys = [c["key"] for c in cs]
     items = {c["key"]: {"country": c["country"], "flag": c["flag"], "currency": c["currency"], "cc": slim[c["key"]]["cc"],
+                        "capital": CAPITALS.get(c["key"], ""),
                         "items": load_country(c["key"]).get("price_items", []), "crowd": crowd(c["key"])} for c in cs}
     (OUT / "report.html").write_text(shell("Report prices — CiO Costs", page_report(keys), dict(base, report=items),
                                            page="report", desc="Report construction input prices in 18 African countries."),

@@ -38,6 +38,12 @@ CREATE TABLE IF NOT EXISTS alerts (
 
 
 MIN_REPORTERS = 3          # an item's median is published only once this many different people reported it
+CHECK_FACTOR = 3           # a price more than 3x above or below the usual one is queried before it is saved
+CAPITALS = {"uganda": "Kampala", "kenya": "Nairobi", "rwanda": "Kigali", "tanzania": "Dar es Salaam", "ethiopia": "Addis Ababa",
+            "south_africa": "Johannesburg", "zambia": "Lusaka", "botswana": "Gaborone", "malawi": "Lilongwe", "zimbabwe": "Harare",
+            "namibia": "Windhoek", "mozambique": "Maputo", "mauritius": "Port Louis", "ghana": "Accra", "nigeria": "Lagos",
+            "senegal": "Dakar", "egypt": "Cairo", "morocco": "Casablanca"}     # the main commercial city, which sets most prices
+AREAS = ("capital", "other")
 
 
 class ReportError(ValueError):
@@ -56,6 +62,8 @@ class Participants:
         self.db = sqlite3.connect(str(path), timeout=10, check_same_thread=False)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
+        if "area" not in [r[1] for r in self.db.execute("PRAGMA table_info(price_reports)")]:
+            self.db.execute("ALTER TABLE price_reports ADD COLUMN area TEXT")      # capital / other (older rows: unknown)
 
     def close(self) -> None:
         self.db.close()
@@ -103,20 +111,22 @@ class Participants:
     # ------------------------------------------------------------- reports --
     def add_report(self, handle: str, country: str, item: str, price: float, location: str,
                    supplier: str = "", note: str = "", items: list[str] | None = None,
-                   on: date | None = None) -> int:
+                   on: date | None = None, area: str = "") -> int:
         if items is not None and item not in items:
             raise ReportError(f"unknown item {item!r}")
         if not price or price <= 0:
             raise ReportError("price must be a positive number")
         if not location.strip():
             raise ReportError("say where (town or area) the price applies")
+        if area and area not in AREAS:
+            raise ReportError("area must be 'capital' or 'other'")
         on = on or date.today()
         with self.db:
             cur = self.db.execute(
-                "INSERT INTO price_reports (ts, week, handle, country, item, price, location, supplier, note)"
-                " VALUES (?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO price_reports (ts, week, handle, country, item, price, location, supplier, note, area)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?)",
                 (datetime.now(timezone.utc).isoformat(timespec="seconds"), week_of(on), handle, country, item,
-                 float(price), location.strip(), supplier.strip(), note.strip()))
+                 float(price), location.strip(), supplier.strip(), note.strip(), area or None))
         return cur.lastrowid
 
     def add_alert(self, country: str, series: str, threshold: float, channel: str, contact: str) -> int:
@@ -149,6 +159,22 @@ class Participants:
         return pd.read_sql_query("SELECT * FROM price_reports WHERE country=? AND week>=? ORDER BY ts",
                                  self.db, params=(country, since))
 
+    def usual_price(self, country: str, item: str, weeks: int = 12, min_reporters: int = MIN_REPORTERS) -> float | None:
+        """The usual price of an item: median of each person's median over recent weeks, once enough people reported."""
+        df = self.reports(country, since_weeks=weeks)
+        g = df[df["item"] == item]
+        if g.empty:
+            return None
+        per = g.groupby("handle")["price"].median()
+        return float(per.median()) if len(per) >= min_reporters else None
+
+    def check_price(self, country: str, item: str, price: float) -> float | None:
+        """The usual price when `price` is more than CHECK_FACTOR times away from it (a likely typo), else None."""
+        usual = self.usual_price(country, item)
+        if usual and (price > usual * CHECK_FACTOR or price < usual / CHECK_FACTOR):
+            return usual
+        return None
+
     def crowd_summary(self, country: str, items: list[dict], weeks_back: int = 4,
                       min_reporters: int = MIN_REPORTERS) -> pd.DataFrame:
         """Per item: the median of the latest week with at least `min_reporters` different
@@ -161,7 +187,8 @@ class Participants:
         for it in items:
             g = df[df["item"] == it["code"]]
             row = {"item": it["code"], "name": it["name"], "unit": it["unit"], "week": None, "median": None,
-                   "reports": int(len(g)), "reporters": 0, "change_pct": None, "published": False, "pending": 0}
+                   "reports": int(len(g)), "reporters": 0, "change_pct": None, "published": False, "pending": 0,
+                   "capital": None, "other": None, "capital_n": 0, "other_n": 0}
             if not g.empty:
                 per = g.groupby(["week", "handle"])["price"].median().groupby("week")
                 med, n_rep = per.median(), per.size()
@@ -172,5 +199,12 @@ class Participants:
                     prior = ok[ok.index <= week_of(date.fromisoformat(last) - timedelta(weeks=weeks_back))]
                     row.update(week=last, median=float(ok[last]), reporters=int(n_rep[last]), published=True,
                                change_pct=(float(ok[last] / prior.iloc[-1] - 1) * 100) if len(prior) else None)
+                # by area: the last `weeks_back` weeks pooled, each person once, published from MIN_REPORTERS people
+                recent = g[g["week"] >= week_of(date.today() - timedelta(weeks=weeks_back))]
+                if "area" in recent:
+                    for a in AREAS:
+                        per_a = recent[recent["area"] == a].groupby("handle")["price"].median()
+                        row[a] = float(per_a.median()) if len(per_a) >= min_reporters else None
+                        row[a + "_n"] = int(len(per_a))
             rows.append(row)
         return pd.DataFrame(rows)
