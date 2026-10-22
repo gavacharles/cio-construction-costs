@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.DS_Store
+.vscode/
+~$*
+
+# Live platform state (participants, trades, price reports) — never in git
+data/live/
+
+# Re-downloadable raw releases
+countries/south_africa/raw/*.pdf
+countries/uganda/raw/downloads/
+
+# Local outreach and commercial notes
+outreach/
