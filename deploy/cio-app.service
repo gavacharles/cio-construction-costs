@@ -5,9 +5,9 @@ After=network-online.target
 
 [Service]
 User=cio
-WorkingDirectory=/srv/cio_pipeline-2
+WorkingDirectory=/srv/cio-construction-costs
 EnvironmentFile=/etc/cio/cio.env
-ExecStart=/srv/cio_pipeline-2/.venv/bin/uvicorn --app-dir src/webapp app:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips 127.0.0.1 --workers 2
+ExecStart=/srv/cio-construction-costs/.venv/bin/uvicorn --app-dir src/webapp app:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips 127.0.0.1 --workers 2
 Restart=always
 RestartSec=3
 NoNewPrivileges=true

@@ -2,7 +2,7 @@
 # Nightly consistent copy of the participant database (safe while the app is running),
 # keeping 30 days. Copy /srv/cio_backups off the server too (e.g. rclone to cloud storage).
 set -euo pipefail
-DB="${CIO_DB:-/srv/cio_pipeline-2/data/live/exchange.sqlite}"
+DB="${CIO_DB:-/srv/cio-construction-costs/data/live/exchange.sqlite}"
 DEST=/srv/cio_backups
 mkdir -p "$DEST"
 STAMP=$(date +%Y-%m-%d)

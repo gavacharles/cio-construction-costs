@@ -1,7 +1,7 @@
 # Deploying the pilot on a server (demo or live)
 
 Target: one Ubuntu 24.04 server, 1–2 GB RAM, with a domain whose DNS **A record** points at its
-IP address. Everything runs as a `cio` user under `/srv/cio_pipeline-2`. About 30 minutes.
+IP address. Everything runs as a `cio` user under `/srv/cio-construction-costs`. About 30 minutes.
 
 ## 1. Server packages and code
 
@@ -10,17 +10,22 @@ sudo apt update && sudo apt install -y python3-venv python3-pip sqlite3 poppler-
 sudo timedatectl set-timezone Africa/Kampala
 sudo useradd --system --create-home --shell /bin/bash cio
 sudo mkdir -p /srv && sudo chown cio:cio /srv
+# The repository is private: give the server a read-only deploy key.
+sudo -iu cio ssh-keygen -t ed25519 -N "" -f /home/cio/.ssh/cio_deploy -C "cio-server"
+sudo -iu cio cat /home/cio/.ssh/cio_deploy.pub
+#   -> GitHub: gavacharles/cio-construction-costs > Settings > Deploy keys > Add (read-only)
+sudo -iu cio bash -c 'printf "Host github.com\n  IdentityFile ~/.ssh/cio_deploy\n  IdentitiesOnly yes\n" >> ~/.ssh/config'
 sudo -iu cio bash -c '
-  git clone https://github.com/gavacharles/cio_pipeline-2.git /srv/cio_pipeline-2 &&
-  cd /srv/cio_pipeline-2 && python3 -m venv .venv &&
-  .venv/bin/pip install -r requirements-server.txt'
+  git clone git@github.com:gavacharles/cio-construction-costs.git /srv/cio-construction-costs &&
+  cd /srv/cio-construction-costs && python3 -m venv .venv &&
+  .venv/bin/pip install -r requirements.txt'
 ```
 
 ## 2. Secrets
 
 ```bash
 sudo mkdir -p /etc/cio
-sudo cp /srv/cio_pipeline-2/deploy/cio.env.example /etc/cio/cio.env
+sudo cp /srv/cio-construction-costs/deploy/cio.env.example /etc/cio/cio.env
 sudo nano /etc/cio/cio.env          # set CIO_ADMIN_KEY to a long random password
 sudo chmod 600 /etc/cio/cio.env
 ```
@@ -30,11 +35,11 @@ Generate a password with `openssl rand -base64 24`. Keep it in a password manage
 ## 3. For a demo: seed the demo database
 
 ```bash
-sudo -iu cio bash -c 'cd /srv/cio_pipeline-2 && .venv/bin/python src/webapp/seed_demo.py --db data/live/demo.sqlite'
+sudo -iu cio bash -c 'cd /srv/cio-construction-costs && .venv/bin/python src/webapp/seed_demo.py --db data/live/demo.sqlite'
 ```
 
 It prints an invite code for each demo participant (Uganda, Kenya, Rwanda). In `/etc/cio/cio.env`,
-set `CIO_DB=/srv/cio_pipeline-2/data/live/demo.sqlite` and `CIO_DEMO=1`. Every page then shows a
+set `CIO_DB=/srv/cio-construction-costs/data/live/demo.sqlite` and `CIO_DEMO=1`. Every page then shows a
 "Demo — illustrative sample data" banner.
 
 For the **live** pilot, leave `CIO_DB` at `exchange.sqlite` and leave `CIO_DEMO` unset. Never seed
@@ -43,9 +48,9 @@ the live database; the script refuses the name `exchange.sqlite`.
 ## 4. Start the app and HTTPS
 
 ```bash
-sudo cp /srv/cio_pipeline-2/deploy/cio-app.service /etc/systemd/system/
+sudo cp /srv/cio-construction-costs/deploy/cio-app.service /etc/systemd/system/
 sudo systemctl daemon-reload && sudo systemctl enable --now cio-app
-sudo cp /srv/cio_pipeline-2/deploy/Caddyfile /etc/caddy/Caddyfile
+sudo cp /srv/cio-construction-costs/deploy/Caddyfile /etc/caddy/Caddyfile
 sudo nano /etc/caddy/Caddyfile      # replace pilot.example.com with your domain
 sudo systemctl reload caddy         # fetches the HTTPS certificate automatically
 ```
@@ -58,8 +63,8 @@ Check:
 ## 5. Automation and backups
 
 ```bash
-sudo -iu cio crontab /srv/cio_pipeline-2/deploy/crontab.example
-sudo -iu cio bash -c 'cd /srv/cio_pipeline-2 && .venv/bin/python src/market/cycle.py weekly'   # first notes now
+sudo -iu cio crontab /srv/cio-construction-costs/deploy/crontab.example
+sudo -iu cio bash -c 'cd /srv/cio-construction-costs && .venv/bin/python src/market/cycle.py weekly'   # first notes now
 ```
 
 | Job | Schedule |
@@ -89,7 +94,7 @@ Also copy `/srv/cio_backups` off the server, e.g. with `rclone` to cloud storage
 ## 7. Updating
 
 ```bash
-sudo -iu cio bash -c 'cd /srv/cio_pipeline-2 && git pull && .venv/bin/pip install -r requirements-server.txt'
+sudo -iu cio bash -c 'cd /srv/cio-construction-costs && git pull && .venv/bin/pip install -r requirements.txt'
 sudo systemctl restart cio-app
 ```
 
