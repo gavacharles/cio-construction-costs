@@ -129,6 +129,13 @@ How the forecasts are tested:
   (recent 24, never narrower than 0.85x); results on each benchmark page.
 - Trend forecasts (materials without their own model): damped drift with ranges from the material's own past
   changes, chosen after AR(1) missed more than "no change"; per-material test shown on hover in the materials table.
+- Kenya: six KNBS releases are scanned images (Q4 2021, Q1-Q4 2022, Q3 2025). `src/ingest/knbs_ocr.py` reads their
+  three headline rows by OCR and accepts a value only when the quarters just before it match the text releases
+  (Q4 2021 recovered: overall 106.12, building 104.23, civil 108.06; also stated in the Q1 2022 release's text).
+  Accepted values are in `countries/kenya/raw/knbs_ocr_verified.csv`; text releases always take priority.
+- Benchmark calibration uses only errors whose outcome was already observable at each test month (no hindsight).
+- Currencies: every live country's rate against the US dollar is in the weekly feed; the United States shows the
+  Federal Reserve broad dollar index (FRED DTWEXBGS) instead.
 - The import-cost estimate (countries without an official index) is checked against Uganda and South Africa:
   its 3-month direction matched the official index about 6 times in 10 (`data/shared/estimate_validation.json`);
   the estimate-country notes say so.

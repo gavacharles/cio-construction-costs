@@ -15,7 +15,7 @@ For every **1,000,000 RWF** you spend on materials today, budget about **1,009,0
 
 ## Why
 
-- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
 - The RWF has been steady against the US dollar.
 
 ## What to do this week

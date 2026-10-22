@@ -7,7 +7,6 @@ status: benchmark
 benchmark: true
 currency: BRL
 fx_code: brl
-pressure_currency: USD
 aliases: [latin america, latam, south america, brasil, bresil]
 regulation:
   mode: play_money

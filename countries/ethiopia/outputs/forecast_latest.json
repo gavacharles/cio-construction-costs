@@ -5,9 +5,9 @@
  "generated": "2026-10-23",
  "drivers": {
   "brent_usd": 115.22,
-  "brent_13w_pct": 35.53699564757087,
-  "fx": 162.5134,
-  "fx_13w_pct": 0.7412706363099764
+  "brent_13w_pct": 14.863921842288907,
+  "fx": 163.1903,
+  "fx_13w_pct": 1.9662791467814467
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -57,11 +57,11 @@
    116.783,
    117.088,
    116.715,
-   114.66,
+   114.515,
    114.762,
    116.327,
    118.764,
-   119.96
+   120.073
   ]
  },
  "paths": {
@@ -92,58 +92,58 @@
    },
    {
     "month": "2027-03",
-    "median": 2.869,
-    "lo": -0.292,
+    "median": 2.872,
+    "lo": -0.296,
     "hi": 9.203
    },
    {
     "month": "2027-04",
-    "median": 3.523,
+    "median": 3.524,
     "lo": -0.193,
     "hi": 30.084
    },
    {
     "month": "2027-05",
-    "median": 4.249,
-    "lo": 0.16,
+    "median": 4.264,
+    "lo": 0.157,
     "hi": 31.989
    },
    {
     "month": "2027-06",
-    "median": 4.999,
-    "lo": 0.473,
-    "hi": 33.978
+    "median": 5.007,
+    "lo": 0.468,
+    "hi": 33.987
    },
    {
     "month": "2027-07",
-    "median": 5.646,
-    "lo": 0.686,
-    "hi": 35.462
+    "median": 5.645,
+    "lo": 0.669,
+    "hi": 35.379
    },
    {
     "month": "2027-08",
-    "median": 6.36,
-    "lo": 1.233,
-    "hi": 36.078
+    "median": 6.366,
+    "lo": 1.212,
+    "hi": 36.083
    },
    {
     "month": "2027-09",
-    "median": 7.064,
-    "lo": 1.662,
-    "hi": 37.252
+    "median": 7.083,
+    "lo": 1.643,
+    "hi": 37.255
    },
    {
     "month": "2027-10",
-    "median": 7.793,
-    "lo": 1.984,
-    "hi": 38.594
+    "median": 7.801,
+    "lo": 1.969,
+    "hi": 38.618
    }
   ]
  },
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in ETB and the exchange rate; an indicator, not a price index",
- "observed_3m": 4.429927621197933,
+ "observed_3m": 4.5238990170442595,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -155,8 +155,8 @@
   {
    "series": "Imported-input cost pressure",
    "period": "Next 6 months",
-   "median": 3.523368612625468,
-   "lo": -0.19263238298677265,
+   "median": 3.524256515175317,
+   "lo": -0.19279774598977356,
    "hi": 30.084363751756737
   }
  ]

@@ -5,9 +5,9 @@
  "generated": "2026-10-23",
  "drivers": {
   "brent_usd": 115.22,
-  "brent_13w_pct": 35.53699564757087,
-  "fx": null,
-  "fx_13w_pct": null
+  "brent_13w_pct": 14.863921842288907,
+  "fx": 63.4279,
+  "fx_13w_pct": 2.576878603368682
  },
  "spark": {
   "label": "Construction materials (all) (Philippine Statistics Authority (PSA))",
@@ -1253,7 +1253,7 @@
    "n": 48
   },
   "3": {
-   "inside": 0.6875,
+   "inside": 0.7083333333333334,
    "mae": 0.6599649018022261,
    "mae_nochange": 0.5700193093614,
    "n": 48

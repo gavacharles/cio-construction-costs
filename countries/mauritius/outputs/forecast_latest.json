@@ -5,9 +5,9 @@
  "generated": "2026-10-23",
  "drivers": {
   "brent_usd": 115.22,
-  "brent_13w_pct": 35.53699564757087,
-  "fx": 47.3198,
-  "fx_13w_pct": 0.6331065605321706
+  "brent_13w_pct": 14.863921842288907,
+  "fx": 47.2895,
+  "fx_13w_pct": 0.28225224995970244
  },
  "official": {
   "series": "Statistics Mauritius Construction Price Index (single-family house), quarterly",
@@ -69,8 +69,8 @@
    101.62,
    100.908,
    101.475,
-   104.092,
-   105.525
+   104.068,
+   105.403
   ]
  },
  "paths": {
@@ -97,62 +97,62 @@
     "month": "2027-02",
     "median": 0.291,
     "lo": -2.461,
-    "hi": 3.719
+    "hi": 3.694
    },
    {
     "month": "2027-03",
-    "median": 0.444,
+    "median": 0.438,
     "lo": -2.62,
-    "hi": 4.211
+    "hi": 4.198
    },
    {
     "month": "2027-04",
     "median": 0.573,
     "lo": -2.893,
-    "hi": 4.854
+    "hi": 4.811
    },
    {
     "month": "2027-05",
-    "median": 0.598,
+    "median": 0.591,
     "lo": -2.97,
-    "hi": 5.038
+    "hi": 5.018
    },
    {
     "month": "2027-06",
-    "median": 0.766,
+    "median": 0.765,
     "lo": -3.182,
-    "hi": 5.443
+    "hi": 5.423
    },
    {
     "month": "2027-07",
-    "median": 0.926,
+    "median": 0.918,
     "lo": -3.344,
-    "hi": 5.827
+    "hi": 5.808
    },
    {
     "month": "2027-08",
-    "median": 0.975,
+    "median": 0.971,
     "lo": -3.444,
-    "hi": 6.109
+    "hi": 6.074
    },
    {
     "month": "2027-09",
-    "median": 1.143,
+    "median": 1.142,
     "lo": -3.662,
-    "hi": 6.353
+    "hi": 6.31
    },
    {
     "month": "2027-10",
-    "median": 1.294,
+    "median": 1.293,
     "lo": -3.82,
-    "hi": 6.822
+    "hi": 6.808
    }
   ]
  },
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in MUR and the exchange rate; an indicator, not a price index",
- "observed_3m": 4.474098325006889,
+ "observed_3m": 4.359086160652477,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -166,7 +166,7 @@
    "period": "Next 6 months",
    "median": 0.5726442770132145,
    "lo": -2.8933016374676113,
-   "hi": 4.853844741688964
+   "hi": 4.81061864972691
   }
  ]
 }

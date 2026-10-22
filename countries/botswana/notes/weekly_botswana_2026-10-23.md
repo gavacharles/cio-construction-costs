@@ -15,8 +15,8 @@ For every **1,000,000 BWP** you spend on materials today, budget about **1,000,0
 
 ## Why
 
-- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
-- The BWP is 1% weaker against the US dollar than 3 months ago — imported steel, cement inputs, paint and fittings cost more.
+- World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- The BWP is 3% weaker against the US dollar than 3 months ago — imported steel, cement inputs, paint and fittings cost more.
 
 ## What to do this week
 
@@ -35,7 +35,7 @@ Botswana has no official construction price index, so **CiO Costs builds an esti
 - **What it covers:** the imported part of building costs — steel, cement inputs, paint, pipes, fuel and transport.
 - **What it misses:** local materials (sand, stone, blocks, timber) and labour. Your price reports fill this gap.
 
-**The CiO estimate index** (100 = two years ago): May 101.6 · Jun 99.5 · Jul 99.5 · Aug 99.9 · Sep 102.3 · Oct 104.7.
+**The CiO estimate index** (100 = two years ago): May 101.6 · Jun 99.5 · Jul 99.5 · Aug 99.9 · Sep 102.3 · Oct 104.5.
 
 **How reliable is it?** Where we can check it against an official index, its 3-month direction matched the official figure about 6 times in 10 (Uganda 63%, South Africa 64%). Use it as an early signal and a contract reference agreed by both sides, not as a measured price.
 

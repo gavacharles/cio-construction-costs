@@ -70,6 +70,7 @@ def daily(db: str | None) -> None:
     before = {c: latest_release_month(c) for c in COUNTRIES}
     run("harvest UBOS", "src/ingest/pull_ubos_cipi.py", "--out", "countries/uganda/raw/downloads")
     run("harvest KNBS", "src/ingest/pull_knbs_cipi.py")
+    run("KNBS scanned releases (OCR, verified)", "src/ingest/knbs_ocr.py")
     run("harvest Stats SA", "src/ingest/statssa_p01511.py", "pull")
     run("harvest benchmarks", "src/ingest/pull_benchmarks.py")
     for c in COUNTRIES:

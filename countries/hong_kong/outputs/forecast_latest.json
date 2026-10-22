@@ -5,9 +5,9 @@
  "generated": "2026-10-23",
  "drivers": {
   "brent_usd": 115.22,
-  "brent_13w_pct": 35.53699564757087,
-  "fx": null,
-  "fx_13w_pct": null
+  "brent_13w_pct": 14.863921842288907,
+  "fx": 7.8459,
+  "fx_13w_pct": 0.05355981483607941
  },
  "spark": {
   "label": "Key materials (basket) (Census and Statistics Department (C&SD), Hong Kong)",

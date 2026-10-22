@@ -15,7 +15,7 @@ For every **1,000,000 TZS** you spend on materials today, budget about **1,003,0
 
 ## Why
 
-- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
 - The TZS has been steady against the US dollar.
 
 ## What to do this week

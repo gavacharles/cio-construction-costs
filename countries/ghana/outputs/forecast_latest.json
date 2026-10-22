@@ -5,9 +5,9 @@
  "generated": "2026-10-23",
  "drivers": {
   "brent_usd": 115.22,
-  "brent_13w_pct": 35.53699564757087,
-  "fx": 11.6365,
-  "fx_13w_pct": 0.9551985008328545
+  "brent_13w_pct": 14.863921842288907,
+  "fx": 11.6263,
+  "fx_13w_pct": 0.0679955931970122
  },
  "official": {
   "series": "GSS Prime Building Cost Index (PBCI), 2023 = 100, monthly",
@@ -66,11 +66,11 @@
    84.658,
    85.579,
    86.334,
-   84.213,
+   84.085,
    84.559,
    84.302,
    87.083,
-   88.768
+   88.683
   ]
  },
  "paths": {
@@ -95,33 +95,33 @@
    },
    {
     "month": "2027-02",
-    "median": 3.109,
+    "median": 3.115,
     "lo": -6.458,
-    "hi": 10.684
+    "hi": 10.686
    },
    {
     "month": "2027-03",
-    "median": 3.924,
+    "median": 3.876,
     "lo": -8.204,
     "hi": 12.922
    },
    {
     "month": "2027-04",
-    "median": 4.696,
-    "lo": -9.18,
+    "median": 4.688,
+    "lo": -9.226,
     "hi": 14.118
    },
    {
     "month": "2027-05",
     "median": 5.254,
-    "lo": -9.473,
-    "hi": 16.11
+    "lo": -9.494,
+    "hi": 16.141
    },
    {
     "month": "2027-06",
     "median": 5.93,
     "lo": -10.475,
-    "hi": 18.139
+    "hi": 18.153
    },
    {
     "month": "2027-07",
@@ -131,15 +131,15 @@
    },
    {
     "month": "2027-08",
-    "median": 7.338,
-    "lo": -10.538,
-    "hi": 21.042
+    "median": 7.345,
+    "lo": -10.491,
+    "hi": 21.044
    },
    {
     "month": "2027-09",
-    "median": 7.877,
+    "median": 7.865,
     "lo": -10.889,
-    "hi": 23.157
+    "hi": 23.154
    },
    {
     "month": "2027-10",
@@ -152,7 +152,7 @@
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in GHS and the exchange rate; an indicator, not a price index",
- "observed_3m": 4.856913734483443,
+ "observed_3m": 4.7615792554048975,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -164,8 +164,8 @@
   {
    "series": "Imported-input cost pressure",
    "period": "Next 6 months",
-   "median": 4.696371689108112,
-   "lo": -9.179904140959849,
+   "median": 4.687576617112777,
+   "lo": -9.225605963249018,
    "hi": 14.118327987809986
   }
  ]

@@ -1,10 +1,10 @@
 month,index,status
-2020-04,100.0,official
 2020-07,102.37,official
 2020-10,102.59,official
 2021-01,104.35,official
 2021-04,106.02,official
 2021-07,106.06,official
+2021-10,106.12,official
 2022-01,112.65,official
 2022-04,114.47,official
 2022-07,113.38,official
@@ -23,5 +23,4 @@ month,index,status
 2025-10,120.15,official
 2026-01,119.51,official
 2026-04,126.36,official
-2026-07,124.42,provisional
-2026-10,127.28,provisional
+2026-07,125.71,provisional

@@ -14,7 +14,8 @@ For every **1,000,000 EUR** you spend on materials today, budget about **1,007,0
 
 ## Why
 
-- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- The EUR is 1% weaker against the US dollar than 3 months ago — imported steel, cement inputs, paint and fittings cost more.
 
 ## What to do this week
 

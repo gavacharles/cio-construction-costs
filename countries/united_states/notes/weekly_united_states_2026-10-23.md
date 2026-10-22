@@ -18,7 +18,8 @@ For every **1,000,000 USD** you spend on materials today, budget about **1,021,0
 
 ## Why
 
-- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- The US dollar has been steady against major currencies.
 
 ## What to do this week
 

@@ -7,7 +7,6 @@ status: benchmark
 benchmark: true
 currency: EUR
 fx_code: eur
-pressure_currency: USD
 aliases: [europe, eu, oesterreich, autriche, vienna]
 regulation:
   mode: play_money

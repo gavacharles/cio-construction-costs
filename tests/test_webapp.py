@@ -185,6 +185,7 @@ def test_benchmark_walk_forward_has_no_lookahead():
     b = weekly_note.walk_forward(lv2, months=24)
     first = a.origin < str(idx[-4].date())                  # forecasts made before those months ...
     assert np.allclose(a[first].structural, b[first].structural)       # ... cannot see them
+    assert np.allclose(a[first].lo, b[first].lo) and np.allclose(a[first].hi, b[first].hi)   # nor can their calibrated ranges
     inside = ((a.actual >= a.lo) & (a.actual <= a.hi)).mean()
     assert 0.5 < inside <= 1.0 and set(a.h) == {1, 3}
 
@@ -327,3 +328,28 @@ def test_data_checks_have_no_failures():
     fails = [f"{r['country']} {r['check']}: {r['detail']}" for r in res if r["status"] == "fail"]
     assert not fails, fails
     assert any(r["check"] == "forecast ranges" for r in res)
+
+
+
+def test_contract_index_uses_completed_periods_only():
+    sys.path.insert(0, str(ROOT / "src" / "site"))
+    import build_index
+    from datetime import date as _d
+    now = _d.today()
+    ym = lambda k: f"{now.year + (now.month - 1 + k) // 12}-{(now.month - 1 + k) % 12 + 1:02d}"
+    hist = [ym(k) for k in range(-12, -5)]                                   # official to six months ago
+    path = [{"month": ym(k), "median": 0.5 * (k + 6), "lo": 0, "hi": 1} for k in range(-5, 7)]
+    c = {"spark": {"dates": hist, "values": [100 + i for i in range(len(hist))]}, "official": True, "step": "month",
+         "kind": "structural", "paths": {"ALL": path}, "head": "ALL"}
+    rows = build_index.contract_series(c)
+    prov = [r for r in rows if r["s"] == "provisional"]
+    assert prov and max(r["m"] for r in prov) < ym(0)                         # never the month under way
+    assert [r["s"] for r in rows] == ["official"] * len(hist) + ["provisional"] * len(prov)
+    assert [r["m"] for r in rows] == sorted(r["m"] for r in rows)
+
+
+def test_bids_and_contracts_page_has_both_tools():
+    t = (ROOT / "public" / "calculator.html").read_text()
+    assert "id=boqform" in t and "id=ci-country" in t and "data-bc-pane=bid" in t and "data-bc-pane=adjust" in t
+    assert "id=calcform" in t                                                  # quick estimate kept, inside the bid tab
+    assert "url=calculator.html#adjust" in (ROOT / "public" / "contract-index.html").read_text()

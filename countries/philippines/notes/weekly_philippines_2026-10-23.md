@@ -18,7 +18,8 @@ For every **1,000,000 PHP** you spend on materials today, budget about **1,006,0
 
 ## Why
 
-- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- The PHP is 3% weaker against the US dollar than 3 months ago — imported steel, cement inputs, paint and fittings cost more.
 
 ## What to do this week
 
@@ -30,7 +31,7 @@ For every **1,000,000 PHP** you spend on materials today, budget about **1,006,0
 Philippines is a **benchmark**: CiO Costs runs the same kind of forecast here as in the African pilot countries, on an official index that is published every month and on time — so anyone can check how well the tool does.
 
 - Tested month by month over the last 48 months, using only the data available at the time.
-- The real change fell inside the likely range **90%** of the time one month ahead and **69%** three months ahead (the aim is 80%).
+- The real change fell inside the likely range **90%** of the time one month ahead and **71%** three months ahead (the aim is 80%).
 - Average miss one month ahead: 0.23 points, against 0.23 for simply assuming no change. It does not beat that simple rule here; rely on the range more than the single number.
 
 ## Official figures

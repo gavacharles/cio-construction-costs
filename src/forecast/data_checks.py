@@ -91,7 +91,7 @@ def check_country(key: str, today: date) -> list[dict]:
     dr = d.get("drivers") or {}
     if not dr.get("brent_usd"):
         add("oil price", "fail", "missing")
-    if cfg.get("pressure_currency") != "USD" and not cfg.get("benchmark"):
+    if cfg.get("pressure_currency") != "USD":
         fx, ch = dr.get("fx"), dr.get("fx_13w_pct")
         add("exchange rate", "fail" if not fx else "warn" if ch is not None and abs(ch) > 40 else "ok",
             "missing" if not fx else f"{cfg['currency']} {fx:,.1f} ({ch:+.1f}% in 13 weeks)" if ch is not None else "no 13-week change")
@@ -125,6 +125,31 @@ def check_country(key: str, today: date) -> list[dict]:
     return out
 
 
+def check_contract_index(key: str, today: date) -> list[dict]:
+    """The published contract index: months in order without gaps, official before provisional, provisional only for
+    periods that have ended, no implausible jumps."""
+    f = ROOT / "public" / "data" / f"contract_index_{key}.csv"
+    if not f.exists():
+        return []
+    d = pd.read_csv(f)
+    probs = []
+    m = list(d["month"])
+    steps = {months_between(a, b) for a, b in zip(m, m[1:])}
+    step = min(steps) if steps else 1                        # 1 = monthly, 3 = quarterly (dated by the first month)
+    if len(steps) > 1 or step not in (1, 3):
+        probs.append("gaps or uneven steps between periods")
+    st = list(d["status"])
+    if "provisional" in st and "official" in st[st.index("provisional"):]:
+        probs.append("an official value after a provisional one")
+    if len(m) and st[-1] == "provisional" and months_between(m[-1], today.strftime("%Y-%m")) < step:
+        probs.append(f"provisional value for a period not yet ended ({m[-1]})")
+    v = list(d["index"])
+    big = [f"{a}->{b}" for (a, x), (b, y) in zip(zip(m, v), zip(m[1:], v[1:])) if x and abs(y / x - 1) > 0.15]
+    if big:
+        probs.append("jumps over 15%: " + ", ".join(big[:3]))
+    return [{"country": key, "check": "contract index", "status": "fail" if probs else "ok", "detail": "; ".join(probs) or f"{len(m)} periods"}]
+
+
 def run(today: date | None = None) -> list[dict]:
     today = today or date.today()
     res = []
@@ -137,7 +162,7 @@ def run(today: date | None = None) -> list[dict]:
     else:
         res.append({"country": "all", "check": "oil and currency feed", "status": "fail", "detail": "weekly_drivers.csv missing"})
     for k in live_countries():
-        res += check_country(k, today)
+        res += check_country(k, today) + check_contract_index(k, today)
     return res
 
 

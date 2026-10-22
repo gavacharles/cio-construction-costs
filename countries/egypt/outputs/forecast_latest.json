@@ -5,9 +5,9 @@
  "generated": "2026-10-23",
  "drivers": {
   "brent_usd": 115.22,
-  "brent_13w_pct": 35.53699564757087,
-  "fx": 53.4373,
-  "fx_13w_pct": 5.871992233548307
+  "brent_13w_pct": 14.863921842288907,
+  "fx": 54.378,
+  "fx_13w_pct": 6.002892866471998
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -59,9 +59,9 @@
    106.779,
    102.101,
    101.477,
-   102.221,
-   105.909,
-   108.059
+   102.292,
+   105.983,
+   108.562
   ]
  },
  "paths": {
@@ -92,58 +92,58 @@
    },
    {
     "month": "2027-03",
-    "median": 2.522,
+    "median": 2.534,
     "lo": -2.19,
     "hi": 18.033
    },
    {
     "month": "2027-04",
-    "median": 4.117,
+    "median": 4.181,
     "lo": -2.443,
     "hi": 19.792
    },
    {
     "month": "2027-05",
-    "median": 5.42,
+    "median": 5.48,
     "lo": -2.425,
     "hi": 20.739
    },
    {
     "month": "2027-06",
-    "median": 6.772,
-    "lo": -2.47,
-    "hi": 21.888
+    "median": 6.875,
+    "lo": -2.466,
+    "hi": 21.897
    },
    {
     "month": "2027-07",
-    "median": 8.161,
-    "lo": -2.504,
-    "hi": 23.674
+    "median": 8.227,
+    "lo": -2.496,
+    "hi": 23.684
    },
    {
     "month": "2027-08",
-    "median": 8.738,
-    "lo": -2.237,
+    "median": 8.769,
+    "lo": -2.22,
     "hi": 25.441
    },
    {
     "month": "2027-09",
-    "median": 9.479,
-    "lo": -2.064,
-    "hi": 27.193
+    "median": 9.49,
+    "lo": -2.063,
+    "hi": 27.313
    },
    {
     "month": "2027-10",
-    "median": 10.646,
+    "median": 10.707,
     "lo": -2.005,
-    "hi": 29.154
+    "hi": 29.195
    }
   ]
  },
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in EGP and the exchange rate; an indicator, not a price index",
- "observed_3m": 6.283687369085085,
+ "observed_3m": 6.748154671235147,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -155,7 +155,7 @@
   {
    "series": "Imported-input cost pressure",
    "period": "Next 6 months",
-   "median": 4.116986945857208,
+   "median": 4.181413405264345,
    "lo": -2.4429812385966314,
    "hi": 19.791969260875725
   }

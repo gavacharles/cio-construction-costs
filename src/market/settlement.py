@@ -85,7 +85,17 @@ def _knbs_releases(cfg: dict) -> pd.DataFrame:
         raise FileNotFoundError("no parseable KNBS releases in " + ", ".join(cfg["settlement"]["raw_dirs"]))
     rel["series_label"] = rel["sheet"].str.lower() + "|" + rel["series_label"]
     rel = rel.rename(columns={"release_period": "release_month"})
-    return rel[["source_file", "series_label", "date", "index_value", "release_month"]]
+    rel = rel[["source_file", "series_label", "date", "index_value", "release_month"]]
+    # headline values recovered by OCR from scanned releases, accepted only when verified (src/ingest/knbs_ocr.py);
+    # added only for quarters no text release covers, so text values always win
+    ocr = ROOT / "countries" / "kenya" / "raw" / "knbs_ocr_verified.csv"
+    if ocr.exists():
+        o = pd.read_csv(ocr, parse_dates=["date", "release_month"])
+        o = o[o.accepted.astype(str).str.lower() == "true"][["source_file", "series_label", "date", "index_value", "release_month"]]
+        have = set(zip(rel.series_label, rel.date))
+        o = o[[(l, d) not in have for l, d in zip(o.series_label, o.date)]]
+        rel = pd.concat([rel, o], ignore_index=True)
+    return rel
 
 
 def _statssa_releases(cfg: dict) -> pd.DataFrame:

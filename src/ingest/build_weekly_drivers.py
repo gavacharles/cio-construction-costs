@@ -5,8 +5,9 @@ build_weekly_drivers.py — weekly macro readings for the weekly forecast note.
 Contractors price jobs weekly; UBOS publishes monthly, 1-2 months late, and KNBS
 quarterly. This script keeps the fast-moving drivers current:
   - Brent crude, daily (EIA RBRTE spreadsheet; FRED DCOILBRENTEU as fallback)
-  - UGX, KES, RWF per USD, one reading per week (fawazahmed0 currency-api, dated
+  - every live country's currency per USD, one reading per week (fawazahmed0 currency-api, dated
     snapshots on jsDelivr; cached, so each run only fetches new weeks)
+  - the broad US dollar index (FRED DTWEXBGS) for the United States benchmark
 
 Outputs
   data/shared/weekly_drivers.csv               weekly (Friday) readings since 2024-03
@@ -40,7 +41,7 @@ def _currencies() -> dict[str, str]:
     out = {}
     for f in sorted((ROOT / "countries").glob("*/config.yaml")):
         fx = (yaml.safe_load(f.read_text(encoding="utf-8")) or {}).get("fx_code")
-        if fx:
+        if fx and fx != "usd":                       # the US uses the broad dollar index instead (see usd_index)
             out[fx] = f"{fx}_per_usd"
     return out
 
@@ -49,6 +50,12 @@ CURRENCIES = _currencies()
 
 
 def _get(url: str, timeout: int = 60) -> bytes:
+    """curl when available (some networks stall Python's TLS client on FRED), else urllib."""
+    import shutil
+    import subprocess
+    if shutil.which("curl"):
+        return subprocess.run(["curl", "-sSfL", "-m", str(timeout), url],      # FRED rejects custom user agents
+                              capture_output=True, check=True).stdout
     with urlopen(Request(url, headers={"User-Agent": "Mozilla/5.0 (CiO Lab)"}), timeout=timeout) as r:  # nosec B310
         return r.read()
 
@@ -85,7 +92,18 @@ def fx_weekly(cached: pd.DataFrame | None, backfill: bool = False) -> pd.DataFra
         pass
     new = pd.DataFrame(rows).set_index("date") if rows else pd.DataFrame(columns=list(CURRENCIES.values()))
     out = pd.concat([cached, new]) if cached is not None else new
-    return out[~out.index.duplicated(keep="last")].sort_index()
+    out = out[~out.index.duplicated(keep="last")].sort_index()
+    return out[out.notna().mean(axis=1) >= 0.5]          # drop partial snapshots (e.g. saved before a currency was added)
+
+
+def usd_index() -> pd.Series:
+    """Federal Reserve broad US dollar index (FRED DTWEXBGS, daily): the dollar against major currencies, for the
+    United States benchmark, whose prices are in dollars. Higher = stronger dollar."""
+    raw = _get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS", 60).decode("utf-8")
+    d = pd.read_csv(io.StringIO(raw))
+    d.columns = ["date", "v"]
+    d = d[pd.to_numeric(d.v, errors="coerce").notna()]
+    return pd.Series(d.v.astype(float).values, index=pd.to_datetime(d.date), name="usd_index")
 
 
 def build() -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -95,6 +113,13 @@ def build() -> tuple[pd.DataFrame, pd.DataFrame]:
     fx = fx_weekly(cached.reindex(columns=cols) if cached is not None else None, backfill=new_cols)
     brent = brent_daily()
     weekly = fx.join(brent.resample("D").ffill().reindex(fx.index, method="ffill"), how="left")
+    try:
+        ui = usd_index()
+        weekly = weekly.join(ui.resample("D").ffill().reindex(weekly.index, method="ffill"), how="left")
+    except Exception as err:                    # keep the last known values rather than fail the feed
+        print(f"usd index: {err}")
+        if cached is not None and "usd_index" in cached:
+            weekly["usd_index"] = cached["usd_index"].reindex(weekly.index)
     weekly.round(4).to_csv(WEEKLY)
 
     # monthly means after the panel ends, spliced onto the panel's own series

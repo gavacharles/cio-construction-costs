@@ -15,7 +15,7 @@ For every **1,000,000 GHS** you spend on materials today, budget about **1,025,0
 
 ## Why
 
-- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
 - The GHS has been steady against the US dollar.
 
 ## What to do this week
@@ -36,7 +36,7 @@ Ghana has no official construction price index, so **CiO Costs builds an estimat
 - **What it covers:** the imported part of building costs — steel, cement inputs, paint, pipes, fuel and transport.
 - **What it misses:** local materials (sand, stone, blocks, timber) and labour. Your price reports fill this gap.
 
-**The CiO estimate index** (100 = two years ago): May 86.3 · Jun 84.2 · Jul 84.6 · Aug 84.3 · Sep 87.1 · Oct 88.8.
+**The CiO estimate index** (100 = two years ago): May 86.3 · Jun 84.1 · Jul 84.6 · Aug 84.3 · Sep 87.1 · Oct 88.7.
 
 **How reliable is it?** Where we can check it against an official index, its 3-month direction matched the official figure about 6 times in 10 (Uganda 63%, South Africa 64%). Use it as an early signal and a contract reference agreed by both sides, not as a measured price.
 

@@ -5,9 +5,9 @@
  "generated": "2026-10-23",
  "drivers": {
   "brent_usd": 115.22,
-  "brent_13w_pct": 35.53699564757087,
-  "fx": 63.8655,
-  "fx_13w_pct": 0.06345475910691789
+  "brent_13w_pct": 14.863921842288907,
+  "fx": 63.8313,
+  "fx_13w_pct": 0.36920270769618124
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -57,11 +57,11 @@
    102.791,
    103.205,
    102.253,
-   99.941,
+   99.945,
    99.685,
    100.558,
    102.89,
-   103.814
+   103.812
   ]
  },
  "paths": {
@@ -82,7 +82,7 @@
     "month": "2027-01",
     "median": -0.236,
     "lo": -1.556,
-    "hi": 2.908
+    "hi": 2.904
    },
    {
     "month": "2027-02",
@@ -100,18 +100,18 @@
     "month": "2027-04",
     "median": -0.15,
     "lo": -2.409,
-    "hi": 3.787
+    "hi": 3.785
    },
    {
     "month": "2027-05",
     "median": -0.167,
-    "lo": -2.652,
+    "lo": -2.651,
     "hi": 3.804
    },
    {
     "month": "2027-06",
     "median": -0.083,
-    "lo": -2.864,
+    "lo": -2.862,
     "hi": 4.062
    },
    {
@@ -122,42 +122,42 @@
    },
    {
     "month": "2027-08",
-    "median": -0.042,
+    "median": -0.041,
     "lo": -3.176,
     "hi": 4.435
    },
    {
     "month": "2027-09",
     "median": 0.084,
-    "lo": -3.428,
+    "lo": -3.427,
     "hi": 4.605
    },
    {
     "month": "2027-10",
     "median": 0.081,
-    "lo": -3.513,
-    "hi": 4.931
+    "lo": -3.512,
+    "hi": 4.924
    }
   ]
  },
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in MZN and the exchange rate; an indicator, not a price index",
- "observed_3m": 4.058028945320364,
+ "observed_3m": 4.0561035560471925,
  "rows": [
   {
    "series": "Imported-input cost pressure",
    "period": "Next 3 months",
    "median": -0.2356882302286767,
    "lo": -1.5558525805646362,
-   "hi": 2.9076492647868157
+   "hi": 2.903773002895216
   },
   {
    "series": "Imported-input cost pressure",
    "period": "Next 6 months",
    "median": -0.150294168863363,
    "lo": -2.40853281614684,
-   "hi": 3.786736714991607
+   "hi": 3.7848113257184353
   }
  ]
 }

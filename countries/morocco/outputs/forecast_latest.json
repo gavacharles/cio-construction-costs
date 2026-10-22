@@ -5,9 +5,9 @@
  "generated": "2026-10-23",
  "drivers": {
   "brent_usd": 115.22,
-  "brent_13w_pct": 35.53699564757087,
-  "fx": 9.7422,
-  "fx_13w_pct": 4.565945388974746
+  "brent_13w_pct": 14.863921842288907,
+  "fx": 9.7872,
+  "fx_13w_pct": 4.340039018773778
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -59,9 +59,9 @@
    98.807,
    97.096,
    97.252,
-   97.686,
-   100.898,
-   103.702
+   97.654,
+   100.865,
+   103.621
   ]
  },
  "paths": {
@@ -94,56 +94,56 @@
     "month": "2027-03",
     "median": 0.119,
     "lo": -3.885,
-    "hi": 5.021
+    "hi": 5.01
    },
    {
     "month": "2027-04",
-    "median": 0.204,
-    "lo": -4.415,
+    "median": 0.195,
+    "lo": -4.432,
     "hi": 5.659
    },
    {
     "month": "2027-05",
-    "median": 0.214,
-    "lo": -4.567,
-    "hi": 5.957
+    "median": 0.212,
+    "lo": -4.57,
+    "hi": 5.951
    },
    {
     "month": "2027-06",
-    "median": 0.456,
+    "median": 0.455,
     "lo": -5.065,
-    "hi": 6.27
+    "hi": 6.25
    },
    {
     "month": "2027-07",
-    "median": 0.635,
+    "median": 0.634,
     "lo": -5.412,
-    "hi": 7.089
+    "hi": 7.074
    },
    {
     "month": "2027-08",
-    "median": 0.698,
+    "median": 0.679,
     "lo": -5.54,
-    "hi": 7.077
+    "hi": 7.056
    },
    {
     "month": "2027-09",
-    "median": 0.674,
+    "median": 0.672,
     "lo": -5.841,
-    "hi": 7.298
+    "hi": 7.296
    },
    {
     "month": "2027-10",
-    "median": 0.74,
-    "lo": -6.147,
-    "hi": 7.9
+    "median": 0.738,
+    "lo": -6.156,
+    "hi": 7.873
    }
   ]
  },
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in MAD and the exchange rate; an indicator, not a price index",
- "observed_3m": 6.421775618895582,
+ "observed_3m": 6.343813707680663,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -155,8 +155,8 @@
   {
    "series": "Imported-input cost pressure",
    "period": "Next 6 months",
-   "median": 0.20366286317651694,
-   "lo": -4.415268177815367,
+   "median": 0.1951113115198888,
+   "lo": -4.432492350969967,
    "hi": 5.659456647833699
   }
  ]

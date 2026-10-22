@@ -7,7 +7,6 @@ status: benchmark
 benchmark: true
 currency: GBP
 fx_code: gbp
-pressure_currency: USD
 aliases: [uk, britain, great britain, england, europe]
 regulation:
   mode: play_money

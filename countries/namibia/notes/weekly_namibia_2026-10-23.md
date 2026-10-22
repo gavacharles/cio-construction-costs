@@ -15,8 +15,8 @@ For every **1,000,000 NAD** you spend on materials today, budget about **1,003,0
 
 ## Why
 
-- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
-- The NAD has been steady against the US dollar.
+- World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- The NAD is 3% stronger against the US dollar than 3 months ago — imported steel, cement inputs, paint and fittings cost a little less.
 
 ## What to do this week
 
@@ -35,7 +35,7 @@ Namibia has no official construction price index, so **CiO Costs builds an estim
 - **What it covers:** the imported part of building costs — steel, cement inputs, paint, pipes, fuel and transport.
 - **What it misses:** local materials (sand, stone, blocks, timber) and labour. Your price reports fill this gap.
 
-**The CiO estimate index** (100 = two years ago): May 99.0 · Jun 96.6 · Jul 96.6 · Aug 96.6 · Sep 98.9 · Oct 100.8.
+**The CiO estimate index** (100 = two years ago): May 99.0 · Jun 96.6 · Jul 96.6 · Aug 96.6 · Sep 98.8 · Oct 100.6.
 
 **How reliable is it?** Where we can check it against an official index, its 3-month direction matched the official figure about 6 times in 10 (Uganda 63%, South Africa 64%). Use it as an early signal and a contract reference agreed by both sides, not as a measured price.
 

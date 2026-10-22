@@ -717,10 +717,13 @@ def contract_series(c: dict) -> list[dict]:
     seen = {r["m"] for r in rows}
     for q in c["paths"][c["head"]]:
         m = q["month"]
-        if m > now or m in seen or c["kind"] == "pressure":
+        if m in seen or c["kind"] == "pressure":
             continue
         if step == 3 and (int(m[5:7]) - int(last["m"][5:7])) % 3:
             continue
+        y, mo = int(m[:4]), int(m[5:7]) + step - 1          # last month of the period (quarters are dated by their first month)
+        if f"{y + (mo - 1) // 12}-{(mo - 1) % 12 + 1:02d}" >= now:
+            continue                                         # only periods that have ended: a month under way has no figure yet
         rows.append({"m": m, "v": round(last["v"] * (1 + q["median"] / 100), 2), "s": "provisional"})
         seen.add(m)
     return rows
@@ -805,6 +808,22 @@ def backtest_svg(key: str, h: int, n: int = 24, w: int = 760, ht: int = 260) -> 
             f"{hits} of {len(rows)} inside the range' data-bt={h}{'' if h == 1 else ' hidden'}>{''.join(out)}</svg>")
 
 
+def bench_drivers(c: dict) -> str:
+    """Oil and the currency against the US dollar (the broad dollar index for the United States), 3-month change."""
+    d = c.get("drivers") or {}
+    cell = lambda k, v, ch: f"<div class=nx><span class=nx-h>{k}</span><b>{v}</b><span class=nx-r>{ch}</span></div>"
+    pc = lambda x: "" if x is None else f"{'⬆' if x > 0 else '⬇'} {abs(x):.1f}% in 3 months"
+    oil = cell("World oil (Brent)", f"US$ {d['brent_usd']:.0f}" if d.get("brent_usd") else "–", pc(d.get("brent_13w_pct")))
+    if d.get("usd_index"):
+        fx = cell("US dollar vs major currencies", f"{d['fx']:.1f}" if d.get("fx") else "–",
+                  pc(d.get("fx_13w_pct")).replace("in 3 months", "in 3 months (index; up = stronger dollar)"))
+    else:
+        fx = cell(f"{e(c['currency'])} per US dollar", f"{d['fx']:,.3f}".rstrip("0").rstrip(".") if d.get("fx") else "–",
+                  pc(d.get("fx_13w_pct")) + (" (up = weaker " + e(c["currency"]) + ")" if d.get("fx_13w_pct") is not None else ""))
+    return (f"<section class=bm-sec><div class=bm-sec-h><h2 data-i18n=dv.h>What is moving costs</h2></div>"
+            f"<div class='bm-next bm-drv'>{oil}{fx}</div></section>")
+
+
 def page_benchmark(c: dict, number: int) -> str:
     cfg = load_country(c["key"])
     b = c.get("bstats") or {}
@@ -842,6 +861,7 @@ def page_benchmark(c: dict, number: int) -> str:
  <p class=bm-legend><span class=lg-rng></span><span data-i18n=bm.lg.rng>our likely range</span><span class=lg-mid></span><span data-i18n=bm.lg.mid>our central forecast</span>
  <span class=lg-hit></span><span data-i18n=bm.lg.hit>official result, inside</span><span class=lg-miss></span><span data-i18n=bm.lg.miss>official result, outside</span></p></section>
 
+{bench_drivers(c)}
 <section class=bm-sec><div class=bm-sec-h><h2 data-i18n=bm.next>What we expect next</h2><span class=bm-small data-i18n=bm.next.d>change from {e(c['base'])}, with the likely range</span></div>
  <div class=bm-next>{nxt}</div></section>
 

@@ -466,3 +466,4 @@ footer{border-top:1px solid var(--rule)}.footlinks{font-size:12px}
 .addbill{font:600 13px var(--text);background:transparent;border:1px dashed var(--line);color:var(--ink-2);padding:5px 8px;cursor:pointer;white-space:nowrap}
 .addbill:hover{border-color:var(--rule);color:var(--ink)}
 @media print{.bctabs,.addbill{display:none!important}}
+.bm-drv{grid-template-columns:repeat(2,1fr)}@media (max-width:760px){.bm-drv{grid-template-columns:1fr}}

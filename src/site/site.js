@@ -169,8 +169,9 @@
     const chg = (v, up, down) => v == null ? "" : `<span class=${v > 0 ? "up" : "down"}>${arrow(v)} ${Math.abs(v).toFixed(1)}%</span> ${tr(v > 0 ? up : down)}`;
     set("for", `${c.flag} ${cname(c)}`);
     set("oil", d.brent_usd ? `US$ ${d.brent_usd.toFixed(0)}` : "–"); set("oilch", chg(d.brent_13w_pct, "dv.up3", "dv.down3"));
-    set("fxk", tr("dv.fx", { ccy: c.currency }));
-    if (d.fx) { set("fx", `${Math.round(d.fx).toLocaleString(T.loc || undefined)} ${c.currency}`); set("fxch", chg(d.fx_13w_pct, "dv.weaker", "dv.stronger")); }
+    set("fxk", d.usd_index ? tr("dv.usdidx") : tr("dv.fx", { ccy: c.currency }));
+    if (d.fx && d.usd_index) { set("fx", d.fx.toFixed(1)); set("fxch", chg(d.fx_13w_pct, "dv.usdup", "dv.usddown")); }
+    else if (d.fx) { set("fx", `${(d.fx >= 100 ? Math.round(d.fx) : +d.fx.toFixed(3)).toLocaleString(T.loc || undefined)} ${c.currency}`); set("fxch", chg(d.fx_13w_pct, "dv.weaker", "dv.stronger")); }
     else { set("fx", "–"); set("fxch", tr("dv.usd")); }
     set("off", c.official ? T.base(c.base) : tr("dv.none")); set("offsrc", c.official ? (c.office || "") : tr("dv.est"));
     const b = Date.parse((($("#updated-ago") || {}).dataset || {}).built || ""), h = Math.max(0, Math.round((Date.now() - b) / 36e5));

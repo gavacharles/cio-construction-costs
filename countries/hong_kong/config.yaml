@@ -7,7 +7,6 @@ status: benchmark
 benchmark: true
 currency: HKD
 fx_code: hkd
-pressure_currency: USD
 aliases: [hk, hongkong, china, asia]
 regulation:
   mode: play_money

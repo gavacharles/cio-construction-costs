@@ -120,6 +120,7 @@ def _trend_model(lv: pd.Series, step: str, H: int) -> tuple[list[tuple[float, fl
     1..H periods ahead and the honest test statistics (calibration learned only from earlier test periods)."""
     ch = ((lv / lv.shift(1) - 1).dropna() * 100).values
     w_len, test_len, min_hist = (40, 16, 10) if step == "quarter" else (60, 48, 20)
+    floor = 1.0 if step == "quarter" else 0.6                  # few quarters: widen when needed, never narrow on luck
 
     def fit(past):
         win = past[-w_len:]
@@ -132,14 +133,14 @@ def _trend_model(lv: pd.Series, step: str, H: int) -> tuple[list[tuple[float, fl
         sc = 1.0
         if len(errs) >= 8:                                     # calibration from earlier test periods only
             e = np.array(errs)
-            sc = float(np.clip(np.percentile(np.abs(e[:, 0]), 80) / max(1e-6, e[:, 1].mean()), 0.6, 2.5))
+            sc = float(np.clip(np.percentile(np.abs(e[:, 0]), 80) / max(1e-6, e[:, 1].mean()), floor, 2.5))
         rows.append((ch[i], d, d + lo * sc, d + hi * sc))
         errs.append((ch[i] - d, (hi - lo) / 2))
     a = np.array(rows)
     stats = {"n": int(len(a)), "inside": float(np.mean((a[:, 0] >= a[:, 2]) & (a[:, 0] <= a[:, 3]))),
              "mae": float(np.mean(np.abs(a[:, 0] - a[:, 1]))), "mae_nochange": float(np.mean(np.abs(a[:, 0])))}
     e = np.array(errs)                                         # live forecast: calibration from the whole test
-    sc = float(np.clip(np.percentile(np.abs(e[:, 0]), 80) / max(1e-6, e[:, 1].mean()), 0.6, 2.5))
+    sc = float(np.clip(np.percentile(np.abs(e[:, 0]), 80) / max(1e-6, e[:, 1].mean()), floor, 2.5))
     d, res = fit(ch)
     lo, hi = np.percentile(res, [10, 90])
     return [(d * h, d * h + lo * sc * np.sqrt(h), d * h + hi * sc * np.sqrt(h)) for h in range(1, H + 1)], stats
@@ -572,7 +573,8 @@ def walk_forward(levels: pd.Series, months: int = 48, horizons=(1, 3)) -> pd.Dat
         path = _ar1_path(ch[ch.index <= origin], origin, H=max(horizons), n=1500)
         for h in horizons:
             q = path[h - 1]
-            sc = _scale(errs[h]) if len(errs[h]) >= 12 else 1.0
+            known = errs[h][:len(errs[h]) - (h - 1)]           # only errors whose outcome was already observable at this origin
+            sc = _scale(known) if len(known) >= 12 else 1.0
             act = (lv.iloc[i + h] / lv.iloc[i] - 1) * 100
             rows.append({"origin": origin.strftime("%Y-%m-%d"), "target": "ALL", "h": h, "actual": act, "structural": q["median"],
                          "lo": q["median"] - (q["median"] - q["lo"]) * sc, "hi": q["median"] + (q["hi"] - q["median"]) * sc, "no_change": 0.0})
@@ -675,6 +677,9 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
                         "brent_13w_pct": _chg(weekly["brent_usd"], 91),
                         "fx": float(weekly[col].dropna().iloc[-1]) if col in weekly and weekly[col].notna().any() else None,
                         "fx_13w_pct": _chg(weekly[col], 91) if col in weekly else None}
+    if cfg["currency"] == "USD" and "usd_index" in weekly and weekly["usd_index"].notna().any():
+        # prices in dollars: show the broad dollar index (higher = stronger dollar = cheaper imports)
+        _DATA["drivers"].update(fx=float(weekly["usd_index"].dropna().iloc[-1]), fx_13w_pct=_chg(weekly["usd_index"], 91), usd_index=True)
     lines = [f"# {cfg['country']} construction cost note — week of {today:%d %B %Y}", "", HEADER, "",
              "## This week's drivers", ""] + drivers_section(weekly, country) + [""]
     from country import load_country as _lc

@@ -1,0 +1,7 @@
+series_label,date,index_value,source_file,release_month,verified_against,accepted
+buildings|total,2022-01-01,112.05,Kenya-Construction-Input-Price-Index-First-Quarter-2022.pdf (OCR),2022-01-01,0,False
+all|total,2021-10-01,106.12,Kenya-Construction-Input-Price-Index-Fourth-Quarter-2021.pdf (OCR),2021-10-01,3,True
+buildings|total,2021-10-01,104.23,Kenya-Construction-Input-Price-Index-Fourth-Quarter-2021.pdf (OCR),2021-10-01,3,True
+civil|total,2021-10-01,108.06,Kenya-Construction-Input-Price-Index-Fourth-Quarter-2021.pdf (OCR),2021-10-01,3,True
+all|total,2022-04-01,114.47,Kenya-Construction-Input-Price-Index-Second-Quarter-2022.pdf (OCR),2022-04-01,1,False
+civil|total,2022-04-01,115.05,Kenya-Construction-Input-Price-Index-Second-Quarter-2022.pdf (OCR),2022-04-01,1,False

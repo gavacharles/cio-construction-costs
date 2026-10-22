@@ -15,8 +15,8 @@ For every **1,000,000 ETB** you spend on materials today, budget about **1,018,0
 
 ## Why
 
-- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
-- The ETB has been steady against the US dollar.
+- World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- The ETB is 2% weaker against the US dollar than 3 months ago — imported steel, cement inputs, paint and fittings cost more.
 
 ## What to do this week
 
@@ -35,7 +35,7 @@ Ethiopia has no official construction price index, so **CiO Costs builds an esti
 - **What it covers:** the imported part of building costs — steel, cement inputs, paint, pipes, fuel and transport.
 - **What it misses:** local materials (sand, stone, blocks, timber) and labour. Your price reports fill this gap.
 
-**The CiO estimate index** (100 = two years ago): May 116.7 · Jun 114.7 · Jul 114.8 · Aug 116.3 · Sep 118.8 · Oct 120.0.
+**The CiO estimate index** (100 = two years ago): May 116.7 · Jun 114.5 · Jul 114.8 · Aug 116.3 · Sep 118.8 · Oct 120.1.
 
 **How reliable is it?** Where we can check it against an official index, its 3-month direction matched the official figure about 6 times in 10 (Uganda 63%, South Africa 64%). Use it as an early signal and a contract reference agreed by both sides, not as a measured price.
 

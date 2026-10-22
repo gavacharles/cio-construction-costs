@@ -5,9 +5,9 @@
  "generated": "2026-10-23",
  "drivers": {
   "brent_usd": 115.22,
-  "brent_13w_pct": 35.53699564757087,
-  "fx": 1733.9449,
-  "fx_13w_pct": -0.08028406683400213
+  "brent_13w_pct": 14.863921842288907,
+  "fx": 1733.3911,
+  "fx_13w_pct": -0.018970768059434207
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -57,11 +57,11 @@
    102.762,
    103.184,
    102.311,
-   99.918,
+   99.902,
    99.711,
    100.609,
    102.908,
-   103.813
+   103.804
   ]
  },
  "paths": {
@@ -98,52 +98,52 @@
    },
    {
     "month": "2027-04",
-    "median": 2.198,
+    "median": 2.212,
     "lo": -1.974,
     "hi": 15.499
    },
    {
     "month": "2027-05",
-    "median": 2.631,
-    "lo": -1.97,
+    "median": 2.634,
+    "lo": -1.975,
     "hi": 16.003
    },
    {
     "month": "2027-06",
-    "median": 3.217,
+    "median": 3.223,
     "lo": -2.018,
     "hi": 16.948
    },
    {
     "month": "2027-07",
-    "median": 3.675,
+    "median": 3.677,
     "lo": -2.069,
     "hi": 18.152
    },
    {
     "month": "2027-08",
-    "median": 4.284,
-    "lo": -1.908,
+    "median": 4.279,
+    "lo": -1.912,
     "hi": 19.237
    },
    {
     "month": "2027-09",
-    "median": 4.986,
+    "median": 4.991,
     "lo": -1.984,
     "hi": 20.325
    },
    {
     "month": "2027-10",
-    "median": 5.738,
+    "median": 5.742,
     "lo": -1.955,
-    "hi": 21.693
+    "hi": 21.686
    }
   ]
  },
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in MWK and the exchange rate; an indicator, not a price index",
- "observed_3m": 4.031927501854655,
+ "observed_3m": 4.022776461127737,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -155,7 +155,7 @@
   {
    "series": "Imported-input cost pressure",
    "period": "Next 6 months",
-   "median": 2.197805322591311,
+   "median": 2.2117237248037735,
    "lo": -1.973767587485315,
    "hi": 15.499279197031122
   }

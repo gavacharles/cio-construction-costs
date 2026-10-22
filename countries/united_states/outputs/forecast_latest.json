@@ -5,9 +5,10 @@
  "generated": "2026-10-23",
  "drivers": {
   "brent_usd": 115.22,
-  "brent_13w_pct": 35.53699564757087,
-  "fx": null,
-  "fx_13w_pct": null
+  "brent_13w_pct": 14.863921842288907,
+  "fx": 121.4048,
+  "fx_13w_pct": 0.5751778014340125,
+  "usd_index": true
  },
  "spark": {
   "label": "Construction inputs (all) (U.S. Bureau of Labor Statistics (BLS))",

@@ -8,7 +8,6 @@ status: benchmark
 benchmark: true
 currency: USD
 fx_code: usd
-pressure_currency: USD
 regulation:
   mode: play_money
   regulators: []

@@ -2,27 +2,27 @@
 
 ## In one line
 
-Building material prices in Kenya are expected to stay about the same until January 2027.
+Building material prices in Kenya are a little more likely than not to rise — about 1.0% by January 2027.
 
 ## What it means for your money
 
-For every **1,000,000 KES** you spend on materials today, budget about **1,005,000 KES** for the same materials in January 2027 (most likely between 976,000 and 1,033,000).
+For every **1,000,000 KES** you spend on materials today, budget about **1,010,000 KES** for the same materials in January 2027 (most likely between 983,000 and 1,037,000).
 
 ## Prices to watch
 
-- ⬆ **Building cost index** — up about 0.7% by January 2027
-- ➡ **All building inputs** — about the same by January 2027
-- ➡ **Civil engineering cost index** — about the same by January 2027
+- ⬆ **Building cost index** — up about 1.2% by January 2027
+- ⬆ **All building inputs** — up about 1.0% by January 2027
+- ⬆ **Civil engineering cost index** — up about 0.8% by January 2027
 
 ## Why
 
-- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
 - The KES has been steady against the US dollar.
 
 ## What to do this week
 
-- No rush: today's quotes are a fair guide.
-- Use the quiet time to compare suppliers.
+- Prices are creeping up: compare at least two quotes before big orders.
+- Keep a small contingency for price rises in new quotes.
 
 ## What people are paying
 

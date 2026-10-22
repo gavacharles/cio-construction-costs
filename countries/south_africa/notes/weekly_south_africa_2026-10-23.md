@@ -18,8 +18,8 @@ For every **1,000,000 ZAR** you spend on materials today, budget about **1,016,0
 
 ## Why
 
-- World oil prices are up 36% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
-- The ZAR has been steady against the US dollar.
+- World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
+- The ZAR is 3% stronger against the US dollar than 3 months ago — imported steel, cement inputs, paint and fittings cost a little less.
 
 ## What to do this week
 

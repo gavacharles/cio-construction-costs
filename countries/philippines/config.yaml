@@ -7,7 +7,6 @@ status: benchmark
 benchmark: true
 currency: PHP
 fx_code: php
-pressure_currency: USD
 aliases: [asia, manila, ph, pilipinas]
 regulation:
   mode: play_money

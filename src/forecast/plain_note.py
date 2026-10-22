@@ -128,7 +128,11 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         why.append(f"World oil prices are {'up' if b > 0 else 'down'} {abs(b):.0f}% in the last 3 months — this feeds diesel, "
                    "transport, asphalt and plastics.")
     fx = dr.get("fx_13w_pct")
-    if fx is not None and cfg.get("pressure_currency") != "USD":
+    if dr.get("usd_index") and fx is not None:
+        why.append("The US dollar has been steady against major currencies." if abs(fx) < 1 else
+                   f"The US dollar is {abs(fx):.0f}% {'stronger' if fx > 0 else 'weaker'} against major currencies than 3 months ago — "
+                   f"imported materials {'cost a little less' if fx > 0 else 'cost more'}.")
+    elif fx is not None and cfg.get("pressure_currency") != "USD":
         why.append(f"The {ccy} has been steady against the US dollar." if abs(fx) < 1 else
                    f"The {ccy} is {abs(fx):.0f}% {'weaker' if fx > 0 else 'stronger'} against the US dollar than 3 months ago — "
                    f"imported steel, cement inputs, paint and fittings {'cost more' if fx > 0 else 'cost a little less'}.")
