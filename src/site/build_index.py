@@ -2,7 +2,7 @@
 """
 build_index.py — build the public CiO Costs site from the latest forecasts.
 
-Pages (all open straight from disk; no server, no internet):
+Pages, written to public/ (open straight from disk, or served by the app):
   index.html                    front page: date picker, featured question, costs at a glance, country cards
   countries/<c>/index.html      one page per country: what is happening to costs, by material, and the outlook
   play.html                     The Cost Call — a daily game on real price data, plus this week's calls
@@ -25,6 +25,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SITE = Path(__file__).resolve().parent
+OUT = ROOT / "public"            # everything public lives here; the app serves only this folder
 sys.path.insert(0, str(ROOT / "src" / "market"))
 
 from country import load_country, list_countries   # noqa: E402
@@ -91,6 +92,22 @@ def crowd(key: str) -> list[dict]:
         return []
 
 
+def weeks_ahead(n: int = 8) -> list[str]:
+    """Mondays of the next n weeks, as YYYY-MM-DD."""
+    from datetime import timedelta
+    t = date.today()
+    first = t + timedelta(days=(7 - t.weekday()) % 7 or 7)
+    return [(first + timedelta(weeks=i)).isoformat() for i in range(n)]
+
+
+def target_options(months: list[str]) -> list[tuple[str, str, str]]:
+    """(value, label, group): the next 8 weeks, then months after the last week."""
+    wk = weeks_ahead(8)
+    out = [(f"W:{d}", "Week of " + str(int(d[8:])) + " " + month_label(d[:7]), "Weeks") for d in wk]
+    out += [(f"M:{m}", month_label(m), "Months") for m in months if m > wk[-1][:7]]
+    return out
+
+
 def months_ahead(n: int = 12) -> list[str]:
     t = date.today()
     out = []
@@ -108,6 +125,7 @@ LOGO = ("<svg class=logo viewBox='0 0 24 24' width=24 height=24 aria-hidden=true
 
 def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc: str = "") -> str:
     nav = [("index.html#countries", "Countries", "home"), ("index.html#glance", "Costs at a glance", "glance"),
+           ("calculator.html", "Bid calculator", "calc"), ("report.html", "Report prices", "report"),
            ("play.html", "The Cost Call", "play"), ("method.html", "How it works", "method")]
     links = "".join(f"<a href='{rel}{h}'{' aria-current=page' if p == page else ''}>{t}</a>" for h, t, p in nav)
     payload = json.dumps(data, separators=(",", ":")).replace("</", "<\\/")
@@ -131,8 +149,11 @@ market sources. Updated {e(data.get('updated', ''))}.</footer>
 
 
 def picker(months: list[str], default: str) -> str:
-    opts = "".join(f"<option value={m}{' selected' if m == default else ''}>{month_label(m)}</option>" for m in months)
-    return (f"<label class=when><span>Forecast to</span><select id=when aria-label='Forecast to month'>{opts}</select></label>")
+    groups = {}
+    for v, lab, g in target_options(months):
+        groups.setdefault(g, []).append(f"<option value='{v}'{' selected' if v == default else ''}>{lab}</option>")
+    opts = "".join(f"<optgroup label='{g}'>{''.join(o)}</optgroup>" for g, o in groups.items())
+    return (f"<label class=when><span>Forecast to</span><select id=when aria-label='Forecast to'>{opts}</select></label>")
 
 
 # ------------------------------------------------------------------ pages --
@@ -162,8 +183,14 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
  <h1>Will building costs rise where you work?</h1>
  <p class=lede>Pick a month. See the chance that construction input prices rise, how much, and what is driving it —
  from official statistics, oil and exchange rates, updated every few hours.</p></div>
- <div class=hero-side>{picker(months, default)}<p class=muted id=when-note>Changes are measured from each country's latest
- official reading (or from today for import-cost indicators).</p></div></section>
+ <div class=hero-side>{picker(months, default)}<p class=muted id=when-note>Weekly figures are interpolated from the monthly forecast, which is refreshed
+ every few hours. Changes are measured from each country's latest official reading (or from today for import-cost
+ indicators).</p></div></section>
+<section class=tools><a class=tool href=calculator.html><b>Bid escalation calculator</b><span>How much could prices move
+ over your contract? Get the expected escalation in your currency, with a range.</span></a>
+ <a class=tool href=report.html><b>Report a price</b><span>Tell us what you paid for cement, steel, diesel or sand this
+ week. It takes a minute and makes everyone's numbers better.</span></a>
+ <a class=tool href=play.html><b>The Cost Call</b><span>Five daily calls on real prices. Keep your streak.</span></a></section>
 
 <section class=featured data-key={feat['key']} aria-labelledby=fq>
  <div class=feat-main><div class=card-top><span class=flag aria-hidden=true>{feat['flag']}</span>
@@ -242,17 +269,30 @@ def chart_svg(c: dict, w: int = 760, h: int = 220) -> str:
             f"<p class=muted>{e(sp.get('label', ''))}. Shaded: likely range (8 in 10).</p>")
 
 
+WHY = [(("diesel", "fuel", "asphalt", "bitumen"), "Oil prices and the exchange rate"),
+       (("steel", "rebar", "reinforc", "roofing", "nails", "iron"), "World steel prices and the exchange rate"),
+       (("cement", "lime", "ready-mix", "concrete", "block", "brick"), "Fuel and power costs, the exchange rate, local demand"),
+       (("sand", "aggregate", "ballast", "stone", "hardcore", "murram"), "Rain (quarrying and haulage), fuel, local demand"),
+       (("paint", "pipe", "tile", "plastic"), "Imports: the exchange rate and oil-based inputs"),
+       (("timber", "wood"), "Local supply and general inflation"), (("labour",), "Local wages and inflation")]
+
+
+def why(name: str) -> str:
+    n = name.lower()
+    return next((t for keys, t in WHY if any(k in n for k in keys)), "Local and imported costs")
+
+
 def page_country(c: dict, months: list[str], default: str, crowd_rows: list[dict]) -> str:
     def yr(m):
         return "–" if m["change_year"] is None else format(m["change_year"], "+.1f") + "%"
     mats = "".join(f"<tr data-mat='{e(m['name'])}'><th scope=row>{e(m['name'])}</th><td>{m['change_period']:+.1f}%</td>"
-                   f"<td>{yr(m)}</td><td data-mexp>–</td></tr>" for m in c["materials"])
+                   f"<td>{yr(m)}</td><td data-mexp>–</td><td class=why>{why(m['name'])}</td></tr>" for m in c["materials"])
     step = "quarter" if c["step"] == "quarter" else "month"
     if mats:
         mat_html = f"""<section><div class=section-h><h2>Costs by material</h2><span class=muted>Official figures,
 latest {('quarter' if step == 'quarter' else 'month')}: {e(c['base'])}</span></div><div class=tablewrap><table class=glance>
 <thead><tr><th scope=col>Material</th><th scope=col>Change on the previous {step}</th><th scope=col>Change on a year</th>
-<th scope=col>Expected by <span data-when-label></span></th></tr></thead><tbody>{mats}</tbody></table></div></section>"""
+<th scope=col>Expected by <span data-when-label></span></th><th scope=col>What moves it</th></tr></thead><tbody>{mats}</tbody></table></div></section>"""
     else:
         r = c["reading"]
         reading_txt = "."
@@ -297,12 +337,41 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  fittings and paint dearer.</p></div>
  <div class=tile><b>Official data</b><p>{e(c['base'])} is the latest period in the forecast's base. New official releases are
  added within a day of publication.</p></div></div></section>
-<section><div class=section-h><h2>Prices reported by participants</h2></div>{crowd_sec}</section>
+<section><div class=section-h><h2>Prices reported by people who buy them</h2>
+<a class='btn primary' href="../../report.html#{c['key']}">Report a price in {e(c['country'])}</a></div>{crowd_sec}</section>
+<section class=alertbox data-country={c['key']}><div><h2>Get a price alert</h2><p>We'll message you when the expected change
+for a material in {e(c['country'])} reaches your level.</p></div>
+<form class=alertform><label>Material<select name=series>{''.join(f"<option>{e(k)}</option>" for k in c['paths'])}</select></label>
+<label>Alert me at<select name=threshold><option value=3>+3%</option><option value=5 selected>+5%</option><option value=10>+10%</option>
+<option value=-3>−3% (prices falling)</option></select></label>
+<label>By<select name=channel><option value=whatsapp>WhatsApp</option><option value=email>Email</option></select></label>
+<label>Number or email<input name=contact required placeholder="+256… or you@company.com"></label>
+<button class='btn primary' type=submit>Set alert</button><p class='muted formmsg' role=status></p></form></section>
+<details class=embed><summary>Put this forecast on your website</summary><p class=muted>Copy this code into any web page:</p>
+<code>&lt;iframe src="https://YOUR-SITE/embed.html?c={c['key']}" width="340" height="230" style="border:0"&gt;&lt;/iframe&gt;</code></details>
 """
 
 
+def track_record() -> str:
+    """Public summary of the Uganda backtest: accuracy vs a simple trend, and range coverage."""
+    import csv
+    f = ROOT / "countries" / "uganda" / "outputs" / "forecast" / "backtest_metrics.csv"
+    if not f.exists():
+        return ""
+    rows = [r for r in csv.DictReader(open(f)) if r["target"] == "ALL"]
+    if not rows:
+        return ""
+    cells = "".join(f"<tr><td>{r['h']} month{'s' if r['h'] != '1' else ''} ahead</td>"
+                    f"<td>{(1 - float(r['rel_structural'])) * 100:.0f}% smaller</td>"
+                    f"<td>{float(r['coverage80']) * 100:.0f}% raw → about 80% after calibration</td></tr>" for r in rows)
+    return (f"<h2>Track record</h2><p>Uganda, overall construction input index, tested month by month since 2021 using only "
+            f"the data available at each point:</p><div class=tablewrap><table class=glance><thead><tr><th>Horizon</th>"
+            f"<th>Errors vs a simple trend</th><th>Outcomes inside the likely range</th></tr></thead><tbody>{cells}</tbody>"
+            f"</table></div><p class=muted>Each month we will also publish our forecast next to the official figure.</p>")
+
+
 def page_method() -> str:
-    return """
+    return f"""
 <section class=prose><p class=eyebrow>How it works</p><h1>From official statistics to a forecast you can use</h1>
 <p class=lede>CiO Costs combines official construction price statistics with the things that move construction costs
 week to week, and turns them into a chance, an expected change and a likely range for each country.</p>
@@ -320,6 +389,7 @@ it had been run at the time, and kept only if it beats simple rules of thumb. In
 <div class=tile><span class=num>4</span><b>How often it updates</b><p>Oil and exchange rates are refreshed every few hours
 and the forecasts with them. Official data is added within a day of publication. A written note for each country comes
 out every Monday.</p></div></div>
+{track_record()}
 <h2>Reading the numbers</h2><ul class=plain>
 <li><b>Chance of a rise</b>: how likely prices are to be higher by the month you pick.</li>
 <li><b>Expected change</b>: the most likely move, measured from the latest official reading (or from today for
@@ -343,12 +413,56 @@ is published</span></div><div class=grid id=calls></div></section>
 """
 
 
+def page_report(keys: list[str]) -> str:
+    opts = "".join(f"<option value={k}>{flag(load_country(k)['iso3'])} {e(load_country(k)['country'])}</option>" for k in keys)
+    return f"""
+<section class=prose><p class=eyebrow>Report prices</p><h1>What did you pay this week?</h1>
+<p class=lede>Tell us the price you paid or were quoted for a construction input, in any of our 18 countries. Reports are
+anonymous: we publish medians by country, item and week — never names, numbers or single reports.</p></section>
+<section class=reportgrid><form id=reportform class=panel>
+ <label>Country<select name=country required>{opts}</select></label>
+ <label>Item<select name=item required></select></label>
+ <div class=row2><label>Price (<span data-ccy></span>)<input name=price type=number min=1 step=any required inputmode=decimal></label>
+ <label>Unit<input name=unit readonly tabindex=-1></label></div>
+ <div class=row2><label>Town or area<input name=location required placeholder="e.g. Kampala – Nakawa"></label>
+ <label>Bought from<select name=supplier><option>Hardware shop</option><option>Factory or depot</option><option>Quarry</option>
+ <option>Fuel station</option><option>Contractor or site</option><option>Other</option></select></label></div>
+ <label>Your phone or email <span class=muted>(optional, never published — only if you want follow-ups)</span><input name=contact></label>
+ <button class='btn primary big' type=submit>Send price</button><p class='formmsg muted' role=status></p></form>
+ <aside class=panel><h2>What others report</h2><div id=crowdview></div>
+ <p class=muted>Medians of each person's reports, so repeated or wild entries can't move the numbers.</p></aside></section>
+"""
+
+
+def page_calc() -> str:
+    return """
+<section class=prose><p class=eyebrow>Bid escalation calculator</p><h1>How much could input prices move over your contract?</h1>
+<p class=lede>Enter your contract and the mix of inputs. You get the expected escalation in your currency, with a likely
+range — a starting point for contingencies and price-adjustment clauses.</p></section>
+<section class=reportgrid><form id=calcform class=panel>
+ <label>Country<select name=country></select></label>
+ <div class=row2><label>Contract value (<span data-ccy></span>)<input name=value type=number min=0 step=any value=1000000000 inputmode=decimal></label>
+ <label>Inputs share of contract (%)<input name=share type=number min=5 max=100 value=60></label></div>
+ <div class=row2><label>Work starts<select name=start></select></label><label>Work ends<select name=end></select></label></div>
+ <label>Type of work<select name=preset><option value=building>Building</option><option value=road>Road</option>
+ <option value=water>Water and drainage</option><option value=custom>Custom mix</option></select></label>
+ <fieldset id=mix><legend>Mix of inputs (%)</legend></fieldset></form>
+ <aside class=panel id=calcout aria-live=polite></aside></section>
+<p class=muted>Assumes spending spread evenly over the contract and prices measured from today. Estimates with ranges, not
+advice. Uses the same forecasts as the country pages, refreshed every few hours.</p>
+"""
+
+
+def page_embed() -> str:
+    return "<div id=embed class=embedcard></div>"
+
+
 # ------------------------------------------------------------------ build --
 def build() -> Path:
     cs = [c for c in (country_data(k) for k in list_countries()) if c]
     cs.sort(key=lambda c: (not c["official"], c["country"]))
     months = months_ahead(12)
-    default = months[2]
+    default = f"M:{months[2]}"
     updated = max((c["generated"] for c in cs), default=date.today().isoformat())
     slim = {c["key"]: {k: c[k] for k in ("country", "flag", "currency", "region", "kind", "official", "base", "head",
                                          "paths", "spark", "drivers", "materials", "step")} for c in cs}
@@ -358,27 +472,49 @@ def build() -> Path:
     for c in slim.values():
         for m in c["materials"]:
             m.pop("history", None)
-    base = {"updated": updated, "months": months, "default": default, "countries": slim}
-    (ROOT / "assets").mkdir(exist_ok=True)
+    opts = [v for v, _, _ in target_options(months)]
+    base = {"updated": updated, "months": opts, "default": default, "countries": slim}
+    (OUT / "assets").mkdir(parents=True, exist_ok=True)
     fonts = "".join((SITE / "vendor" / f).read_text(encoding="utf-8") for f in ("clash-grotesk.css", "inter.css")
                     if (SITE / "vendor" / f).exists())
-    (ROOT / "assets" / "cio.css").write_text(fonts + (SITE / "site.css").read_text(encoding="utf-8"), encoding="utf-8")
-    (ROOT / "assets" / "cio.js").write_text((SITE / "site.js").read_text(encoding="utf-8"), encoding="utf-8")
+    (OUT / "assets" / "cio.css").write_text(fonts + (SITE / "site.css").read_text(encoding="utf-8"), encoding="utf-8")
+    (OUT / "assets" / "cio.js").write_text((SITE / "site.js").read_text(encoding="utf-8"), encoding="utf-8")
 
-    (ROOT / "index.html").write_text(shell("CiO Costs — will building costs rise?", page_index(cs, months, default), base,
+    (OUT / "index.html").write_text(shell("CiO Costs — will building costs rise?", page_index(cs, months, default), base,
                                            page="home"), encoding="utf-8")
-    (ROOT / "method.html").write_text(shell("How it works — CiO Costs", page_method(), {"updated": updated}, page="method"),
+    (OUT / "method.html").write_text(shell("How it works — CiO Costs", page_method(), {"updated": updated}, page="method"),
                                       encoding="utf-8")
-    (ROOT / "play.html").write_text(shell("The Cost Call — CiO Costs", page_play(), dict(base, quiz=quiz), page="play",
+    (OUT / "play.html").write_text(shell("The Cost Call — CiO Costs", page_play(), dict(base, quiz=quiz), page="play",
                                           desc="A daily game on real construction prices across Africa."), encoding="utf-8")
+    keys = [c["key"] for c in cs]
+    items = {c["key"]: {"country": c["country"], "flag": c["flag"], "currency": c["currency"],
+                        "items": load_country(c["key"]).get("price_items", []), "crowd": crowd(c["key"])} for c in cs}
+    (OUT / "report.html").write_text(shell("Report prices — CiO Costs", page_report(keys), dict(base, report=items),
+                                           page="report", desc="Report construction input prices in 18 African countries."),
+                                     encoding="utf-8")
+    (OUT / "calculator.html").write_text(shell("Bid escalation calculator — CiO Costs", page_calc(), base, page="calc",
+                                               desc="Expected input-cost escalation over your contract, with a range."),
+                                         encoding="utf-8")
+    (OUT / "embed.html").write_text(
+        "<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
+        "<title>CiO Costs</title><link rel=stylesheet href='assets/cio.css'></head><body class=embed-body>" + page_embed()
+        + "<script id=cio-data type='application/json'>" + json.dumps(base, separators=(",", ":")).replace("</", "<\\/")
+        + "</script><script src='assets/cio.js'></script></body></html>", encoding="utf-8")
     for c in cs:
-        d = ROOT / "countries" / c["key"]
+        d = OUT / "countries" / c["key"]
+        (d / "notes").mkdir(parents=True, exist_ok=True)
+        if c["note"]:                                  # publish only the latest note's HTML
+            src_note = ROOT / "countries" / c["key"] / c["note"]
+            (d / c["note"]).write_text(src_note.read_text(encoding="utf-8"), encoding="utf-8")
         data = dict(base, countries={c["key"]: slim[c["key"]]}, focus=c["key"])
         (d / "index.html").write_text(shell(f"{c['country']} construction costs — CiO Costs",
                                             page_country(c, months, default, crowd(c["key"])), data, rel="../../",
                                             page="country", desc=f"Construction cost outlook for {c['country']}."),
                                       encoding="utf-8")
-    return ROOT / "index.html"
+    # a convenience entry point at the repo root for opening the site locally
+    (ROOT / "index.html").write_text("<!doctype html><meta charset=utf-8><meta http-equiv=refresh content='0; url=public/index.html'>"
+                                     "<title>CiO Costs</title><a href='public/index.html'>Open CiO Costs</a>", encoding="utf-8")
+    return OUT / "index.html"
 
 
 if __name__ == "__main__":

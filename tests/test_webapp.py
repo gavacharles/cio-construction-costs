@@ -59,7 +59,7 @@ def test_app_flow(tmp_path, monkeypatch):
     mid = Exchange(tmp_path / "x.sqlite").create_market(
         "uganda", "CEM", "cement", "Cement", "2099-01", [0.0], ["down", "up"], [0.5, 0.5], 100,
         "2099-02-01T00:00:00Z", "2099-06-01T00:00:00Z")
-    assert c.post("/login", data={"code": "WRONG"}, follow_redirects=False).headers["location"].startswith("/?err")
+    assert c.post("/login", data={"code": "WRONG"}, follow_redirects=False).headers["location"].startswith("/app?err")
     assert c.post("/login", data={"code": code}, follow_redirects=False).status_code == 303
     assert "Cement" in c.get("/home").text
     assert c.get(f"/api/quote?m={mid}&o=1&s=10").json()["cost"] > 0
@@ -218,9 +218,32 @@ def test_front_page_builds():
     sys.path.insert(0, str(ROOT / "src" / "site"))
     import build_index
     build_index.build()
-    idx = (ROOT / "index.html").read_text()
-    assert idx.count("<article class=card") == 18 and "[hidden]" in (ROOT / "assets" / "cio.css").read_text()
+    idx = (ROOT / "public" / "index.html").read_text()
+    assert idx.count("<article class=card") == 18 and "[hidden]" in (ROOT / "public" / "assets" / "cio.css").read_text()
     assert ".md" not in idx and "docs/" not in idx                        # no internal documents linked
     for page in ("play.html", "method.html", "countries/uganda/index.html", "countries/ghana/index.html"):
-        t = (ROOT / page).read_text()
+        t = (ROOT / "public" / page).read_text()
         assert "cio-data" in t and ".md'" not in t and '.md"' not in t
+
+def test_public_price_and_alert_api(tmp_path, monkeypatch):
+    monkeypatch.setenv("CIO_DB", str(tmp_path / "pub.sqlite"))
+    monkeypatch.setenv("CIO_SECURE_COOKIES", "0")
+    import importlib
+    import app as webapp
+    importlib.reload(webapp)
+    from fastapi.testclient import TestClient
+    c = TestClient(webapp.app)
+    ok = c.post("/api/public/price", json={"country": "kenya", "item": "cement_50kg", "price": 780, "location": "Nairobi"})
+    assert ok.json()["ok"]
+    assert c.post("/api/public/price", json={"country": "kenya", "item": "gold", "price": 1, "location": "x"}).status_code == 400
+    assert c.post("/api/public/price", json={"country": "mars", "item": "cement_50kg", "price": 1, "location": "x"}).status_code == 400
+    assert c.post("/api/public/alert", json={"country": "uganda", "series": "Diesel", "threshold": 10,
+                                             "channel": "email", "contact": "a@b.co"}).json()["ok"]
+    assert c.post("/api/public/alert", json={"country": "uganda", "series": "Diesel", "threshold": 10,
+                                             "channel": "email", "contact": "nope"}).status_code == 400
+    from reports import Participants
+    with Participants(tmp_path / "pub.sqlite") as p:
+        r = p.reports("kenya")
+        assert len(r) == 1 and r.handle.iloc[0].startswith("anon-") and len(p.active_alerts()) == 1
+    if (webapp.ROOT / "public" / "index.html").exists():
+        assert "CiO Costs" in c.get("/").text and c.get("/data/live/exchange.sqlite").status_code == 404

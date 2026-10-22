@@ -146,6 +146,9 @@ error comes from forecasting the economy itself. Details: `countries/uganda/outp
   - participants' prices and the open contracts,
   - method and sources.
   A contractor applies the expected % to their own latest quote for the same item.
+- **Public site** (`public/`): every country's 12-month path powers the **Forecast to** picker. The next 8 weeks are
+  interpolated from the monthly path (refreshed every 3 hours with the latest oil and exchange rates), then months;
+  the bid calculator averages the same paths over a contract's months.
 - **Forecast page in the app** (`/forecast`): the same numbers as the note, from
   `countries/<country>/outputs/forecast_latest.json`, with a range chart per row.
 - **Forecast tables:** `countries/uganda/outputs/forecast/`: forecast paths for every scenario, each

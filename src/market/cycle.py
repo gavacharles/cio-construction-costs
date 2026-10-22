@@ -88,6 +88,7 @@ def refresh(db: str | None) -> None:
     run("drivers", "src/ingest/build_weekly_drivers.py")
     run("forecasts", "src/forecast/weekly_note.py", "--country", "all", "--no-fetch", "--data-only", db=db)
     run("site", "src/site/build_index.py")
+    run("alerts", "src/market/alerts.py", db=db)
 
 
 def weekly(db: str | None) -> None:

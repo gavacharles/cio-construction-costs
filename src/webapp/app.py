@@ -13,7 +13,8 @@ Participants join with an invite code from the organiser, then:
   - report the prices they pay each week (feeds the weekly note's crowd prices),
   - trade play-money contracts on the next official index print (LMSR market maker),
   - read the weekly forecast note and the leaderboard.
-Organiser: /admin (password = CIO_ADMIN_KEY) to create invite codes. Markets are opened
+Public site: public/ is served at / (index, country pages, The Cost Call, report prices,
+calculator); participants log in at /app. Organiser: /admin (password = CIO_ADMIN_KEY) to create invite codes. Markets are opened
 and settled by src/market/cycle.py, not from the browser.
 """
 from __future__ import annotations
@@ -139,7 +140,7 @@ button{background:var(--acc);color:#fff;border:0;cursor:pointer;font-weight:600}
 
 
 def page(title: str, body: str, user: dict | None = None) -> HTMLResponse:
-    nav = ("<nav><a href='/home'>Contracts</a><a href='/forecast'>Forecast</a><a href='/prices'>Report prices</a>"
+    nav = ("<nav><a href='/'>Public site</a><a href='/home'>Contracts</a><a href='/forecast'>Forecast</a><a href='/prices'>Report prices</a>"
            "<a href='/note'>Weekly note</a>"
            "<a href='/leaderboard'>Leaderboard</a><a href='/logout'>Log out</a></nav>") if user else ""
     who = f"<span class=mut>{e(user['name'])} · {e(COUNTRIES[user['country']]['country'])}</span>" if user else ""
@@ -157,11 +158,11 @@ DEMO_BANNER = ("<div class=card style='border-color:var(--acc)'><b>Demo.</b> Par
 
 def need_login(request: Request):
     user = me(request)
-    return user, (None if user else RedirectResponse("/", status_code=303))
+    return user, (None if user else RedirectResponse("/app", status_code=303))
 
 
 # ------------------------------------------------------------------ auth --
-@app.get("/", response_class=HTMLResponse)
+@app.get("/app", response_class=HTMLResponse)
 def index(request: Request, err: str = ""):
     if me(request):
         return RedirectResponse("/home", status_code=303)
@@ -176,12 +177,12 @@ official index print, and get the weekly cost note. Uganda, Kenya and Rwanda.</p
 @app.post("/login")
 def login(request: Request, code: str = Form(...)):
     if LIMIT.blocked(_ip(request)):
-        return RedirectResponse("/?err=Too+many+attempts.+Try+again+in+15+minutes", status_code=303)
+        return RedirectResponse("/app?err=Too+many+attempts.+Try+again+in+15+minutes", status_code=303)
     try:
         token = people().redeem(code)
     except ReportError:
         LIMIT.fail(_ip(request))
-        return RedirectResponse("/?err=That+invite+code+was+not+recognised", status_code=303)
+        return RedirectResponse("/app?err=That+invite+code+was+not+recognised", status_code=303)
     user = people().by_token(token)
     ex().open_account(user["handle"])
     r = RedirectResponse("/home", status_code=303)
@@ -191,7 +192,7 @@ def login(request: Request, code: str = Form(...)):
 
 @app.get("/logout")
 def logout():
-    r = RedirectResponse("/", status_code=303)
+    r = RedirectResponse("/app", status_code=303)
     r.delete_cookie(COOKIE)
     return r
 
@@ -474,3 +475,58 @@ def invite(request: Request, name: str = Form(...), org: str = Form(""), country
         return HTMLResponse("Forbidden", status_code=403)
     code = people().invite(name, org, country)
     return RedirectResponse(f"/admin?made={code}", status_code=303)
+
+
+# ----------------------------------------------------------- public API --
+PUBLIC_LIMIT = Limiter(limit=30, window=3600)          # submissions per IP per hour
+SALT = os.environ.get("CIO_ADMIN_KEY", "cio") + ":public"
+
+
+def _anon(request: Request) -> str:
+    """Anonymous reporter id: a salted hash of the IP, so one person counts once per item-week."""
+    return "anon-" + hashlib.sha256((SALT + _ip(request)).encode()).hexdigest()[:10]
+
+
+@app.post("/api/public/price")
+async def public_price(request: Request):
+    if PUBLIC_LIMIT.blocked(_ip(request)):
+        return JSONResponse({"ok": False, "error": "Too many reports from this connection; try later."}, status_code=429)
+    PUBLIC_LIMIT.fail(_ip(request))                     # counts every submission, not only failures
+    try:
+        d = await request.json()
+        country = str(d.get("country", ""))
+        if country not in COUNTRIES:
+            raise ReportError("unknown country")
+        items = [i["code"] for i in COUNTRIES[country].get("price_items", [])]
+        rid = people().add_report(_anon(request), country, str(d.get("item", "")), float(d.get("price", 0)),
+                                  str(d.get("location", ""))[:80], str(d.get("supplier", ""))[:60],
+                                  note=("public; contact: " + str(d.get("contact", ""))[:80]) if d.get("contact") else "public",
+                                  items=items)
+        return {"ok": True, "id": rid}
+    except (ReportError, ValueError, TypeError) as err:
+        return JSONResponse({"ok": False, "error": str(err)}, status_code=400)
+
+
+@app.post("/api/public/alert")
+async def public_alert(request: Request):
+    if PUBLIC_LIMIT.blocked(_ip(request)):
+        return JSONResponse({"ok": False, "error": "Too many requests; try later."}, status_code=429)
+    PUBLIC_LIMIT.fail(_ip(request))
+    try:
+        d = await request.json()
+        country = str(d.get("country", ""))
+        if country not in COUNTRIES:
+            raise ReportError("unknown country")
+        aid = people().add_alert(country, str(d.get("series", ""))[:80], float(d.get("threshold", 0)),
+                                 str(d.get("channel", "")), str(d.get("contact", ""))[:120])
+        return {"ok": True, "id": aid}
+    except (ReportError, ValueError, TypeError) as err:
+        return JSONResponse({"ok": False, "error": str(err)}, status_code=400)
+
+
+# The public site (built into public/ by src/site/build_index.py) is served at the root.
+# Only that folder is exposed: never the repository, raw data or the database.
+PUBLIC_DIR = ROOT / "public"
+if PUBLIC_DIR.exists():
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/", StaticFiles(directory=PUBLIC_DIR, html=True), name="public")

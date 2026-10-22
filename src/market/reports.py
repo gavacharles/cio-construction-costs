@@ -31,6 +31,9 @@ CREATE TABLE IF NOT EXISTS price_reports (
     country TEXT NOT NULL, item TEXT NOT NULL, price REAL NOT NULL, location TEXT NOT NULL,
     supplier TEXT, note TEXT);
 CREATE INDEX IF NOT EXISTS price_reports_item ON price_reports (country, item, week);
+CREATE TABLE IF NOT EXISTS alerts (
+    id INTEGER PRIMARY KEY, created TEXT NOT NULL, country TEXT NOT NULL, series TEXT NOT NULL,
+    threshold REAL NOT NULL, channel TEXT NOT NULL, contact TEXT NOT NULL, last_sent TEXT, active INTEGER DEFAULT 1);
 """
 
 
@@ -112,6 +115,31 @@ class Participants:
                 (datetime.now(timezone.utc).isoformat(timespec="seconds"), week_of(on), handle, country, item,
                  float(price), location.strip(), supplier.strip(), note.strip()))
         return cur.lastrowid
+
+    def add_alert(self, country: str, series: str, threshold: float, channel: str, contact: str) -> int:
+        """Ask to be told when the expected change in `series` reaches `threshold` % (either sign)."""
+        if channel not in ("whatsapp", "email"):
+            raise ReportError("channel must be whatsapp or email")
+        contact = contact.strip()
+        if channel == "email" and ("@" not in contact or "." not in contact.split("@")[-1]):
+            raise ReportError("enter a valid email address")
+        if channel == "whatsapp" and sum(ch.isdigit() for ch in contact) < 9:
+            raise ReportError("enter a WhatsApp number with country code")
+        if not (0 < abs(float(threshold)) <= 100):
+            raise ReportError("threshold must be between 0 and 100 %")
+        with self.db:
+            cur = self.db.execute("INSERT INTO alerts (created, country, series, threshold, channel, contact) VALUES (?,?,?,?,?,?)",
+                                  (datetime.now(timezone.utc).isoformat(timespec="seconds"), country, series,
+                                   float(threshold), channel, contact))
+        return cur.lastrowid
+
+    def active_alerts(self) -> list[dict]:
+        return [dict(r) for r in self.db.execute("SELECT * FROM alerts WHERE active = 1")]
+
+    def mark_sent(self, alert_id: int) -> None:
+        with self.db:
+            self.db.execute("UPDATE alerts SET last_sent = ? WHERE id = ?",
+                            (datetime.now(timezone.utc).isoformat(timespec="seconds"), alert_id))
 
     def reports(self, country: str, since_weeks: int = 12) -> pd.DataFrame:
         since = week_of(date.today() - timedelta(weeks=since_weeks))

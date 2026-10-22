@@ -1,6 +1,6 @@
 # CiO Construction Cost Platform
 
-Open `index.html` for the public site (works straight from disk): front page, a page per country, The Cost Call game and How it works. Built by `src/site/build_index.py`.
+Open `index.html` (it opens `public/index.html`) for the public site: front page, a page per country, bid calculator, report prices, The Cost Call game and How it works. Built by `src/site/build_index.py`; in production the app serves `public/` at `/` and the participant app at `/app`.
 
 Weekly, forward-looking construction input cost signals for 18 African countries: official
 statistics, live market drivers (oil, exchange rates, rainfall, fiscal and tax data), prices
