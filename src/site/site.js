@@ -133,6 +133,10 @@
 
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register(rel + "sw.js").catch(() => {});
 
+  /* benchmark pages: switch the forecast-vs-outcome chart between 1 and 3 months ahead */
+  $$("[data-bt-show]").forEach(b => b.onclick = () => { $$("[data-bt-show]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    $$("svg[data-bt]").forEach(s => s.hidden = s.dataset.bt !== b.dataset.btShow); });
+
   /* ---------- country-first home ---------- */
   const my = $("#mycountry"), feat = $(".featured:not(.solo)");
   Object.entries(DATA.countries || {}).forEach(([k, c]) => { c.key = k; });

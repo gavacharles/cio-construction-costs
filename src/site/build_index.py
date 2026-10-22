@@ -161,7 +161,7 @@ LOGO = ("<svg class=logo viewBox='0 0 24 24' width=24 height=24 aria-hidden=true
         "<circle class=orbit cx=12 cy=2.5 r=1.6 fill='var(--teal)'/><circle class=core cx=12 cy=12 r=4 fill='var(--accent-fill)'/></svg>")
 
 
-def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc: str = "") -> str:
+def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc: str = "", head: str = "") -> str:
     nav = [("index.html#countries", "Prices", "home", "nav.prices"), ("calculator.html", "Plan a bid", "calc", "nav.plan"),
            ("report.html", "Report a price", "report", "nav.reportshort"), ("play.html", "Play", "play", "nav.playshort")]
     minor: set[str] = set()
@@ -175,7 +175,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
     return f"""<!doctype html>
 <html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>{e(title)}</title><meta name=description content="{e(desc or 'Construction cost forecasts and prices people pay, in seven African countries.')}">
-<link rel=stylesheet href="{rel}assets/cio.css"><link rel=stylesheet href="{rel}assets/fonts.css" media=print onload="this.media='all'"></head><body data-page="{page}" data-rel="{rel}">
+<link rel=stylesheet href="{rel}assets/cio.css"><link rel=stylesheet href="{rel}assets/fonts.css" media=print onload="this.media='all'">{head}</head><body data-page="{page}" data-rel="{rel}">
 <header class=topbar><div class=wrap>
  <a class=mark href="{rel}index.html">{LOGO}CiO <span>Costs</span></a>
  <nav class=nav aria-label=Main>{links}</nav>
@@ -651,6 +651,101 @@ def page_embed() -> str:
     return "<div id=embed class=embedcard></div>"
 
 
+# ------------------------------------------------------- benchmark pages --
+BENCH_FONTS = ("<link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin>"
+               "<link rel=stylesheet href='https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap'>")
+BENCH_REGION = {"united_states": "North America", "united_kingdom": "Europe", "austria": "Europe", "hong_kong": "Asia",
+                "philippines": "Asia", "brazil": "Latin America"}
+
+
+def backtest_svg(key: str, h: int, n: int = 24, w: int = 760, ht: int = 260) -> str:
+    """Forecast vs what happened: for each of the last n test months, our 8-in-10 range (bar), our central forecast (tick)
+    and the official outcome (dot: teal inside the range, red outside)."""
+    import csv
+    f = ROOT / "countries" / key / "outputs" / "forecast" / "backtest_errors.csv"
+    if not f.exists():
+        return ""
+    rows = [r for r in csv.DictReader(open(f)) if r["h"] == str(h)][-n:]
+    if not rows:
+        return ""
+    vals = [float(r[k]) for r in rows for k in ("lo", "hi", "actual")]
+    lo, hi = min(vals + [0]), max(vals + [0])
+    pad = (hi - lo) * 0.08 or 1
+    lo, hi = lo - pad, hi + pad
+    L, R, T, Bt = 46, 12, 14, 34
+    step = (w - L - R) / len(rows)
+    X = lambda i: L + step * (i + 0.5)
+    Y = lambda v: T + (hi - v) * (ht - T - Bt) / (hi - lo)
+    out = [f"<line class=zero x1={L} x2={w - R} y1={Y(0):.1f} y2={Y(0):.1f} />"]
+    for v in sorted({round(lo + (hi - lo) * k / 4, 1) for k in (1, 2, 3)}):
+        out.append(f"<text class=ax x={L - 6} y={Y(v) + 4:.1f} text-anchor=end>{v:+.1f}%</text>")
+    hits = 0
+    for i, r in enumerate(rows):
+        a, l, u, m = float(r["actual"]), float(r["lo"]), float(r["hi"]), float(r["structural"])
+        inside = l <= a <= u
+        hits += inside
+        y, mo = int(r["origin"][:4]), int(r["origin"][5:7]) + h
+        tgt = f"{y + (mo - 1) // 12}-{(mo - 1) % 12 + 1:02d}"
+        out.append(f"<g><title>{month_label(tgt)}: forecast {m:+.1f}% (range {l:+.1f} to {u:+.1f}), official {a:+.1f}%</title>"
+                   f"<rect class=rng x={X(i) - step * 0.32:.1f} width={step * 0.64:.1f} y={Y(u):.1f} height={max(1.5, Y(l) - Y(u)):.1f} />"
+                   f"<line class=mid x1={X(i) - step * 0.32:.1f} x2={X(i) + step * 0.32:.1f} y1={Y(m):.1f} y2={Y(m):.1f} />"
+                   f"<circle class={'hit' if inside else 'miss'} cx={X(i):.1f} cy={Y(a):.1f} r=4.2 /></g>")
+        if i % 4 == 0:
+            out.append(f"<text class=ax x={X(i):.1f} y={ht - 12} text-anchor=middle>{month_label(tgt)[:3]} {tgt[2:4]}</text>")
+    return (f"<svg class=btsvg viewBox='0 0 {w} {ht}' role=img aria-label='Forecast {h} month(s) ahead vs official outcome, last {len(rows)} months: "
+            f"{hits} of {len(rows)} inside the range' data-bt={h}{'' if h == 1 else ' hidden'}>{''.join(out)}</svg>")
+
+
+def page_benchmark(c: dict, number: int) -> str:
+    cfg = load_country(c["key"])
+    b = c.get("bstats") or {}
+    b1, b3 = b.get("1") or {}, b.get("3") or {}
+    beat = b1.get("mae", 9) < b1.get("mae_nochange", 0)
+    region = BENCH_REGION.get(c["key"], "")
+    gauge = lambda v: (f"<span class=ruler aria-hidden=true><i style='left:{v * 100:.0f}%'></i><em style='left:80%'></em></span>")
+    path = c["paths"][c["head"]]
+    nxt = "".join(
+        f"<div class=nx><span class=nx-h>{lab}</span><b>{q['median']:+.1f}%</b><span class=nx-r>{q['lo']:+.1f} to {q['hi']:+.1f}</span>"
+        f"<span class=nx-bar aria-hidden=true><i style='left:{50 + q['lo'] * 4:.1f}%;width:{max(0.8, (q['hi'] - q['lo']) * 4):.1f}%'></i>"
+        f"<em style='left:{50 + q['median'] * 4:.1f}%'></em></span><span class=nx-m>{month_label(q['month'])}</span></div>"
+        for lab, q in (("1 month", path[0]), ("3 months", path[2]), ("6 months", path[5])) if q)
+    note = f"<a href='{e(c['note'])}' data-i18n=btn.note>Read the weekly note</a>" if c["note"] else ""
+    src = cfg["settlement"]
+    return f"""
+<article class=bm>
+<header class=bm-mast><p class=bm-kick><span>Benchmark № {number:02d}</span><span>{e(region)}</span><span>{e(src['statistics_office'])}</span></p>
+<h1><span class=bm-flag aria-hidden=true>{c['flag']}</span>{e(c['country'])}</h1>
+<p class=bm-q data-i18n=bm.q>How well does CiO Costs forecast construction prices where the official data is good?</p>
+<p class=bm-src>{e(src['publication'])} · <span data-i18n=bm.latest>latest</span> {e(c['base'])}</p></header>
+
+<section class=bm-score aria-label="Scoreboard">
+ <div><b>{b1.get('inside', 0):.0%}</b><span data-i18n=bm.in1>inside the likely range, 1 month ahead</span>{gauge(b1.get('inside', 0))}</div>
+ <div><b>{b3.get('inside', 0):.0%}</b><span data-i18n=bm.in3>inside the likely range, 3 months ahead</span>{gauge(b3.get('inside', 0))}</div>
+ <div><b>{b1.get('mae', 0):.2f}<small> / {b1.get('mae_nochange', 0):.2f}</small></b><span data-i18n=bm.miss>average miss (points), ours / “no change”</span>
+  <span class='verdict-tag {'ok' if beat else 'meh'}' data-i18n={'bm.beat' if beat else 'bm.nobeat'}>{'Beats “no change”' if beat else 'Does not beat “no change” yet'}</span></div>
+ <div><b>{b1.get('n', 0)}</b><span data-i18n=bm.months>months tested, each with only the data known at the time</span></div>
+</section>
+<p class=bm-aim data-i18n=bm.aim>The aim is 80%: the real change should land inside our likely range 8 times in 10. Much higher means the range is too cautious; much lower, too bold.</p>
+
+<section class=bm-sec><div class=bm-sec-h><h2 data-i18n=bm.vs>Forecast vs what happened</h2>
+ <div class=bm-toggle role=group><button type=button data-bt-show=1 aria-pressed=true data-i18n=bm.t1>1 month ahead</button><button type=button data-bt-show=3 aria-pressed=false data-i18n=bm.t3>3 months ahead</button></div></div>
+ <div class=bm-chart>{backtest_svg(c['key'], 1)}{backtest_svg(c['key'], 3)}</div>
+ <p class=bm-legend><span class=lg-rng></span><span data-i18n=bm.lg.rng>our likely range</span><span class=lg-mid></span><span data-i18n=bm.lg.mid>our central forecast</span>
+ <span class=lg-hit></span><span data-i18n=bm.lg.hit>official result, inside</span><span class=lg-miss></span><span data-i18n=bm.lg.miss>official result, outside</span></p></section>
+
+<section class=bm-sec><div class=bm-sec-h><h2 data-i18n=bm.next>What we expect next</h2><span class=bm-small data-i18n=bm.next.d>change from {e(c['base'])}, with the likely range</span></div>
+ <div class=bm-next>{nxt}</div></section>
+
+<section class=bm-sec><div class=bm-sec-h><h2 data-i18n=bm.idx>The official index</h2></div><div class=chart>{chart_svg(c)}</div></section>
+
+<section class='bm-sec bm-how'><h2 data-i18n=bm.how>How this test works</h2><ol>
+ <li data-i18n=bm.how1>Every month in the past four years, we made a forecast using only the figures that were published by then.</li>
+ <li data-i18n=bm.how2>We compared it with the official figure that came out later: did it land inside our likely range?</li>
+ <li data-i18n=bm.how3>We also compare with the simplest rule — “prices stay where they are” — to see whether the forecast adds anything.</li></ol>
+ <p class=bm-links>{note}<a href='{e(src['url'])}' target=_blank rel=noopener data-i18n=bm.source>Official source</a><a href='../../index.html' data-i18n=bm.back>The seven pilot countries</a></p></section>
+</article>"""
+
+
 # ------------------------------------------------------------------ build --
 BUILT = ""
 
@@ -727,8 +822,12 @@ def build() -> Path:
             (d / c["note"]).write_text(src_note.read_text(encoding="utf-8"), encoding="utf-8")
         data = dict(base, countries={c["key"]: slim[c["key"]]}, focus=c["key"])
         (d / "index.html").write_text(shell(f"{c['country']} construction costs — CiO Costs",
+                                            page_benchmark(c, BENCH.index(c["key"]) + 1) if c.get("bench") else
                                             page_country(c, months, default, crowd(c["key"])), data, rel="../../",
-                                            page="country", desc=f"Construction cost outlook for {c['country']}."),
+                                            page="bench" if c.get("bench") else "country",
+                                            desc=(f"How well CiO Costs forecasts construction prices in {c['country']}: a benchmark."
+                                                  if c.get("bench") else f"Construction cost outlook for {c['country']}."),
+                                            head=BENCH_FONTS if c.get("bench") else ""),
                                       encoding="utf-8")
     # a convenience entry point at the repo root for opening the site locally
     (ROOT / "index.html").write_text("<!doctype html><meta charset=utf-8><meta http-equiv=refresh content='0; url=public/index.html'>"
