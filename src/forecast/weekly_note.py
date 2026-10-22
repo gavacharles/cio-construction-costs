@@ -55,6 +55,21 @@ _DATA: dict = {}
 
 def _rec(**row) -> None:
     _DATA.setdefault("rows", []).append(row)
+
+
+def _spark(label: str, series) -> None:
+    """Recent history for the front page's trend line (last 24 points)."""
+    s = pd.Series(series).dropna().tail(24)
+    _DATA["spark"] = {"label": label, "dates": [pd.Timestamp(d).strftime("%Y-%m") for d in s.index],
+                      "values": [round(float(v), 3) for v in s.values]}
+
+
+def _p_up(probs, cuts) -> float:
+    """P(change > 0) from bucket probabilities: buckets whose lower edge is at or above zero,
+    excluding an explicit "unchanged" bucket [0, 0.01)."""
+    edges = [-np.inf] + list(cuts)
+    floor = 0.01 if 0.01 in cuts else 0.0
+    return float(sum(p for e, p in zip(edges, probs) if e >= floor))
 KEY = {"ALL": "Overall construction inputs", "diesel": "Diesel", "cement": "Cement",
        "high tensile steel bars": "Rebar", "sand": "Sand", "labour": "Labour"}
 
@@ -188,6 +203,7 @@ def uganda_body(weekly) -> list[str]:
              "| Series | Month | Expected | Range | Without new data |", "|---|---|---|---|---|"]
     lines += [f"| {r.series} | {r.month} | {r['median']:+.1f}% | {r.lo:+.1f}% to {r.hi:+.1f}% | "
               f"{r.without_new_data:+.1f}% |" for _, r in fc.iterrows()]
+    _spark("Overall construction input index (UBOS)", structure.published["ALL"])
     _DATA.update(kind="structural", basis=f"Change from the last UBOS release ({origin:%B %Y}), "
                  f"with {n_known} months of oil and shilling readings since then built in")
     for _, r in fc.iterrows():
@@ -235,6 +251,8 @@ def kenya_body(weekly) -> list[str]:
                          f"{med - half:+.1f}% to {med + half:+.1f}% | {months} of 3 |")
             _rec(series=m["title"], period=f"Q{futq[h - 1].quarter} {futq[h - 1].year}", median=med,
                  lo=med - half, hi=med + half)
+    _spark("Overall construction input index (KNBS, quarterly)",
+           history(rel, next(x for x in cfg["markets"] if x["code"] == "KE_CIPI")["label"], cfg))
     _DATA.update(kind="quarterly", basis=f"Change from the latest KNBS print (Q{latest.quarter} {latest.year}), "
                  "conditioned on the oil and shilling months already observed")
     return lines
@@ -259,11 +277,15 @@ def south_africa_body(weekly) -> list[str]:
         y1 = (yr.iloc[-1] / yr.iloc[0] - 1) * 100 if len(yr) >= 3 else np.nan
         h = history(rel, m["label"], cfg)
         r = mom_changes(h)
-        exp = expected_change(predictive_probs(r, nxt, m["cuts"], 1, 0.02), m["cuts"]) if len(r) > 24 else np.nan
+        probs = predictive_probs(r, nxt, m["cuts"], 1, 0.02) if len(r) > 24 else None
+        exp = expected_change(probs, m["cuts"]) if probs is not None else np.nan
         lines.append(f"| {m['title']} | {_fmt(fp['value'] if fp else None, 2, pct=True)} | "
                      f"{_fmt(y1, pct=True)} | {_fmt(exp, 2, pct=True)} |")
         _rec(series=m["title"], period=f"{nxt:%b %Y}", median=None if pd.isna(exp) else exp, lo=None, hi=None,
-             last_change=fp["value"] if fp else None, year_change=None if pd.isna(y1) else y1)
+             last_change=fp["value"] if fp else None, year_change=None if pd.isna(y1) else y1,
+             p_up=_p_up(probs, m["cuts"]) if probs is not None else None)
+        if m["code"] == "ZA_CIPI":
+            _spark("Construction input index (Stats SA, chained)", h)
     _DATA.update(kind="nowcast", basis=f"Stats SA {latest:%B %Y} release; expected change next month "
                  "from recent patterns (contract opening price)")
     lines += ["", f"Expected = the opening price of the {nxt:%B %Y} contract (recent change patterns; backtest over "
@@ -303,6 +325,8 @@ def pressure_section(country: str) -> list[str]:
              "official baskets in the pilot countries; an indicator, not a price index):", "",
              "| Window | Pressure on input costs | 80% range |", "|---|---|---|",
              f"| Last 3 months (observed) | {last3:+.1f}% | – |"]
+    _spark(f"Imported-input cost pressure (index, 100 = 24 months ago)",
+           100 * np.exp(hist.tail(24).cumsum() / 100))
     _DATA.update(kind="pressure", basis=f"Imported-input cost pressure from oil in {ccy_code} and the exchange "
                  "rate; an indicator, not a price index", observed_3m=last3)
     for h, (med, lo, hi) in fc.items():
