@@ -29,14 +29,15 @@ settlement:
 exchange: {}
 markets: []
 
-# FRED series: the headline index first, then materials (name shown on the site).
-fred_series:
-  - { id: WPUIP2300001, name: "Construction inputs (all)" }
-  - { id: WPU1322,      name: "Cement" }
-  - { id: WPU1333,      name: "Ready-mix concrete" }
-  - { id: WPU1017,      name: "Steel mill products" }
-  - { id: WPU081,       name: "Lumber" }
-  - { id: WPU057303,    name: "Diesel" }
-  - { id: WPU1342,      name: "Gypsum products" }
+# Benchmark series: the headline index first, then materials (name shown on the site).
+aliases: [usa, us, america, north america]
+benchmark_series:
+  - { source: fred, id: WPUIP2300001, name: "Construction inputs (all)" }
+  - { source: fred, id: WPU1322,      name: "Cement" }
+  - { source: fred, id: WPU1333,      name: "Ready-mix concrete" }
+  - { source: fred, id: WPU1017,      name: "Steel mill products" }
+  - { source: fred, id: WPU081,       name: "Lumber" }
+  - { source: fred, id: WPU057303,    name: "Diesel" }
+  - { source: fred, id: WPU1342,      name: "Gypsum products" }
 
 price_items: []

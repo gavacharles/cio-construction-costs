@@ -6,6 +6,7 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "search.btn": "Tafuta", "bench.h2": "Ulinganisho: chombo kilekile mahali takwimu rasmi ni nzuri", "bench.d2": "Pia tunaendesha CiO Costs kwa bei rasmi za ujenzi Amerika Kaskazini, Ulaya, Asia na Amerika Kusini. Zinachapishwa kila mwezi kwa wakati, ili mtu yeyote aone jinsi utabiri unavyofanya. Lengo: mabadiliko halisi yawe ndani ya kiwango mara 8 kati ya 10.", "bench.c1": "Ndani ya kiwango, mwezi 1", "bench.c3": "miezi 3", "bench.cb": "Bora kuliko “hakuna mabadiliko”",
       "cta.report": "Ripoti bei", "join.h": "Shiriki", "join.d2": "Mtu yeyote anaweza kutumia CiO Costs na kuongeza bei — bila akaunti. Tuambie ulicholipa kwa saruji, nondo, mchanga au dizeli unaponunua, hata miezi baadaye, na ufuate taarifa ya kila wiki bure.", "rep.lede2": "Tuambie bei uliyolipa au uliyonukuliwa kwa kifaa cha ujenzi — leo au hadi miezi 6 iliyopita, wakati wowote unapopata nafasi. Ripoti ni siri: tunachapisha bei za kawaida kutoka kwa watu wasiopungua 3 — kamwe si majina, namba au ripoti moja moja.", "qr.h2": "Ulilipa kiasi gani hivi karibuni?", "qr.d2": "Tuambie bei moja — ya leo au ya miezi michache iliyopita. Ni siri na inachukua sekunde 20; watu 3 wakiripoti bidhaa, kila mtu anaona bei ya kawaida.", "rep.when": "Ulilipa lini?", "when.0": "Mwezi huu", "when.1": "Mwezi uliopita", "when.2": "Miezi 2 iliyopita", "when.3": "Miezi 3 iliyopita", "when.4": "Miezi 4 iliyopita", "when.5": "Miezi 5 iliyopita", "when.6": "Miezi 6 iliyopita", "th.vsprev": "dhidi ya miezi 2 iliyotangulia", "crowd.areas2": "Bei za kawaida zinatumia miezi 2 iliyopita, ili watu waripoti wanaponunua. Bei za maeneo zinaonekana watu 3 wakiripoti kutoka eneo hilo.", "track.crowdsoon2": "watu 3 wakiripoti bidhaa katika vipindi viwili vya miezi 2, tutaonyesha mabadiliko ya wanacholipa kando ya makadirio yetu hapa.", "grp.bench": "Kipimo cha ulinganisho", "tab.bench": "Ulinganisho", "bench.eyebrow": "Utabiri ni mzuri kiasi gani?", "bench.h": "Ulinganisho: chombo kilekile mahali takwimu ni nzuri", "bench.d": "Pia tunaendesha CiO Costs kwa bei rasmi za vifaa vya ujenzi za Marekani, zinazochapishwa kila mwezi kwa wakati, ili mtu yeyote aone jinsi kinavyotabiri vizuri.", "bench.in1": "ndani ya kiwango, mwezi 1 mbele", "bench.in3": "miezi 3 mbele (lengo: 80%)", "bench.see": "Ona ulinganisho",
       "grp.pilot": "Nchi za majaribio", "grp.more": "Nchi zaidi",
       "qr.h": "Ulilipa kiasi gani wiki hii?", "qr.d": "Tuambie bei moja. Ni siri na inachukua sekunde 20 — watu 3 wakiripoti bidhaa, kila mtu anaona bei ya kawaida.", "qr.need": "Watu <b>{n} kati ya 3</b> wameripoti {i} nchini {c} katika miezi 2 iliyopita. Ongeza yako ili bei ya kawaida ionekane.", "qr.live": "<b>✓ Inaonekana:</b> bei ya kawaida ya {i} nchini {c} imechapishwa — ripoti yako inaiweka sasa.", "qr.town": "Tafadhali andika mji au eneo.",
@@ -32,7 +33,7 @@ window.I18N = (function () {
       "lbl.chance": "uwezekano wa kupanda", "lbl.expected": "mabadiliko yanayotarajiwa", "lbl.range": "kiwango kinachowezekana (8 kati ya 10)",
       "lbl.expected.cap": "Mabadiliko yanayotarajiwa", "lbl.range.cap": "Kiwango kinachowezekana (8 kati ya 10)",
       "btn.seecosts": "Ona gharama: {c}", "link.makecall": "Cheza mchezo wa leo", "btn.bymaterial": "Ona gharama kwa kila kifaa", "btn.play": "Cheza The Cost Call",
-      "feat.bymaterial": "Kwa kila kifaa, hadi", "search.ph": "Tafuta nchi na vifaa — mf. Kenya Uganda saruji", "empty": "Hakuna nchi inayolingana. Jaribu “saruji”, “Kenya” au “Magharibi”.",
+      "feat.bymaterial": "Kwa kila kifaa, hadi", "search.ph": "Tafuta nchi na vifaa — mf. Kenya Uganda saruji", "empty": "Hakuna nchi inayolingana. Jaribu “saruji”, “Kenya”, “Mashariki” au “Ulinganisho”.",
       "glance.h": "Gharama kwa muhtasari", "glance.sort": "Bofya safu kupanga", "th.country": "Nchi", "th.latest": "Takwimu rasmi za karibuni",
       "th.offyear": "Mabadiliko rasmi, mwaka", "th.expby": "Yanayotarajiwa kufikia", "th.range": "Kiwango kinachowezekana", "th.chance": "Uwezekano wa kupanda",
       "th.fx": "Sarafu dhidi ya USD, wiki 13", "game.eyebrow": "Mpya · mchezo wa kila siku",
@@ -91,6 +92,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "search.btn": "Rechercher", "bench.h2": "Références : le même outil là où les données officielles sont bonnes", "bench.d2": "Nous appliquons aussi CiO Costs aux prix officiels de la construction en Amérique du Nord, en Europe, en Asie et en Amérique latine. Ils sont publiés chaque mois à l'heure : chacun peut vérifier la qualité des prévisions. Objectif : la variation réelle tombe dans la fourchette 8 fois sur 10.", "bench.c1": "Dans la fourchette, 1 mois", "bench.c3": "3 mois", "bench.cb": "Bat « pas de changement »",
       "cta.report": "Signaler un prix", "join.h": "Participer", "join.d2": "Tout le monde peut utiliser CiO Costs et ajouter des prix — sans compte. Indiquez ce que vous avez payé le ciment, l'acier, le sable ou le gazole quand vous achetez, même des mois plus tard, et suivez le point hebdomadaire gratuit.", "rep.lede2": "Indiquez un prix payé ou proposé pour un matériau de construction — aujourd'hui ou jusqu'à 6 mois en arrière, quand vous avez un moment. Les signalements sont anonymes : nous publions des prix habituels d'au moins 3 personnes — jamais de noms, de numéros ni de signalements isolés.", "qr.h2": "Combien avez-vous payé récemment ?", "qr.d2": "Indiquez un prix — d'aujourd'hui ou des derniers mois. C'est anonyme et prend 20 secondes ; dès que 3 personnes signalent un article, tout le monde voit le prix habituel.", "rep.when": "Quand avez-vous payé ?", "when.0": "Ce mois-ci", "when.1": "Le mois dernier", "when.2": "Il y a 2 mois", "when.3": "Il y a 3 mois", "when.4": "Il y a 4 mois", "when.5": "Il y a 5 mois", "when.6": "Il y a 6 mois", "th.vsprev": "vs 2 mois précédents", "crowd.areas2": "Les prix habituels regroupent les 2 derniers mois, pour que chacun puisse signaler quand il achète. Les prix par zone s'affichent dès que 3 personnes de la zone ont signalé.", "track.crowdsoon2": "dès que 3 personnes ont signalé un article sur deux périodes de 2 mois, nous affichons ici l'évolution de ce qu'elles paient à côté de notre estimation.", "grp.bench": "Référence", "tab.bench": "Référence", "bench.eyebrow": "Les prévisions sont-elles fiables ?", "bench.h": "Référence : le même outil là où les données sont bonnes", "bench.d": "Nous appliquons aussi CiO Costs aux prix officiels des intrants de construction des États-Unis, publiés chaque mois à l'heure, pour que chacun puisse vérifier la qualité des prévisions.", "bench.in1": "dans la fourchette, à 1 mois", "bench.in3": "à 3 mois (objectif : 80 %)", "bench.see": "Voir la référence",
       "grp.pilot": "Pays pilotes", "grp.more": "Autres pays",
       "qr.h": "Combien avez-vous payé cette semaine ?", "qr.d": "Indiquez un prix. C'est anonyme et prend 20 secondes — dès que 3 personnes signalent un article, tout le monde voit le prix habituel.", "qr.need": "<b>{n} sur 3</b> personnes ont signalé {i} au {c} ces 2 derniers mois. Ajoutez le vôtre pour débloquer le prix habituel.", "qr.live": "<b>✓ En ligne :</b> le prix habituel de {i} au {c} est publié — votre signalement le tient à jour.", "qr.town": "Veuillez indiquer la ville ou la zone.",
@@ -117,7 +119,7 @@ window.I18N = (function () {
       "lbl.chance": "probabilité de hausse", "lbl.expected": "variation attendue", "lbl.range": "fourchette probable (8 sur 10)",
       "lbl.expected.cap": "Variation attendue", "lbl.range.cap": "Fourchette probable (8 sur 10)",
       "btn.seecosts": "Voir les coûts : {c}", "link.makecall": "Jouer au jeu du jour", "btn.bymaterial": "Voir les coûts par matériau", "btn.play": "Jouer à The Cost Call",
-      "feat.bymaterial": "Par matériau, jusqu'à", "search.ph": "Rechercher pays et matériaux — ex. Kenya Ouganda ciment", "empty": "Aucun pays ne correspond. Essayez « ciment », « Kenya » ou « Ouest ».",
+      "feat.bymaterial": "Par matériau, jusqu'à", "search.ph": "Rechercher pays et matériaux — ex. Kenya Ouganda ciment", "empty": "Aucun pays ne correspond. Essayez « ciment », « Kenya », « Est » ou « Référence ».",
       "glance.h": "Coûts en un coup d'œil", "glance.sort": "Cliquez sur une colonne pour trier", "th.country": "Pays", "th.latest": "Dernière donnée officielle",
       "th.offyear": "Variation officielle sur un an", "th.expby": "Attendu d'ici", "th.range": "Fourchette probable", "th.chance": "Probabilité de hausse",
       "th.fx": "Monnaie face à l'USD, 13 semaines", "game.eyebrow": "Nouveau · jeu quotidien",
@@ -176,6 +178,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "search.btn": "Search", "bench.h2": "Benchmarks: the same tool where official data is good", "bench.d2": "We also run CiO Costs on official construction prices in North America, Europe, Asia and Latin America. They are published every month and on time, so anyone can check how well the forecasts do. The aim: the real change lands inside the likely range 8 times in 10.", "bench.c1": "Inside range, 1 month", "bench.c3": "3 months", "bench.cb": "Beats “no change”", "empty": "No country matches. Try “cement”, “Kenya”, “East” or “Benchmark”.",
       "link.makecall": "Play today's game",
       "cta.report": "Report a price", "home.eyebrow": "Construction cost outlook · 7 African countries", "join.h": "Take part", "join.d2": "Anyone can use CiO Costs and add prices — no account. Tell us what you paid for cement, steel, sand or diesel whenever you buy, even months later, and follow the free weekly update.", "rep.h1": "What did you pay?", "rep.lede2": "Tell us a price you paid or were quoted for a building material — today or up to 6 months ago, whenever you have a moment. Reports are anonymous: we publish typical prices from at least 3 people — never names, numbers or single reports.", "qr.h2": "What did you pay recently?", "qr.d2": "Tell us one price — today or from the last few months. It is anonymous and takes 20 seconds; once 3 people report an item, everyone sees the typical price.", "rep.when": "When did you pay?", "when.0": "This month", "when.1": "Last month", "when.2": "2 months ago", "when.3": "3 months ago", "when.4": "4 months ago", "when.5": "5 months ago", "when.6": "6 months ago", "th.vsprev": "vs previous 2 months", "crowd.areas2": "Typical prices pool the last 2 months, so people can report whenever they buy. Area prices appear once 3 people report from that area.", "track.crowdsoon2": "once 3 people have reported an item over two periods of 2 months, we show the change in what they pay next to our estimate here.", "grp.bench": "Benchmark", "tab.bench": "Benchmark", "bench.eyebrow": "How good are the forecasts?", "bench.h": "Benchmark: the same tool where data is good", "bench.d": "We also run CiO Costs on the United States' official construction input prices, published every month on time, so anyone can check how well it forecasts.", "bench.in1": "inside the likely range, 1 month ahead", "bench.in3": "3 months ahead (aim: 80%)", "bench.see": "See the benchmark",
       "grp.pilot": "Pilot countries", "grp.more": "More countries",
@@ -453,12 +456,13 @@ window.I18N = (function () {
   const tabs = $$(".tabs button"), qbox = $("#q"), count = $("#count"), empty = $("#empty"); let tab = "all";
   /* search: countries and materials together. "uganda kenya cement" = (Uganda or Kenya) with cement.
      Country words are OR-ed, material words AND-ed; every word matches the start of a word, in any language shown. */
-  const REG = { east: ["east", "mashariki", "est"], south: ["southern", "kusini", "australe"], west: ["west", "magharibi", "ouest"], north: ["north", "kaskazini", "nord"] };
+  const REG = { east: ["east", "mashariki", "est"], south: ["southern", "kusini", "australe"], west: ["west", "magharibi", "ouest"], north: ["north", "kaskazini", "nord"],
+    bench: ["benchmark", "benchmarks", "ulinganisho", "reference", "references", "global"] };
   const idx = {};
   function index(k) { if (idx[k]) return idx[k]; const c = DATA.countries[k];
     const mats = [...new Set([...Object.keys(c.paths || {}), ...(c.materials || []).map(m => m.name), ...(c.items || [])])];
     const names = ["en", "fr", "sw"].map(l => { try { return new Intl.DisplayNames([l], { type: "region" }).of(c.cc) || ""; } catch (e) { return ""; } });
-    return (idx[k] = { place: words([c.country, cname(c), ...names, k.replace("_", " "), c.currency, c.cc].join(" ")), region: REG[c.region] || [],
+    return (idx[k] = { place: words([c.country, cname(c), ...names, ...(c.aliases || []), k.replace("_", " "), c.currency, c.cc].join(" ")), region: REG[c.region] || [],
       mats: mats.map(m => ({ name: m, w: words(m + " " + T.mat(m)) })) }); }
   function matchLine(c, name) {
     const p = (c.paths || {})[name], m = (c.materials || []).find(x => x.name === name);
@@ -467,16 +471,21 @@ window.I18N = (function () {
     const h = at(c.paths[c.head], target); if (!h) return "";
     return `<b>${T.mat(name)}</b> <span class=muted>${tr("match.ind", { x: apct(h.q.median), when: tLabel(target) })}</span>`; }
   let gridOpen = false;
+  const keys0 = () => $$("#grid .card").map(c => c.dataset.key);
   function applyFilters() {
     const cards = $$("#grid .card"); if (!cards.length) return; let n = 0;
     const open = gridOpen || words(qbox && qbox.value).length > 0 || tab !== "all", grid = $("#grid"), go = $("#grid-open");
     grid.classList.toggle("folded", !open); if (go) go.hidden = open;
-    const toks = words(qbox && qbox.value).filter(t => !STOP.has(t)), keys = cards.map(c => c.dataset.key);
+    let raw = norm(qbox && qbox.value);
+    const phrase = [];                     /* multi-word names and aliases ("south africa", "latin america") count as one place */
+    keys0().forEach(k => { const c = DATA.countries[k]; [c.country, ...(c.aliases || [])].map(norm).filter(a => a.includes(" ")).forEach(a => {
+      if (raw.includes(a)) { phrase.push(k); raw = raw.replace(a, " "); } }); });
+    const toks = words(raw).filter(t => !STOP.has(t)), keys = cards.map(c => c.dataset.key);
     const isPlace = t => keys.some(k => hit(index(k).place, t) || index(k).region.some(r => r.startsWith(t)));
-    const places = toks.filter(isPlace), mats = toks.filter(t => !isPlace(t));
+    const places = toks.filter(isPlace), mats = toks.filter(t => !isPlace(t)), anyPlace = places.length || phrase.length;
     cards.forEach(c => { const d = c.dataset, ix = index(d.key);
       const okTab = tab === "all" || (tab === "official" || tab === "indicator" ? d.type === tab : (tab === "rising" || tab === "easing") ? d.trend === tab : d.region === tab);
-      const okPlace = !places.length || places.some(t => hit(ix.place, t) || ix.region.some(r => r.startsWith(t)));
+      const okPlace = !anyPlace || phrase.includes(d.key) || places.some(t => hit(ix.place, t) || ix.region.some(r => r.startsWith(t)));
       let found = mats.length ? ix.mats.filter(m => mats.every(t => hit(m.w, t))) : [];
       const c0 = DATA.countries[d.key], measured = found.filter(m => (c0.paths || {})[m.name] || (c0.materials || []).some(x => x.name === m.name));
       if (measured.length) found = measured;               /* official countries: show the measured series, not the report item */
@@ -487,6 +496,10 @@ window.I18N = (function () {
   }
   tabs.forEach(b => b.onclick = () => { tab = b.dataset.tab; tabs.forEach(x => x.setAttribute("aria-pressed", String(x === b))); applyFilters(); });
   if (qbox) qbox.addEventListener("input", applyFilters);
+  const sf = $("#searchform");          /* the Search button (and Enter): show the matches and bring them into view */
+  if (sf) sf.onsubmit = ev => { ev.preventDefault(); gridOpen = gridOpen || !qbox.value.trim(); applyFilters();
+    const first = $$("#grid .card").find(c => !c.hidden && getComputedStyle(c).display !== "none");
+    (first || $("#empty")).scrollIntoView({ behavior: "smooth", block: "start" }); if (window.innerWidth < 760) qbox.blur(); };
   const go = $("#grid-open"); if (go) go.onclick = () => { gridOpen = true; applyFilters(); };
   /* "what are you buying?": pick that material in the price box and show it across countries */
   const BUY = { cement: ["cement"], steel: ["steel", "rebar", "reinforc"], sand: ["sand"], diesel: ["diesel", "fuel"], roofing: ["roofing"] };

@@ -26,9 +26,13 @@ For every **1,000,000 USD** you spend on materials today, budget about **1,021,0
 - Add a price-adjustment clause to new contracts, or a bigger contingency.
 - Ask suppliers how long their quotes are valid.
 
-## What people are paying
+## How well does the forecast do here?
 
-Not enough reports yet this week. Tell us what you pay — it is anonymous: Report a price on the CiO Costs site.
+The United States is a **benchmark**: CiO Costs runs the same kind of forecast here as in the African pilot countries, on an official index that is published every month and on time — so anyone can check how well the tool does.
+
+- Tested month by month over the last 48 months, using only the data available at the time.
+- The real change fell inside the likely range **83%** of the time one month ahead and **81%** three months ahead (the aim is 80%).
+- Average miss one month ahead: 0.71 points, against 0.72 for simply assuming no change. The forecast beats that simple rule here.
 
 ## Official figures
 

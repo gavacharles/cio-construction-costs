@@ -71,7 +71,7 @@ def daily(db: str | None) -> None:
     run("harvest UBOS", "src/ingest/pull_ubos_cipi.py", "--out", "countries/uganda/raw/downloads")
     run("harvest KNBS", "src/ingest/pull_knbs_cipi.py")
     run("harvest Stats SA", "src/ingest/statssa_p01511.py", "pull")
-    run("harvest BLS (benchmark)", "src/ingest/pull_fred.py")
+    run("harvest benchmarks", "src/ingest/pull_benchmarks.py")
     for c in COUNTRIES:
         after = latest_release_month(c)
         if after != before[c]:

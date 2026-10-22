@@ -1,0 +1,36 @@
+# Brazil: BENCHMARK country (Latin America). Same forecasting tool on an official construction price index published
+# monthly and on time, so its accuracy can be checked in public. No price reporting here.
+# BCB SGS series 192 (INCC, monthly % change since 1944), turned into a level index from January 2000.
+country: Brazil
+iso3: BRA
+status: benchmark
+benchmark: true
+currency: BRL
+fx_code: brl
+pressure_currency: USD
+aliases: [latin america, latam, south america, brasil, bresil]
+regulation:
+  mode: play_money
+  regulators: []
+  note: Benchmark only; no contracts and no price reporting.
+
+settlement:
+  statistics_office: Fundação Getulio Vargas (FGV), via Banco Central do Brasil
+  publication: "INCC, national construction cost index (monthly % change)"
+  url: https://www3.bcb.gov.br/sgspub/
+  parser: benchmark
+  raw_dirs: [countries/brazil/raw]
+  frequency: monthly
+  quantity: mom_pct_change
+  decimals: 2
+  void_after_days: 120
+  excluded_participants: []
+
+exchange: {}
+markets: []
+
+# Benchmark series: the headline index first, then materials (name shown on the site).
+benchmark_series:
+  - { source: bcb, id: "192", start: "2000-01", name: "Construction costs (all)" }
+
+price_items: []

@@ -1,0 +1,43 @@
+# Philippines: BENCHMARK country (Asia). Same forecasting tool on an official construction price index published
+# monthly and on time, so its accuracy can be checked in public. No price reporting here.
+# PSA OpenSTAT (PXWeb API): all items plus 20 material groups, January 2018 onwards.
+country: Philippines
+iso3: PHL
+status: benchmark
+benchmark: true
+currency: PHP
+fx_code: php
+pressure_currency: USD
+aliases: [asia, manila, ph, pilipinas]
+regulation:
+  mode: play_money
+  regulators: []
+  note: Benchmark only; no contracts and no price reporting.
+
+settlement:
+  statistics_office: Philippine Statistics Authority (PSA)
+  publication: "Construction Materials Wholesale Price Index, National Capital Region (monthly, 2018 = 100)"
+  url: https://openstat.psa.gov.ph/Database/Prices/Price-Indices
+  parser: benchmark
+  raw_dirs: [countries/philippines/raw]
+  frequency: monthly
+  quantity: mom_pct_change
+  decimals: 2
+  void_after_days: 120
+  excluded_participants: []
+
+exchange: {}
+markets: []
+
+# Benchmark series: the headline index first, then materials (name shown on the site).
+benchmark_series:
+  - { source: pxweb, id: PH_0, url: "https://openstat.psa.gov.ph/PXWeb/api/v1/en/DB/2M/PI/WPI/2018/0052M4ACON1.px", item: 0, name: "Construction materials (all)" }
+  - { source: pxweb, id: PH_3, url: "https://openstat.psa.gov.ph/PXWeb/api/v1/en/DB/2M/PI/WPI/2018/0052M4ACON1.px", item: 3, name: "Cement" }
+  - { source: pxweb, id: PH_8, url: "https://openstat.psa.gov.ph/PXWeb/api/v1/en/DB/2M/PI/WPI/2018/0052M4ACON1.px", item: 8, name: "Reinforcing steel" }
+  - { source: pxweb, id: PH_1, url: "https://openstat.psa.gov.ph/PXWeb/api/v1/en/DB/2M/PI/WPI/2018/0052M4ACON1.px", item: 1, name: "Sand and gravel" }
+  - { source: pxweb, id: PH_6, url: "https://openstat.psa.gov.ph/PXWeb/api/v1/en/DB/2M/PI/WPI/2018/0052M4ACON1.px", item: 6, name: "Lumber" }
+  - { source: pxweb, id: PH_7, url: "https://openstat.psa.gov.ph/PXWeb/api/v1/en/DB/2M/PI/WPI/2018/0052M4ACON1.px", item: 7, name: "Roofing sheets (G.I.)" }
+  - { source: pxweb, id: PH_18, url: "https://openstat.psa.gov.ph/PXWeb/api/v1/en/DB/2M/PI/WPI/2018/0052M4ACON1.px", item: 18, name: "Fuels and lubricants" }
+  - { source: pxweb, id: PH_17, url: "https://openstat.psa.gov.ph/PXWeb/api/v1/en/DB/2M/PI/WPI/2018/0052M4ACON1.px", item: 17, name: "PVC pipes" }
+
+price_items: []

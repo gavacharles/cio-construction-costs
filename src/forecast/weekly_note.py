@@ -480,52 +480,49 @@ def walk_forward(levels: pd.Series, months: int = 48, horizons=(1, 3)) -> pd.Dat
     return pd.DataFrame(rows)
 
 
-def united_states_body(weekly) -> list[str]:
-    """Benchmark: the same method on a timely official index (BLS PPI, inputs to construction)."""
+def benchmark_body(weekly, country: str) -> list[str]:
+    """Benchmark countries: the tool on a timely official index, with a 48-month walk-forward test."""
     from country import load_country
-    cfg = load_country("united_states")
-    series = cfg["fred_series"]
-    head = _fred("united_states", series[0]["id"])
+    cfg = load_country(country)
+    series = cfg["benchmark_series"]
+    head = _fred(country, series[0]["id"])
     latest = head.index.max()
     ch = (head / head.shift(1) - 1).dropna() * 100
-    _spark("Construction input price index (BLS)", head)
+    _spark(f"{series[0]['name']} ({cfg['settlement']['statistics_office']})", head)
     paths = {series[0]["name"]: _ar1_path(ch, latest)}
     mats = []
     for sr in series[1:]:
         try:
-            lv = _fred("united_states", sr["id"])
+            lv = _fred(country, sr["id"])
         except FileNotFoundError:
             continue
         mats.append((sr["name"], lv.tail(30)))
-        if sr["name"] in ("Cement", "Ready-mix concrete", "Steel mill products", "Lumber", "Diesel"):
+        if len(paths) < 6:
             c2 = (lv / lv.shift(1) - 1).dropna() * 100
             paths[sr["name"]] = _ar1_path(c2, lv.index.max())
     _DATA["paths"] = paths
     _DATA["base"] = f"{latest:%b %Y}"
-    _materials(mats, "month")
+    if mats:
+        _materials(mats, "month")
     bt = walk_forward(head)
-    out = ROOT / "countries" / "united_states" / "outputs" / "forecast"
+    out = ROOT / "countries" / country / "outputs" / "forecast"
     out.mkdir(parents=True, exist_ok=True)
     bt.to_csv(out / "backtest_errors.csv", index=False)
-    lines = ["## Benchmark: United States", "",
-             f"The tool's forecasting method on the BLS construction input price index, latest **{latest:%B %Y}**.", "",
-             "| Test (last 48 months, forecast made with data available then) | 1 month ahead | 3 months ahead |", "|---|---|---|"]
     stats = {}
     for h in (1, 3):
         b = bt[bt.h == h]
         stats[h] = {"inside": float(((b.actual >= b.lo) & (b.actual <= b.hi)).mean()),
                     "mae": float((b.actual - b.structural).abs().mean()), "mae_nochange": float(b.actual.abs().mean()), "n": int(len(b))}
-    lines += [f"| Inside the likely range | {stats[1]['inside']:.0%} | {stats[3]['inside']:.0%} |",
-              f"| Average miss (points) | {stats[1]['mae']:.2f} | {stats[3]['mae']:.2f} |",
-              f"| Average miss of 'no change' | {stats[1]['mae_nochange']:.2f} | {stats[3]['mae_nochange']:.2f} |"]
-    _DATA.update(kind="benchmark", benchmark=stats,
-                 basis=f"BLS {latest:%B %Y}; forecast tested month by month on the last 48 months")
+    _DATA.update(kind="benchmark", benchmark=stats, region=cfg.get("aliases", [""])[0],
+                 basis=f"{cfg['settlement']['statistics_office']} {latest:%B %Y}; forecast tested month by month on the last 48 months")
     for q in paths[series[0]["name"]][:3]:
         _rec(series=series[0]["name"], period=q["month"], median=q["median"], lo=q["lo"], hi=q["hi"])
-    return lines
+    return [f"## Benchmark: {cfg['country']}", "", f"{cfg['settlement']['publication']}, latest **{latest:%B %Y}**.", "",
+            f"Inside the likely range over the last {stats[1]['n']} months: {stats[1]['inside']:.0%} (1 month ahead), "
+            f"{stats[3]['inside']:.0%} (3 months ahead)."]
 
 
-BODIES = {"uganda": uganda_body, "kenya": kenya_body, "south_africa": south_africa_body, "united_states": united_states_body}
+BODIES = {"uganda": uganda_body, "kenya": kenya_body, "south_africa": south_africa_body}
 
 
 def _log_forecast(country: str, d: dict) -> None:
@@ -565,7 +562,9 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
                         "fx_13w_pct": _chg(weekly[col], 91) if col in weekly else None}
     lines = [f"# {cfg['country']} construction cost note — week of {today:%d %B %Y}", "", HEADER, "",
              "## This week's drivers", ""] + drivers_section(weekly, country) + [""]
-    lines += BODIES[country](weekly) if country in BODIES else generic_body(weekly, country)
+    from country import load_country as _lc
+    lines += (benchmark_body(weekly, country) if _lc(country).get("benchmark")
+              else BODIES[country](weekly) if country in BODIES else generic_body(weekly, country))
     lines += ["", "## Prices reported by participants", ""] + crowd_section(db_path, country)
     lines += ["", "## Open forecasting contracts", ""] + market_section(db_path, country)
     lines += ["", "## Sources", "",

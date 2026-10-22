@@ -143,6 +143,19 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
     else:
         todo = ["Prices may ease: if you can, wait before bulk buying.", "Ask suppliers for better terms."]
 
+    # Benchmark countries: why they are here and how the forecasts have done
+    bench = d.get("benchmark") or {}
+    b1, b3 = (bench.get("1") or bench.get(1) or {}), (bench.get("3") or bench.get(3) or {})
+    bench_lines = [] if not bench else [
+        f"{country[0].upper() + country[1:]} is a **benchmark**: CiO Costs runs the same kind of forecast here as in the African pilot "
+        f"countries, on an official index that is published every month and on time — so anyone can check how well the tool does.", "",
+        f"- Tested month by month over the last {b1.get('n', 0)} months, using only the data available at the time.",
+        f"- The real change fell inside the likely range **{b1.get('inside', 0):.0%}** of the time one month ahead and "
+        f"**{b3.get('inside', 0):.0%}** three months ahead (the aim is 80%).",
+        f"- Average miss one month ahead: {b1.get('mae', 0):.2f} points, against {b1.get('mae_nochange', 0):.2f} for simply assuming "
+        "no change. " + ("The forecast beats that simple rule here." if b1.get("mae", 9) < b1.get("mae_nochange", 0)
+                         else "It does not beat that simple rule here; rely on the range more than the single number.")]
+
     # Crowd prices
     pub = [r for r in crowd_rows if r.get("published")]
     crowd = ([f"- {r['name']}: **{r['median']:,.0f} {ccy}** per {r['unit']} ({r['reporters']} people)" for r in pub]
@@ -171,7 +184,7 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         "## Prices to watch", "", *[f"- {w}" for w in watch], "",
         "## Why", "", *[f"- {w}" for w in why], "",
         "## What to do this week", "", *[f"- {t}" for t in todo], "",
-        "## What people are paying", "", *crowd, "",
+        *(["## How well does the forecast do here?", "", *bench_lines, ""] if bench else ["## What people are paying", "", *crowd, ""]),
         "## Official figures", "", offl, "",
         "## How to read this", "",
         "\"Likely\" means about 7 times in 10; \"almost certain\" about 9 in 10. Changes are measured from today. "
@@ -186,7 +199,8 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         f"💰 {k:,} {ccy} of materials today ≈ {r1000(med)} {ccy} in {when}.",
         "", *[w.replace("**", "*") for w in watch[:3]], "",
         *[f"• {w}" for w in why], "",
-        f"✅ {todo[0]}", "",
+        *([f"📏 Benchmark: inside the likely range {b1.get('inside', 0):.0%} of the time over the last {b1.get('n', 0)} months.", ""]
+          if bench else [f"✅ {todo[0]}", ""]),
         f"More: {page if site_url else 'CiO Costs site'} · Report prices: {(site_url.rstrip('/') + '/report.html') if site_url else 'CiO Costs site'}",
         *([f"📲 Free every week: {channel}"] if channel else []),
         "_A forecast, not a guarantee or advice._"])

@@ -1,0 +1,36 @@
+# Austria: BENCHMARK country (Europe). Same forecasting tool on an official construction price index published
+# monthly and on time, so its accuracy can be checked in public. No price reporting here.
+# Eurostat sts_copi_m: Austria publishes about one month after the reference month, the fastest in the EU set.
+country: Austria
+iso3: AUT
+status: benchmark
+benchmark: true
+currency: EUR
+fx_code: eur
+pressure_currency: USD
+aliases: [europe, eu, oesterreich, autriche, vienna]
+regulation:
+  mode: play_money
+  regulators: []
+  note: Benchmark only; no contracts and no price reporting.
+
+settlement:
+  statistics_office: Statistics Austria (via Eurostat)
+  publication: "Construction cost index, new residential buildings (monthly, 2021 = 100)"
+  url: https://ec.europa.eu/eurostat/databrowser/view/sts_copi_m/default/table
+  parser: benchmark
+  raw_dirs: [countries/austria/raw]
+  frequency: monthly
+  quantity: mom_pct_change
+  decimals: 2
+  void_after_days: 120
+  excluded_participants: []
+
+exchange: {}
+markets: []
+
+# Benchmark series: the headline index first, then materials (name shown on the site).
+benchmark_series:
+  - { source: eurostat, id: AT_COST, geo: AT, indic: COST, name: "Construction costs (all)" }
+
+price_items: []

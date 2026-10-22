@@ -183,12 +183,13 @@
   const tabs = $$(".tabs button"), qbox = $("#q"), count = $("#count"), empty = $("#empty"); let tab = "all";
   /* search: countries and materials together. "uganda kenya cement" = (Uganda or Kenya) with cement.
      Country words are OR-ed, material words AND-ed; every word matches the start of a word, in any language shown. */
-  const REG = { east: ["east", "mashariki", "est"], south: ["southern", "kusini", "australe"], west: ["west", "magharibi", "ouest"], north: ["north", "kaskazini", "nord"] };
+  const REG = { east: ["east", "mashariki", "est"], south: ["southern", "kusini", "australe"], west: ["west", "magharibi", "ouest"], north: ["north", "kaskazini", "nord"],
+    bench: ["benchmark", "benchmarks", "ulinganisho", "reference", "references", "global"] };
   const idx = {};
   function index(k) { if (idx[k]) return idx[k]; const c = DATA.countries[k];
     const mats = [...new Set([...Object.keys(c.paths || {}), ...(c.materials || []).map(m => m.name), ...(c.items || [])])];
     const names = ["en", "fr", "sw"].map(l => { try { return new Intl.DisplayNames([l], { type: "region" }).of(c.cc) || ""; } catch (e) { return ""; } });
-    return (idx[k] = { place: words([c.country, cname(c), ...names, k.replace("_", " "), c.currency, c.cc].join(" ")), region: REG[c.region] || [],
+    return (idx[k] = { place: words([c.country, cname(c), ...names, ...(c.aliases || []), k.replace("_", " "), c.currency, c.cc].join(" ")), region: REG[c.region] || [],
       mats: mats.map(m => ({ name: m, w: words(m + " " + T.mat(m)) })) }); }
   function matchLine(c, name) {
     const p = (c.paths || {})[name], m = (c.materials || []).find(x => x.name === name);
@@ -197,16 +198,21 @@
     const h = at(c.paths[c.head], target); if (!h) return "";
     return `<b>${T.mat(name)}</b> <span class=muted>${tr("match.ind", { x: apct(h.q.median), when: tLabel(target) })}</span>`; }
   let gridOpen = false;
+  const keys0 = () => $$("#grid .card").map(c => c.dataset.key);
   function applyFilters() {
     const cards = $$("#grid .card"); if (!cards.length) return; let n = 0;
     const open = gridOpen || words(qbox && qbox.value).length > 0 || tab !== "all", grid = $("#grid"), go = $("#grid-open");
     grid.classList.toggle("folded", !open); if (go) go.hidden = open;
-    const toks = words(qbox && qbox.value).filter(t => !STOP.has(t)), keys = cards.map(c => c.dataset.key);
+    let raw = norm(qbox && qbox.value);
+    const phrase = [];                     /* multi-word names and aliases ("south africa", "latin america") count as one place */
+    keys0().forEach(k => { const c = DATA.countries[k]; [c.country, ...(c.aliases || [])].map(norm).filter(a => a.includes(" ")).forEach(a => {
+      if (raw.includes(a)) { phrase.push(k); raw = raw.replace(a, " "); } }); });
+    const toks = words(raw).filter(t => !STOP.has(t)), keys = cards.map(c => c.dataset.key);
     const isPlace = t => keys.some(k => hit(index(k).place, t) || index(k).region.some(r => r.startsWith(t)));
-    const places = toks.filter(isPlace), mats = toks.filter(t => !isPlace(t));
+    const places = toks.filter(isPlace), mats = toks.filter(t => !isPlace(t)), anyPlace = places.length || phrase.length;
     cards.forEach(c => { const d = c.dataset, ix = index(d.key);
       const okTab = tab === "all" || (tab === "official" || tab === "indicator" ? d.type === tab : (tab === "rising" || tab === "easing") ? d.trend === tab : d.region === tab);
-      const okPlace = !places.length || places.some(t => hit(ix.place, t) || ix.region.some(r => r.startsWith(t)));
+      const okPlace = !anyPlace || phrase.includes(d.key) || places.some(t => hit(ix.place, t) || ix.region.some(r => r.startsWith(t)));
       let found = mats.length ? ix.mats.filter(m => mats.every(t => hit(m.w, t))) : [];
       const c0 = DATA.countries[d.key], measured = found.filter(m => (c0.paths || {})[m.name] || (c0.materials || []).some(x => x.name === m.name));
       if (measured.length) found = measured;               /* official countries: show the measured series, not the report item */
@@ -217,6 +223,10 @@
   }
   tabs.forEach(b => b.onclick = () => { tab = b.dataset.tab; tabs.forEach(x => x.setAttribute("aria-pressed", String(x === b))); applyFilters(); });
   if (qbox) qbox.addEventListener("input", applyFilters);
+  const sf = $("#searchform");          /* the Search button (and Enter): show the matches and bring them into view */
+  if (sf) sf.onsubmit = ev => { ev.preventDefault(); gridOpen = gridOpen || !qbox.value.trim(); applyFilters();
+    const first = $$("#grid .card").find(c => !c.hidden && getComputedStyle(c).display !== "none");
+    (first || $("#empty")).scrollIntoView({ behavior: "smooth", block: "start" }); if (window.innerWidth < 760) qbox.blur(); };
   const go = $("#grid-open"); if (go) go.onclick = () => { gridOpen = true; applyFilters(); };
   /* "what are you buying?": pick that material in the price box and show it across countries */
   const BUY = { cement: ["cement"], steel: ["steel", "rebar", "reinforc"], sand: ["sand"], diesel: ["diesel", "fuel"], roofing: ["roofing"] };

@@ -203,7 +203,7 @@ def test_front_page_builds():
     build_index.build()
     idx = (ROOT / "public" / "index.html").read_text()
     live = build_index.LIVE
-    assert idx.count("<article class=card") == len(live) == 8 and "[hidden]" in (ROOT / "public" / "assets" / "cio.css").read_text()
+    assert idx.count("<article class=card") == len(live) and "[hidden]" in (ROOT / "public" / "assets" / "cio.css").read_text()
     assert not (ROOT / "public" / "countries" / "ghana").exists()          # not live yet: no public page
     assert "Join the pilot" not in idx and "united_states" in idx
     assert ".md" not in idx and "docs/" not in idx                        # no internal documents linked

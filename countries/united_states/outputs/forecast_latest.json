@@ -10,7 +10,7 @@
   "fx_13w_pct": null
  },
  "spark": {
-  "label": "Construction input price index (BLS)",
+  "label": "Construction inputs (all) (U.S. Bureau of Labor Statistics (BLS))",
   "dates": [
    "2024-10",
    "2024-11",
@@ -1155,7 +1155,8 @@
    "n": 48
   }
  },
- "basis": "BLS September 2026; forecast tested month by month on the last 48 months",
+ "region": "usa",
+ "basis": "U.S. Bureau of Labor Statistics (BLS) September 2026; forecast tested month by month on the last 48 months",
  "rows": [
   {
    "series": "Construction inputs (all)",

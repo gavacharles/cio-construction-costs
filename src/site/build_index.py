@@ -67,7 +67,7 @@ REGION = {"uganda": "east", "kenya": "east", "rwanda": "east", "tanzania": "east
           "namibia": "south", "mozambique": "south", "mauritius": "south",
           "ghana": "west", "nigeria": "west", "senegal": "west", "egypt": "north", "morocco": "north"}
 REGION_NAME = {"east": "East Africa", "south": "Southern Africa", "west": "West Africa", "north": "North Africa", "bench": "Benchmark"}
-ISO2 = {"USA": "US", "UGA": "UG", "KEN": "KE", "RWA": "RW", "TZA": "TZ", "ETH": "ET", "ZAF": "ZA", "ZMB": "ZM", "BWA": "BW",
+ISO2 = {"USA": "US", "AUT": "AT", "PHL": "PH", "BRA": "BR", "UGA": "UG", "KEN": "KE", "RWA": "RW", "TZA": "TZ", "ETH": "ET", "ZAF": "ZA", "ZMB": "ZM", "BWA": "BW",
         "MWI": "MW", "ZWE": "ZW", "NAM": "NA", "MOZ": "MZ", "MUS": "MU", "GHA": "GH", "NGA": "NG", "SEN": "SN",
         "EGY": "EG", "MAR": "MA"}
 SOURCE = {"uganda": "Uganda Bureau of Statistics (UBOS)", "kenya": "Kenya National Bureau of Statistics (KNBS)",
@@ -188,7 +188,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
 <nav class=bottombar aria-label=Main>{bottom}</nav>
 <footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
 {f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else ""}</p><span data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
-value. Official data: UBOS, KNBS, Stats SA; benchmark: US Bureau of Labor Statistics; oil and exchange rates from public
+value. Official data: UBOS, KNBS, Stats SA; benchmarks: US BLS, Statistics Austria (Eurostat), PSA Philippines, FGV Brazil; oil and exchange rates from public
 market sources. Updated {e(data.get('updated', ''))}.</span></footer>
 <script id=cio-data type="application/json">{payload}</script>
 <script src="{rel}assets/cio.js"></script></body></html>
@@ -244,14 +244,18 @@ def page_glance(cs: list[dict], months: list[str], default: str) -> str:
 
 
 def _home(cs, months, default, feat, tab_html, cards):
-    bc = next((c for c in cs if c.get("bench") and c.get("bstats")), None)
-    BENCH_STRIP = "" if not bc else (
-        f"<section class=bench><div><p class=eyebrow data-i18n=bench.eyebrow>How good are the forecasts?</p>"
-        f"<h2>{bc['flag']} <span data-i18n=bench.h>Benchmark: the same tool where data is good</span></h2>"
-        f"<p data-i18n=bench.d>We also run CiO Costs on the United States' official construction input prices, published every month on "
-        f"time, so anyone can check how well it forecasts.</p></div><div class=bench-nums><div><b>{bc['bstats']['1']['inside']:.0%}</b>"
-        f"<span data-i18n=bench.in1>inside the likely range, 1 month ahead</span></div><div><b>{bc['bstats']['3']['inside']:.0%}</b>"
-        f"<span data-i18n=bench.in3>3 months ahead (aim: 80%)</span></div><a class=btn href='countries/{bc['key']}/index.html' data-i18n=bench.see>See the benchmark</a></div></section>")
+    bcs = [c for c in cs if c.get("bench") and c.get("bstats")]
+    rows = "".join(f"<a class=bench-row href='countries/{c['key']}/index.html'><span>{c['flag']} {e(c['country'])}</span>"
+                   f"<b>{c['bstats']['1']['inside']:.0%}</b><b>{c['bstats']['3']['inside']:.0%}</b>"
+                   f"<span class={'beat' if c['bstats']['1']['mae'] < c['bstats']['1']['mae_nochange'] else 'nobeat'}>"
+                   f"{'✓' if c['bstats']['1']['mae'] < c['bstats']['1']['mae_nochange'] else '–'}</span></a>" for c in bcs)
+    BENCH_STRIP = "" if not bcs else (
+        f"<section class=bench><div class=bench-text><p class=eyebrow data-i18n=bench.eyebrow>How good are the forecasts?</p>"
+        f"<h2 data-i18n=bench.h2>Benchmarks: the same tool where official data is good</h2>"
+        f"<p data-i18n=bench.d2>We also run CiO Costs on official construction prices in North America, Europe, Asia and Latin America. They are "
+        f"published every month and on time, so anyone can check how well the forecasts do. The aim: the real change lands inside the likely "
+        f"range 8 times in 10.</p></div><div class=bench-table><div class='bench-row head'><span></span><span data-i18n=bench.c1>Inside range, 1 month</span>"
+        f"<span data-i18n=bench.c3>3 months</span><span data-i18n=bench.cb>Beats “no change”</span></div>{rows}</div></section>")
     body = f"""
 <section class=hero><div><p class=eyebrow data-i18n=home.eyebrow>Construction cost outlook · 7 African countries</p>
  <h1 data-i18n=home.h1>Will building costs rise where you work?</h1>
@@ -285,9 +289,10 @@ def _home(cs, months, default, feat, tab_html, cards):
 
 {QUICK}
 <nav class=tabs id=countries aria-label="Filter countries">{tab_html}</nav>
-<div class=toolbar><label class=search><span class=sr-only>Search</span>
- <input id=q type=search data-i18n-ph=search.ph placeholder="Search countries and materials — e.g. Kenya Uganda cement" autocomplete=off></label>
- <span class=count id=count aria-live=polite></span></div>
+<form class=toolbar id=searchform role=search><label class=search><span class=sr-only>Search</span>
+ <input id=q type=search data-i18n-ph=search.ph placeholder="Search countries and materials — e.g. Kenya Uganda cement" autocomplete=off enterkeyhint=search></label>
+ <button class='btn primary' type=submit data-i18n=search.btn>Search</button>
+ <span class=count id=count aria-live=polite></span></form>
 <div class="grid folded" id=grid>{cards}</div>
 <p class=empty id=empty data-i18n=empty>No country matches. Try “cement”, “Kenya” or “West”.</p>
 
@@ -667,6 +672,7 @@ def build() -> Path:
     updated = max((c["generated"] for c in cs), default=date.today().isoformat())
     slim = {c["key"]: dict({k: c[k] for k in ("country", "flag", "currency", "region", "kind", "official", "base", "head",
                                               "paths", "spark", "drivers", "materials", "step", "items", "bench")},
+                           aliases=load_country(c["key"]).get("aliases") or [],
                            cc=ISO2.get(load_country(c["key"])["iso3"], ""),
                            crowd={r["name"]: r["median"] for r in crowd(c["key"]) if r.get("published")},
                            pitems=[{"code": i["code"], "name": i["name"], "unit": i["unit"]} for i in load_country(c["key"]).get("price_items", [])],
