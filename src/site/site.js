@@ -15,6 +15,18 @@
   const langSel = $("#lang"); if (langSel) { langSel.value = T.lang; langSel.onchange = () => T.set(langSel.value); }
   $$("#when option").forEach(o => { const v = o.value; o.textContent = v[0] === "W" ? tr("weekof.cap", { d: T.dayMonth(v.slice(2)) }) : label(v.slice(2)); });
   $$("#when optgroup").forEach(g => g.label = tr(g.label === "Weeks" ? "grp.weeks" : "grp.months"));
+  const norm = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const words = x => norm(x).split(/[^a-z0-9]+/).filter(Boolean);
+  const STOP = new Set(["and", "in", "of", "the", "for", "price", "prices", "cost", "costs", "africa", "na", "ya", "za", "bei", "gharama",
+    "et", "de", "du", "la", "le", "les", "en", "prix", "cout", "couts", "afrique"]);
+  const STEEL = ["steel", "rebar", "reinforc"];
+  const SYN = { steel: STEEL, rebar: STEEL, iron: STEEL, nondo: STEEL, chuma: STEEL, fer: STEEL, acier: STEEL, petrol: ["fuel"], gasoil: ["fuel", "diesel"],
+    gazole: ["diesel"], dizeli: ["diesel"], ballast: ["stone", "aggregate"], gravel: ["stone", "aggregate"], aggregate: ["stone", "ballast"],
+    concrete: ["ready"], saruji: ["cement"], ciment: ["cement"], mchanga: ["sand"], sable: ["sand"], labor: ["labour"], kazi: ["labour"],
+    mabati: ["roofing"], toles: ["roofing"], tole: ["roofing"], toiture: ["roofing"], iron_sheet: ["roofing"] };
+  const hit = (ws, t) => ws.some(w => w.startsWith(t) || (SYN[t] || []).some(y => w.startsWith(y)));
+  const arrow = v => v >= 0.25 ? "⬆" : (v <= -0.25 ? "⬇" : "➡");
+  const apct = v => `${arrow(v)} ${pct(v)}`;
   const pct = (v, d = 1) => { const r = +(+v).toFixed(d); return (r > 0 ? "+" : "") + (r === 0 ? (0).toFixed(d) : r.toFixed(d)) + "%"; };
   const qlabel = (m, step) => step === "quarter" ? tr("quarter", { q: Math.floor((+m.slice(5, 7) - 1) / 3) + 1, y: m.slice(0, 4) }) : label(m);
   const online = location.protocol !== "file:";
@@ -47,6 +59,9 @@
   }
   function chance(q) { const sd = (q.hi - q.lo) / (2 * 1.2816); if (!(sd > 1e-6)) return q.median > 0 ? 0.99 : 0.01;
     return Math.min(0.99, Math.max(0.01, 0.5 * (1 + erf(q.median / (sd * Math.SQRT2))))); }
+  function verdict(q, p) { if (Math.abs(q.median) < 0.25) return "➡ " + tr("v.same");
+    const up = q.median > 0, s = up ? p : 1 - p;
+    return (up ? "⬆ " : "⬇ ") + tr((s >= 0.9 ? "v.sure" : s >= 0.7 ? "v.likely" : "v.lean") + (up ? ".up" : ".down")); }
   function question(c, tg) { return tr(c.official ? "q.official" : "q.indicator", { c: cname(c), when: tLabel(tg) }); }
   function advice(c, q, tg) { const v = { when: tLabel(tg), base: T.base(c.base), x: Math.abs(q.median).toFixed(1) + "%" };
     if (!c.official) return Math.abs(q.median) < 0.25 ? tr("adv.indflat", v) : tr("adv.ind", Object.assign(v, { dir: tr(q.median > 0 ? "dir.up" : "dir.down") }));
@@ -61,18 +76,24 @@
   /* ---------- "your price": a price today -> the expected price at the target date ---------- */
   const nowTg = () => { const d = new Date(); return `M:${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
   const money0 = n => Math.round(n).toLocaleString(T.loc || undefined);
+  const first = n => words(n)[0] || "";
+  /* the forecast series for a material or report item: same name, else same first word, else the country's headline series */
+  const pathFor = (c, n) => c.paths[n] || c.paths[Object.keys(c.paths).find(k => hit(words(k), first(n)))] || c.paths[c.head];
+  const crowdFor = (c, n) => { const cr = c.crowd || {}; if (cr[n] != null) return cr[n];
+    const k = Object.keys(cr).find(x => first(x) && hit(words(n), first(x))); return k ? cr[k] : null; };
   function money(el, c, tg) {
     const box = $(".money", el); if (!box) return;
     const sel = $("[data-money-mat]", box), inp = $("[data-money-price]", box), out = $("[data-money-out]", box);
     if (sel.dataset.key !== c.key) {                       /* (re)build the material list when the country changes */
-      sel.dataset.key = c.key; sel.innerHTML = Object.keys(c.paths).map(n => `<option value="${n}">${T.mat(n)}</option>`).join("");
+      sel.dataset.key = c.key; const names = c.official ? Object.keys(c.paths) : (c.items && c.items.length ? c.items : Object.keys(c.paths));
+      sel.innerHTML = names.map(n => `<option value="${n}">${T.mat(n)}</option>`).join("");
       $("[data-money-ccy]", box).textContent = c.currency;
       inp.placeholder = tr("money.ph");
-      const load = () => { const v = store.get(`cio-price-${c.key}-${sel.value}`, null) ?? (c.crowd || {})[sel.value]; inp.value = v == null ? "" : v; };
+      const load = () => { const v = store.get(`cio-price-${c.key}-${sel.value}`, null) ?? crowdFor(c, sel.value); inp.value = v == null ? "" : v; };
       sel.onchange = () => { load(); money(el, c, target); };
       inp.oninput = () => { store.set(`cio-price-${c.key}-${sel.value}`, inp.value === "" ? null : +inp.value); money(el, c, target); };
       load(); }
-    const a = at(c.paths[sel.value], nowTg()), b = at(c.paths[sel.value], tg), v = +inp.value;
+    const pth = pathFor(c, sel.value), a = at(pth, nowTg()), b = at(pth, tg), v = +inp.value;
     if (!a || !b || !(v > 0)) { out.textContent = tr("money.need"); return; }
     const f = x => v * (1 + x / 100) / (1 + a.q.median / 100);
     out.innerHTML = tr("money.out", { p: `<strong>${money0(f(b.q.median))} ${c.currency}</strong>`, when: tLabel(tg),
@@ -84,19 +105,22 @@
     const r = at(c.paths[c.head], tg); if (!r) return; const q = r.q, p = chance(q);
     const set = (sel, h) => { const x = $(sel, el); if (x) x.innerHTML = h; };
     set("[data-q]", question(c, tg) + (r.beyond ? ` <small class=muted>${tr("furthest", { m: label(q.month) })}</small>` : ""));
-    set("[data-pct]", Math.round(p * 100) + "%"); set("[data-exp]", pct(q.median)); set("[data-rng]", `${pct(q.lo)} – ${pct(q.hi)}`);
+    set("[data-verdict]", verdict(q, p)); set("[data-sub]", tr("v.sub", { x: pct(q.median), when: tLabel(tg) }));
+    set("[data-pct]", Math.round(p * 100) + "%"); set("[data-exp]", apct(q.median)); set("[data-rng]", `${pct(q.lo)} – ${pct(q.hi)}`);
     set("[data-advice]", advice(c, q, tg));
     const bar = $("[data-bar]", el); if (bar) bar.style.width = Math.round(p * 100) + "%";
     const sl = $("[data-spark]", el); if (sl && !sl.innerHTML) sl.innerHTML = spark(c);
     const br = $("[data-breakdown]", el);
-    if (br) br.innerHTML = Object.entries(c.paths).map(([n, pth]) => { const x = at(pth, tg); return x ? `<li><span>${T.mat(n)}</span><b>${pct(x.q.median)}</b></li>` : ""; }).join("");
+    if (br) br.innerHTML = Object.entries(c.paths).map(([n, pth]) => { const x = at(pth, tg); return x ? `<li><span>${T.mat(n)}</span><b>${apct(x.q.median)}</b></li>` : ""; }).join("");
     money(el, c, tg);
     el.dataset.trend = q.median > 0.05 ? "rising" : (q.median < -0.05 ? "easing" : "flat");
     const fan = $(".fan", el); if (fan) { const xs = JSON.parse(fan.dataset.xs || "{}"), mk = $(".marker", fan), m = tMonth(tg);
       const x = xs[m] || xs[Object.keys(xs).filter(k => k <= m).pop()]; if (mk && x) { mk.setAttribute("x1", x); mk.setAttribute("x2", x); } }
     $$("tr[data-mat]").forEach(row => { const pth = c.paths[row.dataset.mat] || (row.dataset.mat === "Reinforcement steel" ? c.paths["Rebar"] : null);
-      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.textContent = x ? `${pct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})` : tr("notsep"); } });
+      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.textContent = x ? `${apct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})` : tr("notsep"); } });
   }
+
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register(rel + "sw.js").catch(() => {});
 
   /* ---------- country-first home ---------- */
   const my = $("#mycountry"), feat = $(".featured:not(.solo)");
@@ -121,29 +145,33 @@
     $$(".card[data-key], .featured[data-key]").forEach(el => { const c = DATA.countries[el.dataset.key]; if (c) fill(el, c, target); });
     $$("#glance-table tbody tr").forEach(row => { const c = DATA.countries[row.dataset.key]; if (!c) return;
       const q = at(c.paths[c.head], target).q, p = chance(q), d = c.drivers || {}, cell = k => $(`[data-g=${k}]`, row);
-      cell("exp").textContent = pct(q.median); cell("exp").dataset.v = q.median; cell("rng").textContent = `${pct(q.lo)} – ${pct(q.hi)}`;
+      cell("exp").textContent = apct(q.median); cell("exp").dataset.v = q.median; cell("rng").textContent = `${pct(q.lo)} – ${pct(q.hi)}`;
       cell("pct").textContent = Math.round(p * 100) + "%"; cell("pct").dataset.v = p;
       const fx = d.fx_13w_pct; cell("fx").innerHTML = fx == null ? "–" : `<span class=${fx > 0 ? "up" : "down"}>${fx > 0 ? "weaker" : "stronger"} ${Math.abs(fx).toFixed(1)}%</span>`;
       cell("fx").dataset.v = fx == null ? 0 : fx;
       const of = cell("official"); if (of && !of.dataset.done) { const h = (c.spark || {}).values || [], yr = c.step === "quarter" ? 4 : 12;
         if (c.official && h.length > yr) { const v = (h[h.length - 1] / h[h.length - 1 - yr] - 1) * 100; of.textContent = pct(v); of.dataset.v = v; }
         else { of.textContent = "–"; of.dataset.v = -999; } of.dataset.done = 1; } });
-    applyFilters();
+    applyFilters(); syncH();
   }
+  /* "in h months": that month's option, or the week closest to the middle of it while weeks are offered */
+  function horizon(h) { const d = new Date(), y = d.getFullYear() + Math.floor((d.getMonth() + h) / 12), m = (d.getMonth() + h) % 12 + 1;
+    const ym = `${y}-${String(m).padStart(2, "0")}`, opts = DATA.months || [];
+    if (opts.indexOf("M:" + ym) >= 0) return "M:" + ym;
+    const goal = Date.UTC(y, m - 1, 15); let best = null, gap = Infinity;
+    opts.filter(v => v[0] === "W").forEach(v => { const g = Math.abs(Date.parse(v.slice(2)) - goal); if (g < gap) { gap = g; best = v; } });
+    return best; }
+  function syncH() { $$(".when").forEach(w => { const sel = $("select", w); let any = false;
+    $$("[data-h]", w).forEach(b => { const on = b.dataset.h !== "pick" && horizon(+b.dataset.h) === target; any = any || on; b.setAttribute("aria-pressed", String(on)); });
+    const pk = $("[data-h=pick]", w); if (pk) pk.setAttribute("aria-pressed", String(!any)); if (sel && !any) sel.hidden = false; }); }
+  $$("[data-h]").forEach(b => b.onclick = () => { if (b.dataset.h === "pick") { const sel = $("select", b.closest(".when")); sel.hidden = false; sel.focus(); return; }
+    const v = horizon(+b.dataset.h); if (!v) return; target = v; store.set("cio-target", target); $$("#when").forEach(s => s.value = target); render(); });
   $$("#when").forEach(w => { w.value = target; w.onchange = () => { target = w.value; store.set("cio-target", target); $$("#when").forEach(s => s.value = target); render(); }; });
 
   /* ---------- filters + search ---------- */
   const tabs = $$(".tabs button"), qbox = $("#q"), count = $("#count"), empty = $("#empty"); let tab = "all";
   /* search: countries and materials together. "uganda kenya cement" = (Uganda or Kenya) with cement.
      Country words are OR-ed, material words AND-ed; every word matches the start of a word, in any language shown. */
-  const norm = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  const words = x => norm(x).split(/[^a-z0-9]+/).filter(Boolean);
-  const STOP = new Set(["and", "in", "of", "the", "for", "price", "prices", "cost", "costs", "africa", "na", "ya", "za", "bei", "gharama",
-    "et", "de", "du", "la", "le", "les", "en", "prix", "cout", "couts", "afrique"]);
-  const STEEL = ["steel", "rebar", "reinforc"];
-  const SYN = { steel: STEEL, rebar: STEEL, iron: STEEL, nondo: STEEL, chuma: STEEL, fer: STEEL, acier: STEEL, petrol: ["fuel"], gasoil: ["fuel", "diesel"],
-    gazole: ["diesel"], dizeli: ["diesel"], ballast: ["stone", "aggregate"], gravel: ["stone", "aggregate"], aggregate: ["stone", "ballast"],
-    concrete: ["ready"], saruji: ["cement"], ciment: ["cement"], mchanga: ["sand"], sable: ["sand"], labor: ["labour"], kazi: ["labour"] };
   const REG = { east: ["east", "mashariki", "est"], south: ["southern", "kusini", "australe"], west: ["west", "magharibi", "ouest"], north: ["north", "kaskazini", "nord"] };
   const idx = {};
   function index(k) { if (idx[k]) return idx[k]; const c = DATA.countries[k];
@@ -151,15 +179,17 @@
     const names = ["en", "fr", "sw"].map(l => { try { return new Intl.DisplayNames([l], { type: "region" }).of(c.cc) || ""; } catch (e) { return ""; } });
     return (idx[k] = { place: words([c.country, cname(c), ...names, k.replace("_", " "), c.currency, c.cc].join(" ")), region: REG[c.region] || [],
       mats: mats.map(m => ({ name: m, w: words(m + " " + T.mat(m)) })) }); }
-  const hit = (ws, t) => ws.some(w => w.startsWith(t) || (SYN[t] || []).some(y => w.startsWith(y)));
   function matchLine(c, name) {
     const p = (c.paths || {})[name], m = (c.materials || []).find(x => x.name === name);
-    if (p) { const x = at(p, target); if (x) return `<b>${T.mat(name)}</b> ${pct(x.q.median)} <span class=muted>${tr("match.by", { when: tLabel(target) })}</span>`; }
-    if (m && m.change_period != null) return `<b>${T.mat(name)}</b> ${pct(m.change_period)} <span class=muted>${tr("match.last", { p: qlabel(m.period, c.step) })}</span>`;
+    if (p) { const x = at(p, target); if (x) return `<b>${T.mat(name)}</b> ${apct(x.q.median)} <span class=muted>${tr("match.by", { when: tLabel(target) })}</span>`; }
+    if (m && m.change_period != null) return `<b>${T.mat(name)}</b> ${apct(m.change_period)} <span class=muted>${tr("match.last", { p: qlabel(m.period, c.step) })}</span>`;
     const h = at(c.paths[c.head], target); if (!h) return "";
-    return `<b>${T.mat(name)}</b> <span class=muted>${tr("match.ind", { x: pct(h.q.median), when: tLabel(target) })}</span>`; }
+    return `<b>${T.mat(name)}</b> <span class=muted>${tr("match.ind", { x: apct(h.q.median), when: tLabel(target) })}</span>`; }
+  let gridOpen = false;
   function applyFilters() {
     const cards = $$("#grid .card"); if (!cards.length) return; let n = 0;
+    const open = gridOpen || words(qbox && qbox.value).length > 0 || tab !== "all", grid = $("#grid"), go = $("#grid-open");
+    grid.classList.toggle("folded", !open); if (go) go.hidden = open;
     const toks = words(qbox && qbox.value).filter(t => !STOP.has(t)), keys = cards.map(c => c.dataset.key);
     const isPlace = t => keys.some(k => hit(index(k).place, t) || index(k).region.some(r => r.startsWith(t)));
     const places = toks.filter(isPlace), mats = toks.filter(t => !isPlace(t));
@@ -172,19 +202,24 @@
       const ok = okTab && okPlace && (!mats.length || found.length); c.hidden = !ok; if (ok) n++;
       const box = $("[data-match]", c); if (box) { box.hidden = !(ok && found.length);
         box.innerHTML = ok ? found.slice(0, 3).map(m => `<li>${matchLine(DATA.countries[d.key], m.name)}</li>`).join("") : ""; } });
-    if (count) count.textContent = tr("count", { n, m: cards.length }); if (empty) empty.style.display = n ? "none" : "block";
+    if (count) count.textContent = open ? tr("count", { n, m: cards.length }) : ""; if (empty) empty.style.display = n || !open ? "none" : "block";
   }
   tabs.forEach(b => b.onclick = () => { tab = b.dataset.tab; tabs.forEach(x => x.setAttribute("aria-pressed", String(x === b))); applyFilters(); });
   if (qbox) qbox.addEventListener("input", applyFilters);
+  const go = $("#grid-open"); if (go) go.onclick = () => { gridOpen = true; applyFilters(); };
+  /* "what are you buying?": pick that material in the price box and show it across countries */
+  const BUY = { cement: ["cement"], steel: ["steel", "rebar", "reinforc"], sand: ["sand"], diesel: ["diesel", "fuel"], roofing: ["roofing"] };
+  $$("[data-buy]").forEach(b => b.onclick = () => { const terms = BUY[b.dataset.buy] || [], box = b.closest("[data-key]");
+    $$("[data-buy]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    const sel = box && $("[data-money-mat]", box);
+    if (sel) { const o = [...sel.options].find(o => terms.some(t => hit(words(o.value), t))); if (o) { sel.value = o.value; sel.onchange && sel.onchange(); } }
+    if (qbox) { qbox.value = b.textContent.trim(); applyFilters(); } });
   $$("#glance-table thead th[data-sort]").forEach((th, i) => { let asc = false; th.onclick = () => { asc = !asc;
     const tbody = $("#glance-table tbody"), rows = $$("tr", tbody), num = th.dataset.sort === "num";
     rows.sort((a, b) => { const A = a.children[i], B = b.children[i];
       const va = num ? parseFloat(A.dataset.v ?? A.textContent) : A.textContent.trim(), vb = num ? parseFloat(B.dataset.v ?? B.textContent) : B.textContent.trim();
       return (va > vb ? 1 : va < vb ? -1 : 0) * (asc ? 1 : -1); }).forEach(r => tbody.appendChild(r)); }; });
   render();
-  const more = $("#glance-more");
-  if (more) more.onclick = () => { const hid = $$("#glance-table tr.more").some(r => r.hidden);
-    $$("#glance-table tr.more").forEach(r => r.hidden = !hid); more.textContent = hid ? tr("glance.fewer") : tr("glance.more", { n: $$("#glance-table tbody tr").length }); };
 
   /* ---------- share on WhatsApp ---------- */
   /* the phone's own share sheet (WhatsApp, SMS, email…); WhatsApp link where there is none */

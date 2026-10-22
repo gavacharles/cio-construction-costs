@@ -147,6 +147,10 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
     minor: set[str] = set()
     links = "".join(f"<a href='{rel}{h}' data-i18n='{k}'{' class=minor' if p in minor else ''}{' aria-current=page' if p == page else ''}>{t}</a>"
                     for h, t, p, k in nav)
+    icons = {"home": "M3 11l9-7 9 7v9h-6v-6H9v6H3z", "calc": "M6 3h12v18H6zM9 7h6M9 11h2M13 11h2M9 15h2M13 15h2",
+             "report": "M4 20h4L19 9l-4-4L4 16zM14 6l4 4", "play": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8v8M8 12h8"}
+    bottom = "".join(f"<a href='{rel}{h}'{' aria-current=page' if p == page else ''}><svg viewBox='0 0 24 24' aria-hidden=true><path d='{icons[p]}'/></svg>"
+                     f"<span data-i18n='{k}'>{t}</span></a>" for h, t, p, k in nav)
     payload = json.dumps(data, separators=(",", ":")).replace("</", "<\\/")
     return f"""<!doctype html>
 <html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
@@ -156,12 +160,13 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
  <a class=mark href="{rel}index.html">{LOGO}CiO <span>Costs</span></a>
  <nav class=nav aria-label=Main>{links}</nav>
  {f"<a class='btn wa cta-wa' href='https://wa.me/{WA}' target=_blank rel=noopener aria-label='Chat with us on WhatsApp'>{WA_ICON}</a>" if WA else ""}
- <a class="btn primary cta" href="{rel}index.html#join" data-i18n=cta.join>Join the pilot</a>
+ <a class="btn primary cta" href="{rel}method.html#join" data-i18n=cta.join>Join the pilot</a>
  <select class=lang id=lang aria-label="Language"><option value=en>EN</option><option value=sw>Kiswahili</option><option value=fr>Français</option></select>
  <button class=theme id=theme type=button aria-label=Theme>◐</button>
 </div></header>
 <main class=wrap>{body}</main>
-<footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
+<nav class=bottombar aria-label=Main>{bottom}</nav>
+<footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
 {f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else ""}</p><span data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
 value. Official data: UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD, Statistics Mauritius; oil and exchange rates from public
 market sources. Updated {e(data.get('updated', ''))}.</span></footer>
@@ -175,7 +180,10 @@ def picker(months: list[str], default: str) -> str:
     for v, lab, g in target_options(months):
         groups.setdefault(g, []).append(f"<option value='{v}'{' selected' if v == default else ''}>{lab}</option>")
     opts = "".join(f"<optgroup label='{g}'>{''.join(o)}</optgroup>" for g, o in groups.items())
-    return (f"<label class=when><span data-i18n=when.label>Forecast to</span><select id=when aria-label='Forecast to'>{opts}</select></label>")
+    hz = "".join(f"<button type=button data-h={h} data-i18n={k}>{t}</button>" for h, k, t in
+                 ((1, "h.1", "Next month"), (3, "h.3", "3 months"), (6, "h.6", "6 months"), ("pick", "h.pick", "Pick a date")))
+    return (f"<div class=when><span data-i18n=when.label>Forecast to</span><div class=horizon role=group aria-label='Forecast to'>{hz}</div>"
+            f"<select id=when aria-label='Forecast to' hidden>{opts}</select></div>")
 
 
 # ------------------------------------------------------------------ pages --
@@ -191,44 +199,52 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
  <div class=card-top><span class=flag aria-hidden=true>{c['flag']}</span><a class=country data-cc={ISO2.get(load_country(c['key'])['iso3'], '')} href="countries/{c['key']}/index.html">{e(c['country'])}</a>
  {chip(c['official'])}</div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/{c['key']}/index.html"><span data-i18n=btn.seecosts data-c="{e(c['country'])}">See costs in {e(c['country'])}</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#{c['key']}" data-i18n=link.makecall>Make your call</a></div></article>""" for c in cs)
+    return _home(cs, months, default, feat, tab_html, cards)
+
+
+def page_glance(cs: list[dict], months: list[str], default: str) -> str:
     order = sorted(cs, key=lambda c: (c["key"] not in FEATURED, FEATURED.index(c["key"]) if c["key"] in FEATURED else 0, c["country"]))
-    glance = "".join(f"""<tr data-key={c['key']}{'' if c['key'] in FEATURED else ' class=more hidden'}><th scope=row><a href="countries/{c['key']}/index.html">{c['flag']} {e(c['country'])}</a></th>
+    glance = "".join(f"""<tr data-key={c['key']}><th scope=row><a href="countries/{c['key']}/index.html">{c['flag']} {e(c['country'])}</a></th>
  <td>{e(c['base'])}</td><td data-g=official>{'–' if not c['reading'] and not c['materials'] else ''}</td><td data-g=exp></td><td data-g=rng></td>
  <td data-g=pct></td><td data-g=fx></td></tr>""" for c in order)
+    return f"""
+<p class=crumbs><a href=index.html data-i18n=crumbs.all>All countries</a></p>
+<div class=section-h><h1 data-i18n=glance.h>Costs at a glance</h1>{picker(months, default)}</div><p class=muted data-i18n=glance.sort>Click a column to sort</p>
+<div class=tablewrap><table class=glance id=glance-table><thead><tr><th scope=col data-sort=text data-i18n=th.country>Country</th>
+<th scope=col data-sort=text data-i18n=th.latest>Latest official</th><th scope=col data-sort=num data-i18n=th.offyear>Official change, year</th>
+<th scope=col data-sort=num><span data-i18n=th.expby>Expected by</span> <span data-when-label></span></th><th scope=col data-i18n=th.range>Likely range</th>
+<th scope=col data-sort=num data-i18n=th.chance>Chance of a rise</th><th scope=col data-sort=num data-i18n=th.fx>Currency vs USD, 13 weeks</th></tr></thead>
+<tbody>{glance}</tbody></table></div>"""
+
+
+def _home(cs, months, default, feat, tab_html, cards):
     body = f"""
 <section class=hero><div><p class=eyebrow data-i18n=home.eyebrow>Construction cost outlook · 18 African countries</p>
  <h1 data-i18n=home.h1>Will building costs rise where you work?</h1>
- <p class=lede data-i18n=home.lede>Pick a month. See the chance that construction input prices rise, how much, and what is driving it —
- from official statistics, oil and exchange rates, updated every few hours.</p></div>
- <div class=hero-side><label class="when country-pick"><span data-i18n=pick.country>Your country</span><select id=mycountry aria-label="Your country">
+ <p class=lede data-i18n=home.lede>Choose your country and a date. See whether building material prices are likely to go up, by how much,
+ and what that means for the price you pay — updated every few hours.</p></div>
+ <div class=hero-side><label class="when-box country-pick"><span data-i18n=pick.country>Your country</span><select id=mycountry aria-label="Your country">
  {''.join(f"<option value={c['key']}>{c['flag']} {e(c['country'])}</option>" for c in sorted(cs, key=lambda c: c['country']))}</select></label>
- {picker(months, default)}<p class=muted id=when-note data-i18n=when.note>Weekly figures are interpolated from the monthly forecast, which is refreshed
- every few hours. Changes are measured from each country's latest official reading (or from today for import-cost
- indicators).</p></div></section>
+ {picker(months, default)}</div></section>
 <p class=trust><span data-i18n=trust.sources>Official data from UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD and Statistics Mauritius</span>
  · <span id=updated-ago data-built="{BUILT}"></span> · <a href="method.html#track" data-i18n=trust.track>Track record</a>
  {f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.weekly>Free weekly update on WhatsApp</a>" if CHANNEL else ""}</p>
-<section class=tools><a class=tool href=calculator.html><b data-i18n=tool.calc.t>Bid escalation calculator</b><span data-i18n=tool.calc.d>How much could prices move
- over your contract? Get the expected escalation in your currency, with a range.</span></a>
- <a class=tool href=report.html><b data-i18n=tool.report.t>Report a price</b><span data-i18n=tool.report.d>Tell us what you paid for cement, steel, diesel or sand this
- week. It takes a minute and makes everyone's numbers better.</span></a>
- <a class=tool href=play.html><b data-i18n=tool.play.t>The Cost Call</b><span data-i18n=tool.play.d>Five daily calls on real prices. Keep your streak.</span></a></section>
-
 <section class=featured data-key={feat['key']} aria-labelledby=fq>
  <div class=feat-main><div class=card-top><span class=flag aria-hidden=true>{feat['flag']}</span>
  <a class=country data-feat-name data-cc={ISO2.get(load_country(feat['key'])['iso3'], '')} href="countries/{feat['key']}/index.html">{e(feat['country'])}</a><span class=chip data-i18n=chip.yours>Your country</span></div>
  <h2 id=fq class=feat-q data-q></h2>
- <div class=feat-odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
- <div><span class='pct small' data-exp>–</span><span class=pct-l data-i18n=lbl.expected>expected change</span></div>
+ <div class=feat-odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div>
+ <div><span class='pct small' data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
  <div class=pbar><span data-bar></span></div><div class=chart data-chart></div>
  <p class='advice big' data-advice></p>
+ <div class=buy><span data-i18n=buy.q>What are you buying?</span>{BUY}</div>
  {MONEY}
  <div class=actions><a class='btn primary' data-feat-link href="countries/{feat['key']}/index.html" data-i18n=btn.bymaterial>See costs by material</a>
  <a class=btn href="play.html" data-i18n=btn.play>Play The Cost Call</a>
@@ -240,38 +256,18 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
 <div class=toolbar><label class=search><span class=sr-only>Search</span>
  <input id=q type=search data-i18n-ph=search.ph placeholder="Search countries and materials — e.g. Kenya Uganda cement" autocomplete=off></label>
  <span class=count id=count aria-live=polite></span></div>
-<div class=grid id=grid>{cards}</div>
+<div class="grid folded" id=grid>{cards}</div>
 <p class=empty id=empty data-i18n=empty>No country matches. Try “cement”, “Kenya” or “West”.</p>
 
-<section id=glance><div class=section-h><h2 data-i18n=glance.h>Costs at a glance</h2><span class=muted data-i18n=glance.sort>Click a column to sort</span></div>
-<div class=tablewrap><table class=glance id=glance-table><thead><tr><th scope=col data-sort=text data-i18n=th.country>Country</th>
-<th scope=col data-sort=text data-i18n=th.latest>Latest official</th><th scope=col data-sort=num data-i18n=th.offyear>Official change, year</th>
-<th scope=col data-sort=num><span data-i18n=th.expby>Expected by</span> <span data-when-label></span></th><th scope=col data-i18n=th.range>Likely range</th>
-<th scope=col data-sort=num data-i18n=th.chance>Chance of a rise</th><th scope=col data-sort=num data-i18n=th.fx>Currency vs USD, 13 weeks</th></tr></thead>
-<tbody>{glance}</tbody></table></div>
-<p class=center><button class=btn type=button id=glance-more data-i18n=glance.more>Show all {len(cs)} countries</button></p></section>
-
-<section class=gamebox><div><p class=eyebrow data-i18n=game.eyebrow>New · daily game</p><h2 data-i18n=tool.play.t>The Cost Call</h2>
-<p data-i18n=game.teaser>Five quick calls a day on real construction prices across Africa. Did cement go up or down? Keep your streak, share
-your score, and test your instincts against the model.</p></div>
-<a class='btn primary big' href=play.html data-i18n=game.cta>Play today's calls</a></section>
-
-<section class=howto><div class=tile><span class=num>1</span><b data-i18n=how1.t>Chance of a rise</b><p data-i18n=how1.d>How likely prices are to be higher
-by the month you picked. 80% means about 8 times in 10.</p></div>
-<div class=tile><span class=num>2</span><b data-i18n=how2.t>Expected change</b><p data-i18n=how2.d>The most likely move. Apply it to your own latest quote
-for the same item.</p></div><div class=tile><span class=num>3</span><b data-i18n=how3.t>Likely range</b><p data-i18n=how3.d>Where the change should land
-8 times in 10. Wider ranges mean more uncertainty.</p></div>
-<div class=tile><span class=num>4</span><b data-i18n=how4.t>Updated every few hours</b><p><span data-i18n=how4.d>Forecasts move with oil prices, exchange rates and
-new official data.</span> <a href=method.html data-i18n=nav.method>How it works</a>.</p></div></section>
-
-<section class=join id=join><div><h2 data-i18n=cta.join>Join the pilot</h2><p data-i18n=join.d>Contractors, quantity surveyors, developers and lenders: report
-the prices you pay each week, play The Cost Call for points on the leaderboard, and get the Monday note for your country.
-Free. Ask CiO Lab for an invite code.</p></div><div class=actions>{f"<a class='btn wa big' href='https://wa.me/{WA}?text=" + "Hello%20CiO%20Costs%2C%20I%27d%20like%20to%20join%20the%20pilot." + "' target=_blank rel=noopener>" + WA_ICON + " <span data-i18n=wa.chat>Chat with us on WhatsApp</span></a>" if WA else ""}
-<a class='btn primary big' href=play.html data-i18n=join.cta>Start with today's game</a></div></section>
+<p class=center><button class=btn type=button id=grid-open data-i18n=grid.open>Show all 18 countries</button></p>
+<p class=moreline><a href=glance.html data-i18n=glance.link>Compare all countries in one table →</a></p>
+<p class=gameline>🎯 <span data-i18n=game.line>Five quick calls a day on real prices.</span> <a href=play.html data-i18n=game.cta>Play today's calls</a></p>
 """
     return body
 
 
+BUY = "".join(f"<button type=button class=pill data-buy={k} data-i18n=buy.{k}>{t}</button>" for k, t in
+              (("cement", "Cement"), ("steel", "Steel"), ("sand", "Sand"), ("diesel", "Diesel"), ("roofing", "Roofing")))
 MONEY = """<div class=money><b data-i18n=money.h>Your price</b>
  <label><span class=sr-only>Material</span><select data-money-mat></select></label>
  <label class=money-in><span class=sr-only>Your latest price</span><input data-money-price type=number min=0 step=any inputmode=decimal
@@ -323,8 +319,8 @@ def why(name: str) -> str:
 
 def page_country(c: dict, months: list[str], default: str, crowd_rows: list[dict]) -> str:
     def yr(m):
-        return "–" if m["change_year"] is None else format(m["change_year"], "+.1f") + "%"
-    mats = "".join(f"<tr data-mat='{e(m['name'])}'><th scope=row data-matname='{e(m['name'])}'>{e(m['name'])}</th><td>{m['change_period']:+.1f}%</td>"
+        return "–" if m["change_year"] is None else arrow(m["change_year"]) + " " + format(m["change_year"], "+.1f") + "%"
+    mats = "".join(f"<tr data-mat='{e(m['name'])}'><th scope=row data-matname='{e(m['name'])}'>{e(m['name'])}</th><td>{arrow(m['change_period'])} {m['change_period']:+.1f}%</td>"
                    f"<td>{yr(m)}</td><td data-mexp>–</td><td class=why>{why(m['name'])}</td></tr>" for m in c["materials"])
     step = "quarter" if c["step"] == "quarter" else "month"
     if mats:
@@ -346,13 +342,15 @@ Prices reported by participants (below) fill the gap, material by material.</p><
     def price(r):
         if r.get("published"):
             return f"{r['median']:,.0f} {e(c['currency'])} per {e(r['unit'])}"
-        return f"<span class=muted>Waiting for more reports ({r.get('pending', 0)} of 3 people this week)</span>"
+        return (f"<span class=progress-line><b>{r.get('pending', 0)} of 3</b> reports this week · "
+                f"<a href='../../report.html#{c['key']}'>add yours</a></span>")
     crowd_html = "".join(f"<tr><th scope=row>{e(r['name'])}</th><td>{price(r)}</td>"
                          f"<td>{r['reporters'] if r.get('published') else '–'}</td><td>{ch(r)}</td></tr>" for r in crowd_rows)
     crowd_sec = (f"<div class=tablewrap><table class=glance><thead><tr><th>Item</th><th>Median price</th><th>Reporters</th>"
                  f"<th>vs 4 weeks</th></tr></thead><tbody>{crowd_html}</tbody></table></div>") if crowd_rows else (
-        f"<div class=tile><p>No prices reported yet for {e(c['country'])}. Pilot participants report what they pay for "
-        f"{e(', '.join(c['items'][:5]).lower())} and more each week. <a href='../../index.html#join'>Join the pilot</a>.</p></div>")
+        f"<div class=tile><p><b>0 of 3</b> reports this week for {e(c['country'])}. Prices appear here once 3 people report "
+        f"what they pay for an item ({e(', '.join(c['items'][:4]).lower())}…). "
+        f"<a href='../../report.html#{c['key']}'>Be the first — it takes a minute and is anonymous</a>.</p></div>")
     dr = c["drivers"]
     fx = (f"{e(c['currency'])} per US dollar: <b>{dr['fx']:,.1f}</b> ({'weaker' if (dr.get('fx_13w_pct') or 0) > 0 else 'stronger'} "
           f"{abs(dr.get('fx_13w_pct') or 0):.1f}% in 13 weeks)") if dr.get("fx") else ""
@@ -364,11 +362,12 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <div class=feat-main><div class=card-top><span class='flag big' aria-hidden=true>{c['flag']}</span><h1 class=country-h data-cc={ISO2.get(load_country(c['key'])['iso3'], '')}>{e(c['country'])}</h1>
  {chip(c['official'])}{picker(months, default)}</div>
  <h2 class=feat-q data-q></h2>
- <div class=feat-odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
- <div><span class='pct small' data-exp>–</span><span class=pct-l data-i18n=lbl.expected>expected change</span></div>
+ <div class=feat-odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div>
+ <div><span class='pct small' data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
  <div class=pbar><span data-bar></span></div>
  <div class=chart>{chart_svg(c)}</div><p class='advice big' data-advice></p>
+ {track_country(c)}
  {MONEY}
  <div class=actions><a class='btn primary' href="../../play.html#{c['key']}" data-i18n=link.makecall>Make your call</a>{note}
  <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div>{src}</div>
@@ -396,6 +395,55 @@ the channel above. Reply STOP at any time to stop them.</span></label>
 <details class=embed><summary data-i18n=embed.s>Put this forecast on your website</summary><p class=muted>Copy this code into any web page:</p>
 <code>&lt;iframe src="https://YOUR-SITE/embed.html?c={c['key']}" width="340" height="230" style="border:0"&gt;&lt;/iframe&gt;</code></details>
 """
+
+
+def _ym(base: str) -> str:
+    """'Apr 2026' -> '2026-04'; 'Q2 2026' -> '2026-04' (first month of the quarter, as in the history series)."""
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    try:
+        if base.startswith("Q"):
+            return f"{base[-4:]}-{3 * (int(base[1]) - 1) + 1:02d}"
+        return f"{base[-4:]}-{months.index(base[:3]) + 1:02d}"
+    except (ValueError, IndexError):
+        return ""
+
+
+def arrow(v: float) -> str:
+    return "⬆" if v >= 0.25 else ("⬇" if v <= -0.25 else "➡")
+
+
+def track_country(c: dict) -> str:
+    """'Last time we said X, it came in at Y': logged live forecasts once they mature, else Uganda's back-test."""
+    import csv
+    if not c["official"]:
+        return ("<p class='track muted'><b data-i18n=track.h>Track record</b>: "
+                "<span data-i18n=track.none>no official index to check against yet; we compare with reported prices as they come in.</span></p>")
+    sp = c.get("spark") or {}
+    lvl = dict(zip(sp.get("dates") or [], sp.get("values") or []))
+    rows, label = [], "Live forecasts"
+    log = ROOT / "data" / "live" / "forecast_log" / f"{c['key']}.csv"
+    if log.exists():
+        seen = set()
+        for r in sorted(csv.DictReader(open(log)), key=lambda r: r["made"]):
+            b, t = _ym(r["base"]), r["target"]
+            if t in seen or b not in lvl or t not in lvl or t <= b:
+                continue
+            seen.add(t)
+            rows.append((f"Said on {r['made']}", t, float(r["median"]), float(r["lo"]), float(r["hi"]), (lvl[t] / lvl[b] - 1) * 100))
+    if not rows and c["key"] == "uganda":
+        f = ROOT / "countries" / "uganda" / "outputs" / "forecast" / "backtest_errors.csv"
+        if f.exists():
+            for r in [r for r in csv.DictReader(open(f)) if r["target"] == "ALL" and r["h"] == "3"][-3:]:
+                y, m = int(r["origin"][:4]), int(r["origin"][5:7]) + 3
+                t = f"{y + (m - 1) // 12}-{(m - 1) % 12 + 1:02d}"
+                rows.append((f"Data to {month_label(r['origin'][:7])}", t, float(r["structural"]), float(r["lo"]), float(r["hi"]), float(r["actual"])))
+            label = "Tested on past data"
+    if not rows:
+        return ("<p class='track muted'><b data-i18n=track.h>Track record</b>: "
+                "<span data-i18n=track.soon>we log every forecast and will show it here next to the official figure once it is published.</span></p>")
+    li = "".join(f"<li>{e(w)}, for <b>{month_label(t)}</b>: {arrow(m)} {m:+.1f}% <span class=muted>({lo:+.1f} to {hi:+.1f})</span> → "
+                 f"official {arrow(a)} <b>{a:+.1f}%</b> {'✓' if lo <= a <= hi else '✗'}</li>" for w, t, m, lo, hi, a in rows[-3:])
+    return f"<div class=track><b data-i18n=track.h>Track record</b> <span class=muted>· {label}</span><ul>{li}</ul></div>"
 
 
 def track_record() -> str:
@@ -444,6 +492,10 @@ import-cost indicators).</li><li><b>Likely range</b>: where the change should la
 <li>Import-cost indicators see oil and currency effects only, not local materials or labour.</li>
 <li>Where official statistics are published late, the forecast bridges the gap with the latest market data.</li>
 <li>Nothing here is financial or contractual advice.</li></ul></section>
+<section class=join id=join><div><h2 data-i18n=cta.join>Join the pilot</h2><p data-i18n=join.d>Contractors, quantity surveyors, developers and lenders: report
+the prices you pay each week, play The Cost Call for points on the leaderboard, and get the Monday note for your country.
+Free. Ask CiO Lab for an invite code.</p></div><div class=actions>{f"<a class='btn big' href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else ""}
+<a class='btn primary big' href=app data-i18n=join.signin>Pilot sign-in</a></div></section>
 """
 
 
@@ -533,11 +585,14 @@ def build() -> Path:
     display = SITE / "vendor" / "clash-grotesk.css"
     (OUT / "assets" / "fonts.css").write_text(display.read_text(encoding="utf-8") if display.exists() else "", encoding="utf-8")
     (OUT / "assets" / "cio.css").write_text((SITE / "site.css").read_text(encoding="utf-8"), encoding="utf-8")
+    (OUT / "sw.js").write_text((SITE / "sw.js").read_text(encoding="utf-8").replace("__BUILT__", BUILT), encoding="utf-8")
     (OUT / "assets" / "cio.js").write_text((SITE / "i18n.js").read_text(encoding="utf-8") + "\n"
                                            + (SITE / "site.js").read_text(encoding="utf-8"), encoding="utf-8")
 
     (OUT / "index.html").write_text(shell("CiO Costs — will building costs rise?", page_index(cs, months, default), base,
                                            page="home"), encoding="utf-8")
+    (OUT / "glance.html").write_text(shell("Costs at a glance — CiO Costs", page_glance(cs, months, default), base, page="glance"),
+                                      encoding="utf-8")
     (OUT / "method.html").write_text(shell("How it works — CiO Costs", page_method(), {"updated": updated}, page="method"),
                                       encoding="utf-8")
     (OUT / "play.html").write_text(shell("The Cost Call — CiO Costs", page_play(), dict(base, quiz=quiz), page="play",

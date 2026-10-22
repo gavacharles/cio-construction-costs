@@ -443,6 +443,26 @@ def generic_body(weekly, country: str) -> list[str]:
 BODIES = {"uganda": uganda_body, "kenya": kenya_body, "south_africa": south_africa_body}
 
 
+def _log_forecast(country: str, d: dict) -> None:
+    """Append today's head-series path to data/live/forecast_log/<country>.csv (one set of rows per day), so the
+    site can later show each forecast next to the official figure."""
+    import csv
+    paths = d.get("paths") or {}
+    if not paths or not d.get("base"):
+        return
+    f = ROOT / "data" / "live" / "forecast_log" / f"{country}.csv"
+    f.parent.mkdir(parents=True, exist_ok=True)
+    today = date.today().isoformat()
+    rows = list(csv.DictReader(open(f))) if f.exists() else []
+    rows = [r for r in rows if r["made"] != today]
+    rows += [{"made": today, "base": d["base"], "target": q["month"], "median": f"{q['median']:.3f}", "lo": f"{q['lo']:.3f}",
+              "hi": f"{q['hi']:.3f}"} for q in next(iter(paths.values()))[:6]]
+    with open(f, "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=["made", "base", "target", "median", "lo", "hi"])
+        w.writeheader()
+        w.writerows(rows)
+
+
 def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_DB, write_note: bool = True) -> Path:
     if fetch:
         import build_weekly_drivers
@@ -470,6 +490,7 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
     out.mkdir(parents=True, exist_ok=True)
     clean = json.loads(json.dumps(_DATA, default=lambda x: None if x is None else float(x)).replace("NaN", "null"))
     (out / "forecast_latest.json").write_text(json.dumps(clean, indent=1), encoding="utf-8")
+    _log_forecast(country, clean)
     if not write_note:
         return out / "forecast_latest.json"
     # The published note is the plain-language one; the detailed tables live on the country web page.

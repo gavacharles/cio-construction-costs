@@ -6,38 +6,31 @@
  <a class=mark href="index.html"><svg class=logo viewBox='0 0 24 24' width=24 height=24 aria-hidden=true><circle class=ring cx=12 cy=12 r=9.5 fill=none stroke='var(--accent-fill)' stroke-width=2 stroke-linecap=round pathLength=100 stroke-dasharray='62 38'/><circle class=orbit cx=12 cy=2.5 r=1.6 fill='var(--teal)'/><circle class=core cx=12 cy=12 r=4 fill='var(--accent-fill)'/></svg>CiO <span>Costs</span></a>
  <nav class=nav aria-label=Main><a href='index.html#countries' data-i18n='nav.prices' aria-current=page>Prices</a><a href='calculator.html' data-i18n='nav.plan'>Plan a bid</a><a href='report.html' data-i18n='nav.reportshort'>Report a price</a><a href='play.html' data-i18n='nav.playshort'>Play</a></nav>
  
- <a class="btn primary cta" href="index.html#join" data-i18n=cta.join>Join the pilot</a>
+ <a class="btn primary cta" href="method.html#join" data-i18n=cta.join>Join the pilot</a>
  <select class=lang id=lang aria-label="Language"><option value=en>EN</option><option value=sw>Kiswahili</option><option value=fr>Français</option></select>
  <button class=theme id=theme type=button aria-label=Theme>◐</button>
 </div></header>
 <main class=wrap>
 <section class=hero><div><p class=eyebrow data-i18n=home.eyebrow>Construction cost outlook · 18 African countries</p>
  <h1 data-i18n=home.h1>Will building costs rise where you work?</h1>
- <p class=lede data-i18n=home.lede>Pick a month. See the chance that construction input prices rise, how much, and what is driving it —
- from official statistics, oil and exchange rates, updated every few hours.</p></div>
- <div class=hero-side><label class="when country-pick"><span data-i18n=pick.country>Your country</span><select id=mycountry aria-label="Your country">
+ <p class=lede data-i18n=home.lede>Choose your country and a date. See whether building material prices are likely to go up, by how much,
+ and what that means for the price you pay — updated every few hours.</p></div>
+ <div class=hero-side><label class="when-box country-pick"><span data-i18n=pick.country>Your country</span><select id=mycountry aria-label="Your country">
  <option value=botswana>🇧🇼 Botswana</option><option value=egypt>🇪🇬 Egypt</option><option value=ethiopia>🇪🇹 Ethiopia</option><option value=ghana>🇬🇭 Ghana</option><option value=kenya>🇰🇪 Kenya</option><option value=malawi>🇲🇼 Malawi</option><option value=mauritius>🇲🇺 Mauritius</option><option value=morocco>🇲🇦 Morocco</option><option value=mozambique>🇲🇿 Mozambique</option><option value=namibia>🇳🇦 Namibia</option><option value=nigeria>🇳🇬 Nigeria</option><option value=rwanda>🇷🇼 Rwanda</option><option value=senegal>🇸🇳 Senegal</option><option value=south_africa>🇿🇦 South Africa</option><option value=tanzania>🇹🇿 Tanzania</option><option value=uganda>🇺🇬 Uganda</option><option value=zambia>🇿🇲 Zambia</option><option value=zimbabwe>🇿🇼 Zimbabwe</option></select></label>
- <label class=when><span data-i18n=when.label>Forecast to</span><select id=when aria-label='Forecast to'><optgroup label='Weeks'><option value='W:2026-10-26'>Week of 26 Oct 2026</option><option value='W:2026-11-02'>Week of 2 Nov 2026</option><option value='W:2026-11-09'>Week of 9 Nov 2026</option><option value='W:2026-11-16'>Week of 16 Nov 2026</option><option value='W:2026-11-23'>Week of 23 Nov 2026</option><option value='W:2026-11-30'>Week of 30 Nov 2026</option><option value='W:2026-12-07'>Week of 7 Dec 2026</option><option value='W:2026-12-14'>Week of 14 Dec 2026</option></optgroup><optgroup label='Months'><option value='M:2027-01' selected>Jan 2027</option><option value='M:2027-02'>Feb 2027</option><option value='M:2027-03'>Mar 2027</option><option value='M:2027-04'>Apr 2027</option><option value='M:2027-05'>May 2027</option><option value='M:2027-06'>Jun 2027</option><option value='M:2027-07'>Jul 2027</option><option value='M:2027-08'>Aug 2027</option><option value='M:2027-09'>Sep 2027</option><option value='M:2027-10'>Oct 2027</option></optgroup></select></label><p class=muted id=when-note data-i18n=when.note>Weekly figures are interpolated from the monthly forecast, which is refreshed
- every few hours. Changes are measured from each country's latest official reading (or from today for import-cost
- indicators).</p></div></section>
+ <div class=when><span data-i18n=when.label>Forecast to</span><div class=horizon role=group aria-label='Forecast to'><button type=button data-h=1 data-i18n=h.1>Next month</button><button type=button data-h=3 data-i18n=h.3>3 months</button><button type=button data-h=6 data-i18n=h.6>6 months</button><button type=button data-h=pick data-i18n=h.pick>Pick a date</button></div><select id=when aria-label='Forecast to' hidden><optgroup label='Weeks'><option value='W:2026-10-26'>Week of 26 Oct 2026</option><option value='W:2026-11-02'>Week of 2 Nov 2026</option><option value='W:2026-11-09'>Week of 9 Nov 2026</option><option value='W:2026-11-16'>Week of 16 Nov 2026</option><option value='W:2026-11-23'>Week of 23 Nov 2026</option><option value='W:2026-11-30'>Week of 30 Nov 2026</option><option value='W:2026-12-07'>Week of 7 Dec 2026</option><option value='W:2026-12-14'>Week of 14 Dec 2026</option></optgroup><optgroup label='Months'><option value='M:2027-01' selected>Jan 2027</option><option value='M:2027-02'>Feb 2027</option><option value='M:2027-03'>Mar 2027</option><option value='M:2027-04'>Apr 2027</option><option value='M:2027-05'>May 2027</option><option value='M:2027-06'>Jun 2027</option><option value='M:2027-07'>Jul 2027</option><option value='M:2027-08'>Aug 2027</option><option value='M:2027-09'>Sep 2027</option><option value='M:2027-10'>Oct 2027</option></optgroup></select></div></div></section>
 <p class=trust><span data-i18n=trust.sources>Official data from UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD and Statistics Mauritius</span>
- · <span id=updated-ago data-built="2026-10-22T18:43+00:00"></span> · <a href="method.html#track" data-i18n=trust.track>Track record</a>
+ · <span id=updated-ago data-built="2026-10-22T18:56+00:00"></span> · <a href="method.html#track" data-i18n=trust.track>Track record</a>
   · <a href='https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L' target=_blank rel=noopener data-i18n=wa.weekly>Free weekly update on WhatsApp</a></p>
-<section class=tools><a class=tool href=calculator.html><b data-i18n=tool.calc.t>Bid escalation calculator</b><span data-i18n=tool.calc.d>How much could prices move
- over your contract? Get the expected escalation in your currency, with a range.</span></a>
- <a class=tool href=report.html><b data-i18n=tool.report.t>Report a price</b><span data-i18n=tool.report.d>Tell us what you paid for cement, steel, diesel or sand this
- week. It takes a minute and makes everyone's numbers better.</span></a>
- <a class=tool href=play.html><b data-i18n=tool.play.t>The Cost Call</b><span data-i18n=tool.play.d>Five daily calls on real prices. Keep your streak.</span></a></section>
-
 <section class=featured data-key=uganda aria-labelledby=fq>
  <div class=feat-main><div class=card-top><span class=flag aria-hidden=true>🇺🇬</span>
  <a class=country data-feat-name data-cc=UG href="countries/uganda/index.html">Uganda</a><span class=chip data-i18n=chip.yours>Your country</span></div>
  <h2 id=fq class=feat-q data-q></h2>
- <div class=feat-odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
- <div><span class='pct small' data-exp>–</span><span class=pct-l data-i18n=lbl.expected>expected change</span></div>
+ <div class=feat-odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div>
+ <div><span class='pct small' data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div>
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
  <div class=pbar><span data-bar></span></div><div class=chart data-chart></div>
  <p class='advice big' data-advice></p>
+ <div class=buy><span data-i18n=buy.q>What are you buying?</span><button type=button class=pill data-buy=cement data-i18n=buy.cement>Cement</button><button type=button class=pill data-buy=steel data-i18n=buy.steel>Steel</button><button type=button class=pill data-buy=sand data-i18n=buy.sand>Sand</button><button type=button class=pill data-buy=diesel data-i18n=buy.diesel>Diesel</button><button type=button class=pill data-buy=roofing data-i18n=buy.roofing>Roofing</button></div>
  <div class=money><b data-i18n=money.h>Your price</b>
  <label><span class=sr-only>Material</span><select data-money-mat></select></label>
  <label class=money-in><span class=sr-only>Your latest price</span><input data-money-price type=number min=0 step=any inputmode=decimal
@@ -53,14 +46,14 @@
 <div class=toolbar><label class=search><span class=sr-only>Search</span>
  <input id=q type=search data-i18n-ph=search.ph placeholder="Search countries and materials — e.g. Kenya Uganda cement" autocomplete=off></label>
  <span class=count id=count aria-live=polite></span></div>
-<div class=grid id=grid><article class=card data-key=kenya data-region=east
+<div class="grid folded" id=grid><article class=card data-key=kenya data-region=east
  data-type=official data-search="kenya kes east africa cement, 50 kg bag rebar y12, 12 m bar iron sheet, gauge 30, 3 m diesel, pump price ballast, per tonne river sand, per tonne machine-cut stone / block, 6 in mason, daily wage cement steel and reinforcement roofing sheets fuel and lubricants sand ballast and crushed stone hardcore timber paint tiles labour">
  <div class=card-top><span class=flag aria-hidden=true>🇰🇪</span><a class=country data-cc=KE href="countries/kenya/index.html">Kenya</a>
  <span class=chip><span data-i18n=chip.officialdata>Official data</span> <span class=info tabindex=0 role=note aria-label='Built from the country&#x27;s official construction price statistics, updated with this week&#x27;s oil and currency moves.' data-tipkey=tip.official>ⓘ<span class=tip data-i18n=tip.official>Built from the country&#x27;s official construction price statistics, updated with this week&#x27;s oil and currency moves.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/kenya/index.html"><span data-i18n=btn.seecosts data-c="Kenya">See costs in Kenya</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#kenya" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=south_africa data-region=south
@@ -68,9 +61,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇿🇦</span><a class=country data-cc=ZA href="countries/south_africa/index.html">South Africa</a>
  <span class=chip><span data-i18n=chip.officialdata>Official data</span> <span class=info tabindex=0 role=note aria-label='Built from the country&#x27;s official construction price statistics, updated with this week&#x27;s oil and currency moves.' data-tipkey=tip.official>ⓘ<span class=tip data-i18n=tip.official>Built from the country&#x27;s official construction price statistics, updated with this week&#x27;s oil and currency moves.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/south_africa/index.html"><span data-i18n=btn.seecosts data-c="South Africa">See costs in South Africa</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#south_africa" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=uganda data-region=east
@@ -78,9 +71,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇺🇬</span><a class=country data-cc=UG href="countries/uganda/index.html">Uganda</a>
  <span class=chip><span data-i18n=chip.officialdata>Official data</span> <span class=info tabindex=0 role=note aria-label='Built from the country&#x27;s official construction price statistics, updated with this week&#x27;s oil and currency moves.' data-tipkey=tip.official>ⓘ<span class=tip data-i18n=tip.official>Built from the country&#x27;s official construction price statistics, updated with this week&#x27;s oil and currency moves.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/uganda/index.html"><span data-i18n=btn.seecosts data-c="Uganda">See costs in Uganda</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#uganda" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=botswana data-region=south
@@ -88,9 +81,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇧🇼</span><a class=country data-cc=BW href="countries/botswana/index.html">Botswana</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/botswana/index.html"><span data-i18n=btn.seecosts data-c="Botswana">See costs in Botswana</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#botswana" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=egypt data-region=north
@@ -98,9 +91,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇪🇬</span><a class=country data-cc=EG href="countries/egypt/index.html">Egypt</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/egypt/index.html"><span data-i18n=btn.seecosts data-c="Egypt">See costs in Egypt</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#egypt" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=ethiopia data-region=east
@@ -108,9 +101,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇪🇹</span><a class=country data-cc=ET href="countries/ethiopia/index.html">Ethiopia</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/ethiopia/index.html"><span data-i18n=btn.seecosts data-c="Ethiopia">See costs in Ethiopia</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#ethiopia" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=ghana data-region=west
@@ -118,9 +111,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇬🇭</span><a class=country data-cc=GH href="countries/ghana/index.html">Ghana</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/ghana/index.html"><span data-i18n=btn.seecosts data-c="Ghana">See costs in Ghana</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#ghana" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=malawi data-region=south
@@ -128,9 +121,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇲🇼</span><a class=country data-cc=MW href="countries/malawi/index.html">Malawi</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/malawi/index.html"><span data-i18n=btn.seecosts data-c="Malawi">See costs in Malawi</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#malawi" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=mauritius data-region=south
@@ -138,9 +131,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇲🇺</span><a class=country data-cc=MU href="countries/mauritius/index.html">Mauritius</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/mauritius/index.html"><span data-i18n=btn.seecosts data-c="Mauritius">See costs in Mauritius</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#mauritius" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=morocco data-region=north
@@ -148,9 +141,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇲🇦</span><a class=country data-cc=MA href="countries/morocco/index.html">Morocco</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/morocco/index.html"><span data-i18n=btn.seecosts data-c="Morocco">See costs in Morocco</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#morocco" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=mozambique data-region=south
@@ -158,9 +151,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇲🇿</span><a class=country data-cc=MZ href="countries/mozambique/index.html">Mozambique</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/mozambique/index.html"><span data-i18n=btn.seecosts data-c="Mozambique">See costs in Mozambique</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#mozambique" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=namibia data-region=south
@@ -168,9 +161,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇳🇦</span><a class=country data-cc=NA href="countries/namibia/index.html">Namibia</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/namibia/index.html"><span data-i18n=btn.seecosts data-c="Namibia">See costs in Namibia</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#namibia" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=nigeria data-region=west
@@ -178,9 +171,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇳🇬</span><a class=country data-cc=NG href="countries/nigeria/index.html">Nigeria</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/nigeria/index.html"><span data-i18n=btn.seecosts data-c="Nigeria">See costs in Nigeria</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#nigeria" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=rwanda data-region=east
@@ -188,9 +181,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇷🇼</span><a class=country data-cc=RW href="countries/rwanda/index.html">Rwanda</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/rwanda/index.html"><span data-i18n=btn.seecosts data-c="Rwanda">See costs in Rwanda</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#rwanda" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=senegal data-region=west
@@ -198,9 +191,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇸🇳</span><a class=country data-cc=SN href="countries/senegal/index.html">Senegal</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/senegal/index.html"><span data-i18n=btn.seecosts data-c="Senegal">See costs in Senegal</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#senegal" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=tanzania data-region=east
@@ -208,9 +201,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇹🇿</span><a class=country data-cc=TZ href="countries/tanzania/index.html">Tanzania</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/tanzania/index.html"><span data-i18n=btn.seecosts data-c="Tanzania">See costs in Tanzania</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#tanzania" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=zambia data-region=south
@@ -218,9 +211,9 @@
  <div class=card-top><span class=flag aria-hidden=true>🇿🇲</span><a class=country data-cc=ZM href="countries/zambia/index.html">Zambia</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/zambia/index.html"><span data-i18n=btn.seecosts data-c="Zambia">See costs in Zambia</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#zambia" data-i18n=link.makecall>Make your call</a></div></article><article class=card data-key=zimbabwe data-region=south
@@ -228,77 +221,20 @@
  <div class=card-top><span class=flag aria-hidden=true>🇿🇼</span><a class=country data-cc=ZW href="countries/zimbabwe/index.html">Zimbabwe</a>
  <span class=chip><span data-i18n=chip.estimate>Estimate</span> <span class=info tabindex=0 role=note aria-label='No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.' data-tipkey=tip.estimate>ⓘ<span class=tip data-i18n=tip.estimate>No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.</span></span></span></div>
  <h3 class=q data-q></h3>
- <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
+ <div class=odds><div><span class="pct verdict" data-verdict>–</span><span class=pct-l data-sub></span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
- <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
+ <dl class=facts><div><dt data-i18n=lbl.chance.cap>Chance of a rise</dt><dd data-pct>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
  <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/zimbabwe/index.html"><span data-i18n=btn.seecosts data-c="Zimbabwe">See costs in Zimbabwe</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#zimbabwe" data-i18n=link.makecall>Make your call</a></div></article></div>
 <p class=empty id=empty data-i18n=empty>No country matches. Try “cement”, “Kenya” or “West”.</p>
 
-<section id=glance><div class=section-h><h2 data-i18n=glance.h>Costs at a glance</h2><span class=muted data-i18n=glance.sort>Click a column to sort</span></div>
-<div class=tablewrap><table class=glance id=glance-table><thead><tr><th scope=col data-sort=text data-i18n=th.country>Country</th>
-<th scope=col data-sort=text data-i18n=th.latest>Latest official</th><th scope=col data-sort=num data-i18n=th.offyear>Official change, year</th>
-<th scope=col data-sort=num><span data-i18n=th.expby>Expected by</span> <span data-when-label></span></th><th scope=col data-i18n=th.range>Likely range</th>
-<th scope=col data-sort=num data-i18n=th.chance>Chance of a rise</th><th scope=col data-sort=num data-i18n=th.fx>Currency vs USD, 13 weeks</th></tr></thead>
-<tbody><tr data-key=uganda><th scope=row><a href="countries/uganda/index.html">🇺🇬 Uganda</a></th>
- <td>Apr 2026</td><td data-g=official></td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=kenya><th scope=row><a href="countries/kenya/index.html">🇰🇪 Kenya</a></th>
- <td>Q2 2026</td><td data-g=official></td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=south_africa><th scope=row><a href="countries/south_africa/index.html">🇿🇦 South Africa</a></th>
- <td>Aug 2026</td><td data-g=official></td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=nigeria><th scope=row><a href="countries/nigeria/index.html">🇳🇬 Nigeria</a></th>
- <td>Oct 2026</td><td data-g=official>–</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=ghana><th scope=row><a href="countries/ghana/index.html">🇬🇭 Ghana</a></th>
- <td>Oct 2026</td><td data-g=official></td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=botswana class=more hidden><th scope=row><a href="countries/botswana/index.html">🇧🇼 Botswana</a></th>
- <td>Oct 2026</td><td data-g=official>–</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=egypt class=more hidden><th scope=row><a href="countries/egypt/index.html">🇪🇬 Egypt</a></th>
- <td>Oct 2026</td><td data-g=official>–</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=ethiopia class=more hidden><th scope=row><a href="countries/ethiopia/index.html">🇪🇹 Ethiopia</a></th>
- <td>Oct 2026</td><td data-g=official>–</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=malawi class=more hidden><th scope=row><a href="countries/malawi/index.html">🇲🇼 Malawi</a></th>
- <td>Oct 2026</td><td data-g=official>–</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=mauritius class=more hidden><th scope=row><a href="countries/mauritius/index.html">🇲🇺 Mauritius</a></th>
- <td>Oct 2026</td><td data-g=official></td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=morocco class=more hidden><th scope=row><a href="countries/morocco/index.html">🇲🇦 Morocco</a></th>
- <td>Oct 2026</td><td data-g=official>–</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=mozambique class=more hidden><th scope=row><a href="countries/mozambique/index.html">🇲🇿 Mozambique</a></th>
- <td>Oct 2026</td><td data-g=official>–</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=namibia class=more hidden><th scope=row><a href="countries/namibia/index.html">🇳🇦 Namibia</a></th>
- <td>Oct 2026</td><td data-g=official>–</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=rwanda class=more hidden><th scope=row><a href="countries/rwanda/index.html">🇷🇼 Rwanda</a></th>
- <td>Oct 2026</td><td data-g=official>–</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=senegal class=more hidden><th scope=row><a href="countries/senegal/index.html">🇸🇳 Senegal</a></th>
- <td>Oct 2026</td><td data-g=official></td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=tanzania class=more hidden><th scope=row><a href="countries/tanzania/index.html">🇹🇿 Tanzania</a></th>
- <td>Oct 2026</td><td data-g=official>–</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=zambia class=more hidden><th scope=row><a href="countries/zambia/index.html">🇿🇲 Zambia</a></th>
- <td>Oct 2026</td><td data-g=official>–</td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr><tr data-key=zimbabwe class=more hidden><th scope=row><a href="countries/zimbabwe/index.html">🇿🇼 Zimbabwe</a></th>
- <td>Oct 2026</td><td data-g=official></td><td data-g=exp></td><td data-g=rng></td>
- <td data-g=pct></td><td data-g=fx></td></tr></tbody></table></div>
-<p class=center><button class=btn type=button id=glance-more data-i18n=glance.more>Show all 18 countries</button></p></section>
-
-<section class=gamebox><div><p class=eyebrow data-i18n=game.eyebrow>New · daily game</p><h2 data-i18n=tool.play.t>The Cost Call</h2>
-<p data-i18n=game.teaser>Five quick calls a day on real construction prices across Africa. Did cement go up or down? Keep your streak, share
-your score, and test your instincts against the model.</p></div>
-<a class='btn primary big' href=play.html data-i18n=game.cta>Play today's calls</a></section>
-
-<section class=howto><div class=tile><span class=num>1</span><b data-i18n=how1.t>Chance of a rise</b><p data-i18n=how1.d>How likely prices are to be higher
-by the month you picked. 80% means about 8 times in 10.</p></div>
-<div class=tile><span class=num>2</span><b data-i18n=how2.t>Expected change</b><p data-i18n=how2.d>The most likely move. Apply it to your own latest quote
-for the same item.</p></div><div class=tile><span class=num>3</span><b data-i18n=how3.t>Likely range</b><p data-i18n=how3.d>Where the change should land
-8 times in 10. Wider ranges mean more uncertainty.</p></div>
-<div class=tile><span class=num>4</span><b data-i18n=how4.t>Updated every few hours</b><p><span data-i18n=how4.d>Forecasts move with oil prices, exchange rates and
-new official data.</span> <a href=method.html data-i18n=nav.method>How it works</a>.</p></div></section>
-
-<section class=join id=join><div><h2 data-i18n=cta.join>Join the pilot</h2><p data-i18n=join.d>Contractors, quantity surveyors, developers and lenders: report
-the prices you pay each week, play The Cost Call for points on the leaderboard, and get the Monday note for your country.
-Free. Ask CiO Lab for an invite code.</p></div><div class=actions>
-<a class='btn primary big' href=play.html data-i18n=join.cta>Start with today's game</a></div></section>
+<p class=center><button class=btn type=button id=grid-open data-i18n=grid.open>Show all 18 countries</button></p>
+<p class=moreline><a href=glance.html data-i18n=glance.link>Compare all countries in one table →</a></p>
+<p class=gameline>🎯 <span data-i18n=game.line>Five quick calls a day on real prices.</span> <a href=play.html data-i18n=game.cta>Play today's calls</a></p>
 </main>
-<footer class=wrap><p class=footlinks><a href="method.html" data-i18n=nav.method>How it works</a> · <a href="method.html#track" data-i18n=trust.track>Track record</a>
+<nav class=bottombar aria-label=Main><a href='index.html#countries' aria-current=page><svg viewBox='0 0 24 24' aria-hidden=true><path d='M3 11l9-7 9 7v9h-6v-6H9v6H3z'/></svg><span data-i18n='nav.prices'>Prices</span></a><a href='calculator.html'><svg viewBox='0 0 24 24' aria-hidden=true><path d='M6 3h12v18H6zM9 7h6M9 11h2M13 11h2M9 15h2M13 15h2'/></svg><span data-i18n='nav.plan'>Plan a bid</span></a><a href='report.html'><svg viewBox='0 0 24 24' aria-hidden=true><path d='M4 20h4L19 9l-4-4L4 16zM14 6l4 4'/></svg><span data-i18n='nav.reportshort'>Report a price</span></a><a href='play.html'><svg viewBox='0 0 24 24' aria-hidden=true><path d='M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8v8M8 12h8'/></svg><span data-i18n='nav.playshort'>Play</span></a></nav>
+<footer class=wrap><p class=footlinks><a href="method.html" data-i18n=nav.method>How it works</a> · <a href="glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="method.html#track" data-i18n=trust.track>Track record</a>
  · <a href='https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a></p><span data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
 value. Official data: UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD, Statistics Mauritius; oil and exchange rates from public
 market sources. Updated 2026-10-22.</span></footer>

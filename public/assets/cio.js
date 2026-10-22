@@ -6,6 +6,7 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "h.1": "Mwezi ujao", "h.3": "Miezi 3", "h.6": "Miezi 6", "h.pick": "Chagua tarehe", "v.sure.up": "Hakika zitapanda", "v.likely.up": "Huenda zikapanda", "v.lean.up": "Zinaelekea kupanda", "v.sure.down": "Hakika zitashuka", "v.likely.down": "Huenda zikashuka", "v.lean.down": "Zinaelekea kushuka", "v.same": "Takriban hazibadiliki", "v.sub": "takriban {x} kufikia {when}", "lbl.chance.cap": "Uwezekano wa kupanda", "buy.q": "Unanunua nini?", "buy.cement": "Saruji", "buy.steel": "Nondo", "buy.sand": "Mchanga", "buy.diesel": "Dizeli", "buy.roofing": "Mabati", "grid.open": "Onyesha nchi zote 18", "glance.link": "Linganisha nchi zote kwenye jedwali moja →", "game.line": "Makisio matano ya haraka kila siku kwa bei halisi.", "track.h": "Rekodi ya usahihi", "track.none": "bado hakuna fahirisi rasmi ya kulinganisha; tunalinganisha na bei zinazoripotiwa zinapoingia.", "track.soon": "tunahifadhi kila utabiri na tutauonyesha hapa kando ya takwimu rasmi zitakapochapishwa.", "join.signin": "Ingia (majaribio)", "rep.needs": "Ripoti {n} kati ya 3 wiki hii — ongeza yako",
       "match.by": "inayotarajiwa kufikia {when}", "match.last": "rasmi, ya karibuni ({p})", "match.ind": "gharama za uagizaji {x} kufikia {when}",
       "share": "Shiriki", "wa.weekly": "Taarifa ya kila wiki bure kwenye WhatsApp",
       "nav.prices": "Bei", "nav.plan": "Panga zabuni", "nav.reportshort": "Ripoti bei", "nav.playshort": "Cheza", "pick.country": "Nchi yako", "chip.yours": "Nchi yako", "chip.officialdata": "Takwimu rasmi", "chip.estimate": "Makadirio", "tip.official": "Imejengwa kutoka takwimu rasmi za bei za ujenzi za nchi, ikisasishwa kwa mabadiliko ya mafuta na sarafu ya wiki hii.", "tip.estimate": "Bado hakuna fahirisi rasmi ya bei za ujenzi inayotumika: haya ni makadirio ya shinikizo kwa vifaa vinavyoagizwa kutoka bei za mafuta na kiwango cha ubadilishaji. Vifaa vya ndani na kazi havijajumuishwa.", "trust.sources": "Takwimu rasmi kutoka UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD na Statistics Mauritius", "trust.track": "Rekodi ya usahihi", "trust.ago": "imesasishwa saa {h} zilizopita", "trust.justnow": "imesasishwa sasa hivi", "wa.follow": "Fuata kwenye WhatsApp (bure)", "money.h": "Bei yako", "money.ph": "Bei yako ya mwisho", "money.need": "Andika bei uliyolipa mara ya mwisho kuona bei inayotarajiwa.", "money.out": "Tarajia takriban {p} kufikia {when} (kwa uwezekano mkubwa {lo} – {hi}).", "alert.email": "Barua pepe", "tab.official": "Takwimu rasmi", "tab.indicator": "Makadirio",
@@ -14,7 +15,7 @@ window.I18N = (function () {
       "footer.short": "CiO Lab · Utabiri ni makadirio yenye viwango, si ushauri. The Cost Call ni mchezo: alama hazina thamani ya pesa.",
       "when.label": "Utabiri hadi", "when.note": "Takwimu za kila wiki zinakadiriwa kutoka utabiri wa kila mwezi, unaosasishwa kila baada ya saa chache. Mabadiliko yanapimwa kutoka takwimu rasmi za karibuni za kila nchi (au kutoka leo kwa viashiria vya gharama za uagizaji).",
       "home.eyebrow": "Mtazamo wa gharama za ujenzi · nchi 18 za Afrika", "home.h1": "Je, gharama za ujenzi zitapanda unapofanya kazi?",
-      "home.lede": "Chagua mwezi. Ona uwezekano wa bei za vifaa vya ujenzi kupanda, kwa kiasi gani, na kinachosababisha — kutoka takwimu rasmi, mafuta na viwango vya ubadilishaji, zinazosasishwa kila baada ya saa chache.",
+      "home.lede": "Chagua nchi yako na tarehe. Ona kama bei za vifaa vya ujenzi huenda zikapanda, kwa kiasi gani, na maana yake kwa bei unayolipa — inasasishwa kila baada ya saa chache.",
       "tool.calc.t": "Kikokotoo cha ongezeko la bei kwenye zabuni", "tool.calc.d": "Bei zinaweza kubadilika kiasi gani katika kipindi cha mkataba wako? Pata ongezeko linalotarajiwa kwa sarafu yako, pamoja na kiwango.",
       "tool.report.t": "Ripoti bei", "tool.report.d": "Tuambie ulilipa kiasi gani kwa saruji, chuma, dizeli au mchanga wiki hii. Inachukua dakika moja na inaboresha takwimu za kila mtu.",
       "tool.play.t": "The Cost Call", "tool.play.d": "Makisio matano kila siku kuhusu bei halisi. Endeleza mfululizo wako.",
@@ -71,7 +72,7 @@ window.I18N = (function () {
       "call.q": "Je, {s} itakuwa juu zaidi {when} kuliko {base}?", "call.higher": "↑ Juu zaidi", "call.lower": "↓ Chini zaidi",
       "call.sure": "Una uhakika kiasi gani?", "call.yours": "Kisio lako: {a} kwa uhakika wa {c}%.", "call.model": "Modeli: uwezekano wa {p} kuwa juu zaidi. Itapimwa takwimu rasmi zitakapochapishwa.",
       "call.next": "Toleo rasmi lijalo", "call.see": "Ona vinavyosukuma gharama: {c} →",
-      "rep.none": "Bado hakuna ripoti kwa {c}. Kuwa wa kwanza.", "rep.needs": "Inahitaji watu 3 — {n} hadi sasa wiki hii",
+      "rep.none": "Bado hakuna ripoti kwa {c}. Kuwa wa kwanza.", 
       "rep.thanks": "Asante ✓ Bei yako imeingia kwenye wastani wa wiki hii.", "net.offline": "Kuhifadhi kunafunguka tovuti ikiwa mtandaoni. Taarifa zako hazijatumwa.",
       "net.notsent": "Haijatumwa: {e}", "net.unreach": "Hatukuweza kufikia seva. Tafadhali jaribu tena baadaye.", "alert.ok": "Tahadhari imewekwa ✓ Tutakutumia ujumbe itakapotimia.",
       "calc.escal": "ongezeko linalotarajiwa la bei za vifaa (8 kati ya 10: {lo} hadi {hi})", "calc.money": "{v} linatarajiwa · kiwango {lo} hadi {hi}",
@@ -83,6 +84,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "h.1": "Mois prochain", "h.3": "3 mois", "h.6": "6 mois", "h.pick": "Choisir une date", "v.sure.up": "Hausse quasi certaine", "v.likely.up": "Hausse probable", "v.lean.up": "Plutôt en hausse", "v.sure.down": "Baisse quasi certaine", "v.likely.down": "Baisse probable", "v.lean.down": "Plutôt en baisse", "v.same": "À peu près stable", "v.sub": "environ {x} d'ici {when}", "lbl.chance.cap": "Probabilité de hausse", "buy.q": "Qu'achetez-vous ?", "buy.cement": "Ciment", "buy.steel": "Acier", "buy.sand": "Sable", "buy.diesel": "Gazole", "buy.roofing": "Tôles", "grid.open": "Afficher les 18 pays", "glance.link": "Comparer tous les pays dans un tableau →", "game.line": "Cinq pronostics rapides par jour sur des prix réels.", "track.h": "Historique de précision", "track.none": "pas encore d'indice officiel pour comparer ; nous comparons avec les prix signalés à mesure qu'ils arrivent.", "track.soon": "nous enregistrons chaque prévision et l'afficherons ici à côté du chiffre officiel dès sa publication.", "join.signin": "Connexion pilote", "rep.needs": "{n} signalements sur 3 cette semaine — ajoutez le vôtre",
       "match.by": "attendu d'ici {when}", "match.last": "officiel, dernier ({p})", "match.ind": "coûts d'importation {x} d'ici {when}",
       "share": "Partager", "wa.weekly": "Point hebdomadaire gratuit sur WhatsApp",
       "nav.prices": "Prix", "nav.plan": "Préparer une offre", "nav.reportshort": "Signaler un prix", "nav.playshort": "Jouer", "pick.country": "Votre pays", "chip.yours": "Votre pays", "chip.officialdata": "Données officielles", "chip.estimate": "Estimation", "tip.official": "Construit à partir des statistiques officielles des prix de la construction du pays, mis à jour avec les variations du pétrole et de la monnaie de la semaine.", "tip.estimate": "Pas encore d'indice officiel utilisable des prix de la construction : estimation de la pression sur les matériaux importés à partir du prix du pétrole et du taux de change. Matériaux locaux et main-d'œuvre non inclus.", "trust.sources": "Données officielles de l'UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD et Statistics Mauritius", "trust.track": "Historique de précision", "trust.ago": "mis à jour il y a {h} h", "trust.justnow": "mis à jour à l'instant", "wa.follow": "Suivre sur WhatsApp (gratuit)", "money.h": "Votre prix", "money.ph": "Votre dernier prix", "money.need": "Saisissez le dernier prix payé pour voir le prix attendu.", "money.out": "Prévoyez environ {p} d'ici {when} (le plus probable : {lo} – {hi}).", "alert.email": "E-mail", "tab.official": "Données officielles", "tab.indicator": "Estimations",
@@ -91,7 +93,7 @@ window.I18N = (function () {
       "footer.short": "CiO Lab · Les prévisions sont des estimations avec des fourchettes, pas des conseils. The Cost Call est un jeu : les points n'ont aucune valeur monétaire.",
       "when.label": "Prévision jusqu'à", "when.note": "Les valeurs hebdomadaires sont interpolées à partir de la prévision mensuelle, mise à jour toutes les quelques heures. Les variations sont mesurées depuis la dernière donnée officielle de chaque pays (ou depuis aujourd'hui pour les indicateurs de coûts d'importation).",
       "home.eyebrow": "Perspectives des coûts de construction · 18 pays africains", "home.h1": "Les coûts de construction vont-ils augmenter là où vous travaillez ?",
-      "home.lede": "Choisissez un mois. Voyez la probabilité que les prix des intrants de construction augmentent, de combien, et pourquoi — à partir des statistiques officielles, du pétrole et des taux de change, mis à jour toutes les quelques heures.",
+      "home.lede": "Choisissez votre pays et une date. Voyez si les prix des matériaux de construction vont probablement augmenter, de combien, et ce que cela signifie pour le prix que vous payez — mis à jour toutes les quelques heures.",
       "tool.calc.t": "Calculateur d'actualisation des offres", "tool.calc.d": "De combien les prix pourraient-ils évoluer pendant votre contrat ? Obtenez l'actualisation attendue dans votre monnaie, avec une fourchette.",
       "tool.report.t": "Signaler un prix", "tool.report.d": "Dites-nous combien vous avez payé le ciment, l'acier, le gazole ou le sable cette semaine. Une minute suffit, et tout le monde y gagne.",
       "tool.play.t": "The Cost Call", "tool.play.d": "Cinq pronostics par jour sur des prix réels. Gardez votre série.",
@@ -148,7 +150,7 @@ window.I18N = (function () {
       "call.q": "{s} sera-t-il plus élevé en {when} qu'en {base} ?", "call.higher": "↑ Plus élevé", "call.lower": "↓ Plus bas",
       "call.sure": "Quelle est votre certitude ?", "call.yours": "Votre pronostic : {a} à {c} % de certitude.", "call.model": "Modèle : {p} de chances d'être plus élevé. Noté à la publication du chiffre officiel.",
       "call.next": "Prochaine publication officielle", "call.see": "Voir ce qui fait bouger les coûts : {c} →",
-      "rep.none": "Aucun signalement pour {c} pour l'instant. Soyez le premier.", "rep.needs": "Il faut 3 personnes — {n} cette semaine",
+      "rep.none": "Aucun signalement pour {c} pour l'instant. Soyez le premier.", 
       "rep.thanks": "Merci ✓ Votre prix compte dans les médianes de la semaine.", "net.offline": "L'envoi est possible une fois le site en ligne. Vos informations n'ont pas été envoyées.",
       "net.notsent": "Non envoyé : {e}", "net.unreach": "Serveur injoignable. Réessayez dans un instant.", "alert.ok": "Alerte créée ✓ Nous vous préviendrons dès qu'elle se déclenche.",
       "calc.escal": "actualisation attendue des intrants (8 sur 10 : {lo} à {hi})", "calc.money": "{v} attendus · fourchette {lo} à {hi}",
@@ -160,6 +162,8 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "home.lede": "Choose your country and a date. See whether building material prices are likely to go up, by how much, and what that means for the price you pay — updated every few hours.",
+      "h.1": "Next month", "h.3": "3 months", "h.6": "6 months", "h.pick": "Pick a date", "v.sure.up": "Almost certainly up", "v.likely.up": "Likely up", "v.lean.up": "Leaning up", "v.sure.down": "Almost certainly down", "v.likely.down": "Likely down", "v.lean.down": "Leaning down", "v.same": "About the same", "v.sub": "about {x} by {when}", "lbl.chance.cap": "Chance of a rise", "buy.q": "What are you buying?", "buy.cement": "Cement", "buy.steel": "Steel", "buy.sand": "Sand", "buy.diesel": "Diesel", "buy.roofing": "Roofing", "grid.open": "Show all 18 countries", "glance.link": "Compare all countries in one table →", "game.line": "Five quick calls a day on real prices.", "track.h": "Track record", "track.none": "no official index to check against yet; we compare with reported prices as they come in.", "track.soon": "we log every forecast and will show it here next to the official figure once it is published.", "join.signin": "Pilot sign-in", "rep.needs": "{n} of 3 reports this week — add yours",
       "match.by": "expected by {when}", "match.last": "official, latest ({p})", "match.ind": "import costs {x} by {when}",
       "share": "Share", "wa.weekly": "Free weekly update on WhatsApp",
       "nav.prices": "Prices", "nav.plan": "Plan a bid", "nav.reportshort": "Report a price", "nav.playshort": "Play", "pick.country": "Your country", "chip.yours": "Your country", "chip.officialdata": "Official data", "chip.estimate": "Estimate", "tip.official": "Built from the country's official construction price statistics, updated with this week's oil and currency moves.", "tip.estimate": "No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.", "trust.sources": "Official data from UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD and Statistics Mauritius", "trust.track": "Track record", "trust.ago": "updated {h} h ago", "trust.justnow": "updated just now", "wa.follow": "Follow on WhatsApp (free)", "money.h": "Your price", "money.ph": "Your latest price", "money.need": "Type what you paid last to see the expected price.", "money.out": "Expect about {p} by {when} (most likely {lo} – {hi}).", "alert.email": "Email", "tab.official": "Official data", "tab.indicator": "Estimates",
@@ -179,7 +183,7 @@ window.I18N = (function () {
       "call.q": "Will {s} be higher in {when} than in {base}?", "call.higher": "↑ Higher", "call.lower": "↓ Lower", "call.sure": "How sure are you?",
       "call.yours": "Your call: {a} at {c}% confidence.", "call.model": "Model: {p} chance it is higher. Scored when the official figure is published.",
       "call.next": "Next official release", "call.see": "See the inputs driving {c}'s costs →",
-      "rep.none": "No reports yet for {c}. Be the first.", "rep.needs": "Needs 3 people — {n} so far this week",
+      "rep.none": "No reports yet for {c}. Be the first.", 
       "rep.thanks": "Thank you ✓ Your price is in this week's medians.", "net.offline": "Saving opens when the site is online. Your details have not been sent.",
       "net.notsent": "Not sent: {e}", "net.unreach": "Could not reach the server. Please try again shortly.", "alert.ok": "Alert set ✓ We'll message you when it triggers.",
       "calc.escal": "expected escalation on inputs (8 in 10: {lo} to {hi})", "calc.money": "{v} expected · range {lo} to {hi}",
@@ -258,6 +262,18 @@ window.I18N = (function () {
   const langSel = $("#lang"); if (langSel) { langSel.value = T.lang; langSel.onchange = () => T.set(langSel.value); }
   $$("#when option").forEach(o => { const v = o.value; o.textContent = v[0] === "W" ? tr("weekof.cap", { d: T.dayMonth(v.slice(2)) }) : label(v.slice(2)); });
   $$("#when optgroup").forEach(g => g.label = tr(g.label === "Weeks" ? "grp.weeks" : "grp.months"));
+  const norm = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const words = x => norm(x).split(/[^a-z0-9]+/).filter(Boolean);
+  const STOP = new Set(["and", "in", "of", "the", "for", "price", "prices", "cost", "costs", "africa", "na", "ya", "za", "bei", "gharama",
+    "et", "de", "du", "la", "le", "les", "en", "prix", "cout", "couts", "afrique"]);
+  const STEEL = ["steel", "rebar", "reinforc"];
+  const SYN = { steel: STEEL, rebar: STEEL, iron: STEEL, nondo: STEEL, chuma: STEEL, fer: STEEL, acier: STEEL, petrol: ["fuel"], gasoil: ["fuel", "diesel"],
+    gazole: ["diesel"], dizeli: ["diesel"], ballast: ["stone", "aggregate"], gravel: ["stone", "aggregate"], aggregate: ["stone", "ballast"],
+    concrete: ["ready"], saruji: ["cement"], ciment: ["cement"], mchanga: ["sand"], sable: ["sand"], labor: ["labour"], kazi: ["labour"],
+    mabati: ["roofing"], toles: ["roofing"], tole: ["roofing"], toiture: ["roofing"], iron_sheet: ["roofing"] };
+  const hit = (ws, t) => ws.some(w => w.startsWith(t) || (SYN[t] || []).some(y => w.startsWith(y)));
+  const arrow = v => v >= 0.25 ? "⬆" : (v <= -0.25 ? "⬇" : "➡");
+  const apct = v => `${arrow(v)} ${pct(v)}`;
   const pct = (v, d = 1) => { const r = +(+v).toFixed(d); return (r > 0 ? "+" : "") + (r === 0 ? (0).toFixed(d) : r.toFixed(d)) + "%"; };
   const qlabel = (m, step) => step === "quarter" ? tr("quarter", { q: Math.floor((+m.slice(5, 7) - 1) / 3) + 1, y: m.slice(0, 4) }) : label(m);
   const online = location.protocol !== "file:";
@@ -290,6 +306,9 @@ window.I18N = (function () {
   }
   function chance(q) { const sd = (q.hi - q.lo) / (2 * 1.2816); if (!(sd > 1e-6)) return q.median > 0 ? 0.99 : 0.01;
     return Math.min(0.99, Math.max(0.01, 0.5 * (1 + erf(q.median / (sd * Math.SQRT2))))); }
+  function verdict(q, p) { if (Math.abs(q.median) < 0.25) return "➡ " + tr("v.same");
+    const up = q.median > 0, s = up ? p : 1 - p;
+    return (up ? "⬆ " : "⬇ ") + tr((s >= 0.9 ? "v.sure" : s >= 0.7 ? "v.likely" : "v.lean") + (up ? ".up" : ".down")); }
   function question(c, tg) { return tr(c.official ? "q.official" : "q.indicator", { c: cname(c), when: tLabel(tg) }); }
   function advice(c, q, tg) { const v = { when: tLabel(tg), base: T.base(c.base), x: Math.abs(q.median).toFixed(1) + "%" };
     if (!c.official) return Math.abs(q.median) < 0.25 ? tr("adv.indflat", v) : tr("adv.ind", Object.assign(v, { dir: tr(q.median > 0 ? "dir.up" : "dir.down") }));
@@ -304,18 +323,24 @@ window.I18N = (function () {
   /* ---------- "your price": a price today -> the expected price at the target date ---------- */
   const nowTg = () => { const d = new Date(); return `M:${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
   const money0 = n => Math.round(n).toLocaleString(T.loc || undefined);
+  const first = n => words(n)[0] || "";
+  /* the forecast series for a material or report item: same name, else same first word, else the country's headline series */
+  const pathFor = (c, n) => c.paths[n] || c.paths[Object.keys(c.paths).find(k => hit(words(k), first(n)))] || c.paths[c.head];
+  const crowdFor = (c, n) => { const cr = c.crowd || {}; if (cr[n] != null) return cr[n];
+    const k = Object.keys(cr).find(x => first(x) && hit(words(n), first(x))); return k ? cr[k] : null; };
   function money(el, c, tg) {
     const box = $(".money", el); if (!box) return;
     const sel = $("[data-money-mat]", box), inp = $("[data-money-price]", box), out = $("[data-money-out]", box);
     if (sel.dataset.key !== c.key) {                       /* (re)build the material list when the country changes */
-      sel.dataset.key = c.key; sel.innerHTML = Object.keys(c.paths).map(n => `<option value="${n}">${T.mat(n)}</option>`).join("");
+      sel.dataset.key = c.key; const names = c.official ? Object.keys(c.paths) : (c.items && c.items.length ? c.items : Object.keys(c.paths));
+      sel.innerHTML = names.map(n => `<option value="${n}">${T.mat(n)}</option>`).join("");
       $("[data-money-ccy]", box).textContent = c.currency;
       inp.placeholder = tr("money.ph");
-      const load = () => { const v = store.get(`cio-price-${c.key}-${sel.value}`, null) ?? (c.crowd || {})[sel.value]; inp.value = v == null ? "" : v; };
+      const load = () => { const v = store.get(`cio-price-${c.key}-${sel.value}`, null) ?? crowdFor(c, sel.value); inp.value = v == null ? "" : v; };
       sel.onchange = () => { load(); money(el, c, target); };
       inp.oninput = () => { store.set(`cio-price-${c.key}-${sel.value}`, inp.value === "" ? null : +inp.value); money(el, c, target); };
       load(); }
-    const a = at(c.paths[sel.value], nowTg()), b = at(c.paths[sel.value], tg), v = +inp.value;
+    const pth = pathFor(c, sel.value), a = at(pth, nowTg()), b = at(pth, tg), v = +inp.value;
     if (!a || !b || !(v > 0)) { out.textContent = tr("money.need"); return; }
     const f = x => v * (1 + x / 100) / (1 + a.q.median / 100);
     out.innerHTML = tr("money.out", { p: `<strong>${money0(f(b.q.median))} ${c.currency}</strong>`, when: tLabel(tg),
@@ -327,19 +352,22 @@ window.I18N = (function () {
     const r = at(c.paths[c.head], tg); if (!r) return; const q = r.q, p = chance(q);
     const set = (sel, h) => { const x = $(sel, el); if (x) x.innerHTML = h; };
     set("[data-q]", question(c, tg) + (r.beyond ? ` <small class=muted>${tr("furthest", { m: label(q.month) })}</small>` : ""));
-    set("[data-pct]", Math.round(p * 100) + "%"); set("[data-exp]", pct(q.median)); set("[data-rng]", `${pct(q.lo)} – ${pct(q.hi)}`);
+    set("[data-verdict]", verdict(q, p)); set("[data-sub]", tr("v.sub", { x: pct(q.median), when: tLabel(tg) }));
+    set("[data-pct]", Math.round(p * 100) + "%"); set("[data-exp]", apct(q.median)); set("[data-rng]", `${pct(q.lo)} – ${pct(q.hi)}`);
     set("[data-advice]", advice(c, q, tg));
     const bar = $("[data-bar]", el); if (bar) bar.style.width = Math.round(p * 100) + "%";
     const sl = $("[data-spark]", el); if (sl && !sl.innerHTML) sl.innerHTML = spark(c);
     const br = $("[data-breakdown]", el);
-    if (br) br.innerHTML = Object.entries(c.paths).map(([n, pth]) => { const x = at(pth, tg); return x ? `<li><span>${T.mat(n)}</span><b>${pct(x.q.median)}</b></li>` : ""; }).join("");
+    if (br) br.innerHTML = Object.entries(c.paths).map(([n, pth]) => { const x = at(pth, tg); return x ? `<li><span>${T.mat(n)}</span><b>${apct(x.q.median)}</b></li>` : ""; }).join("");
     money(el, c, tg);
     el.dataset.trend = q.median > 0.05 ? "rising" : (q.median < -0.05 ? "easing" : "flat");
     const fan = $(".fan", el); if (fan) { const xs = JSON.parse(fan.dataset.xs || "{}"), mk = $(".marker", fan), m = tMonth(tg);
       const x = xs[m] || xs[Object.keys(xs).filter(k => k <= m).pop()]; if (mk && x) { mk.setAttribute("x1", x); mk.setAttribute("x2", x); } }
     $$("tr[data-mat]").forEach(row => { const pth = c.paths[row.dataset.mat] || (row.dataset.mat === "Reinforcement steel" ? c.paths["Rebar"] : null);
-      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.textContent = x ? `${pct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})` : tr("notsep"); } });
+      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.textContent = x ? `${apct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})` : tr("notsep"); } });
   }
+
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register(rel + "sw.js").catch(() => {});
 
   /* ---------- country-first home ---------- */
   const my = $("#mycountry"), feat = $(".featured:not(.solo)");
@@ -364,29 +392,33 @@ window.I18N = (function () {
     $$(".card[data-key], .featured[data-key]").forEach(el => { const c = DATA.countries[el.dataset.key]; if (c) fill(el, c, target); });
     $$("#glance-table tbody tr").forEach(row => { const c = DATA.countries[row.dataset.key]; if (!c) return;
       const q = at(c.paths[c.head], target).q, p = chance(q), d = c.drivers || {}, cell = k => $(`[data-g=${k}]`, row);
-      cell("exp").textContent = pct(q.median); cell("exp").dataset.v = q.median; cell("rng").textContent = `${pct(q.lo)} – ${pct(q.hi)}`;
+      cell("exp").textContent = apct(q.median); cell("exp").dataset.v = q.median; cell("rng").textContent = `${pct(q.lo)} – ${pct(q.hi)}`;
       cell("pct").textContent = Math.round(p * 100) + "%"; cell("pct").dataset.v = p;
       const fx = d.fx_13w_pct; cell("fx").innerHTML = fx == null ? "–" : `<span class=${fx > 0 ? "up" : "down"}>${fx > 0 ? "weaker" : "stronger"} ${Math.abs(fx).toFixed(1)}%</span>`;
       cell("fx").dataset.v = fx == null ? 0 : fx;
       const of = cell("official"); if (of && !of.dataset.done) { const h = (c.spark || {}).values || [], yr = c.step === "quarter" ? 4 : 12;
         if (c.official && h.length > yr) { const v = (h[h.length - 1] / h[h.length - 1 - yr] - 1) * 100; of.textContent = pct(v); of.dataset.v = v; }
         else { of.textContent = "–"; of.dataset.v = -999; } of.dataset.done = 1; } });
-    applyFilters();
+    applyFilters(); syncH();
   }
+  /* "in h months": that month's option, or the week closest to the middle of it while weeks are offered */
+  function horizon(h) { const d = new Date(), y = d.getFullYear() + Math.floor((d.getMonth() + h) / 12), m = (d.getMonth() + h) % 12 + 1;
+    const ym = `${y}-${String(m).padStart(2, "0")}`, opts = DATA.months || [];
+    if (opts.indexOf("M:" + ym) >= 0) return "M:" + ym;
+    const goal = Date.UTC(y, m - 1, 15); let best = null, gap = Infinity;
+    opts.filter(v => v[0] === "W").forEach(v => { const g = Math.abs(Date.parse(v.slice(2)) - goal); if (g < gap) { gap = g; best = v; } });
+    return best; }
+  function syncH() { $$(".when").forEach(w => { const sel = $("select", w); let any = false;
+    $$("[data-h]", w).forEach(b => { const on = b.dataset.h !== "pick" && horizon(+b.dataset.h) === target; any = any || on; b.setAttribute("aria-pressed", String(on)); });
+    const pk = $("[data-h=pick]", w); if (pk) pk.setAttribute("aria-pressed", String(!any)); if (sel && !any) sel.hidden = false; }); }
+  $$("[data-h]").forEach(b => b.onclick = () => { if (b.dataset.h === "pick") { const sel = $("select", b.closest(".when")); sel.hidden = false; sel.focus(); return; }
+    const v = horizon(+b.dataset.h); if (!v) return; target = v; store.set("cio-target", target); $$("#when").forEach(s => s.value = target); render(); });
   $$("#when").forEach(w => { w.value = target; w.onchange = () => { target = w.value; store.set("cio-target", target); $$("#when").forEach(s => s.value = target); render(); }; });
 
   /* ---------- filters + search ---------- */
   const tabs = $$(".tabs button"), qbox = $("#q"), count = $("#count"), empty = $("#empty"); let tab = "all";
   /* search: countries and materials together. "uganda kenya cement" = (Uganda or Kenya) with cement.
      Country words are OR-ed, material words AND-ed; every word matches the start of a word, in any language shown. */
-  const norm = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  const words = x => norm(x).split(/[^a-z0-9]+/).filter(Boolean);
-  const STOP = new Set(["and", "in", "of", "the", "for", "price", "prices", "cost", "costs", "africa", "na", "ya", "za", "bei", "gharama",
-    "et", "de", "du", "la", "le", "les", "en", "prix", "cout", "couts", "afrique"]);
-  const STEEL = ["steel", "rebar", "reinforc"];
-  const SYN = { steel: STEEL, rebar: STEEL, iron: STEEL, nondo: STEEL, chuma: STEEL, fer: STEEL, acier: STEEL, petrol: ["fuel"], gasoil: ["fuel", "diesel"],
-    gazole: ["diesel"], dizeli: ["diesel"], ballast: ["stone", "aggregate"], gravel: ["stone", "aggregate"], aggregate: ["stone", "ballast"],
-    concrete: ["ready"], saruji: ["cement"], ciment: ["cement"], mchanga: ["sand"], sable: ["sand"], labor: ["labour"], kazi: ["labour"] };
   const REG = { east: ["east", "mashariki", "est"], south: ["southern", "kusini", "australe"], west: ["west", "magharibi", "ouest"], north: ["north", "kaskazini", "nord"] };
   const idx = {};
   function index(k) { if (idx[k]) return idx[k]; const c = DATA.countries[k];
@@ -394,15 +426,17 @@ window.I18N = (function () {
     const names = ["en", "fr", "sw"].map(l => { try { return new Intl.DisplayNames([l], { type: "region" }).of(c.cc) || ""; } catch (e) { return ""; } });
     return (idx[k] = { place: words([c.country, cname(c), ...names, k.replace("_", " "), c.currency, c.cc].join(" ")), region: REG[c.region] || [],
       mats: mats.map(m => ({ name: m, w: words(m + " " + T.mat(m)) })) }); }
-  const hit = (ws, t) => ws.some(w => w.startsWith(t) || (SYN[t] || []).some(y => w.startsWith(y)));
   function matchLine(c, name) {
     const p = (c.paths || {})[name], m = (c.materials || []).find(x => x.name === name);
-    if (p) { const x = at(p, target); if (x) return `<b>${T.mat(name)}</b> ${pct(x.q.median)} <span class=muted>${tr("match.by", { when: tLabel(target) })}</span>`; }
-    if (m && m.change_period != null) return `<b>${T.mat(name)}</b> ${pct(m.change_period)} <span class=muted>${tr("match.last", { p: qlabel(m.period, c.step) })}</span>`;
+    if (p) { const x = at(p, target); if (x) return `<b>${T.mat(name)}</b> ${apct(x.q.median)} <span class=muted>${tr("match.by", { when: tLabel(target) })}</span>`; }
+    if (m && m.change_period != null) return `<b>${T.mat(name)}</b> ${apct(m.change_period)} <span class=muted>${tr("match.last", { p: qlabel(m.period, c.step) })}</span>`;
     const h = at(c.paths[c.head], target); if (!h) return "";
-    return `<b>${T.mat(name)}</b> <span class=muted>${tr("match.ind", { x: pct(h.q.median), when: tLabel(target) })}</span>`; }
+    return `<b>${T.mat(name)}</b> <span class=muted>${tr("match.ind", { x: apct(h.q.median), when: tLabel(target) })}</span>`; }
+  let gridOpen = false;
   function applyFilters() {
     const cards = $$("#grid .card"); if (!cards.length) return; let n = 0;
+    const open = gridOpen || words(qbox && qbox.value).length > 0 || tab !== "all", grid = $("#grid"), go = $("#grid-open");
+    grid.classList.toggle("folded", !open); if (go) go.hidden = open;
     const toks = words(qbox && qbox.value).filter(t => !STOP.has(t)), keys = cards.map(c => c.dataset.key);
     const isPlace = t => keys.some(k => hit(index(k).place, t) || index(k).region.some(r => r.startsWith(t)));
     const places = toks.filter(isPlace), mats = toks.filter(t => !isPlace(t));
@@ -415,19 +449,24 @@ window.I18N = (function () {
       const ok = okTab && okPlace && (!mats.length || found.length); c.hidden = !ok; if (ok) n++;
       const box = $("[data-match]", c); if (box) { box.hidden = !(ok && found.length);
         box.innerHTML = ok ? found.slice(0, 3).map(m => `<li>${matchLine(DATA.countries[d.key], m.name)}</li>`).join("") : ""; } });
-    if (count) count.textContent = tr("count", { n, m: cards.length }); if (empty) empty.style.display = n ? "none" : "block";
+    if (count) count.textContent = open ? tr("count", { n, m: cards.length }) : ""; if (empty) empty.style.display = n || !open ? "none" : "block";
   }
   tabs.forEach(b => b.onclick = () => { tab = b.dataset.tab; tabs.forEach(x => x.setAttribute("aria-pressed", String(x === b))); applyFilters(); });
   if (qbox) qbox.addEventListener("input", applyFilters);
+  const go = $("#grid-open"); if (go) go.onclick = () => { gridOpen = true; applyFilters(); };
+  /* "what are you buying?": pick that material in the price box and show it across countries */
+  const BUY = { cement: ["cement"], steel: ["steel", "rebar", "reinforc"], sand: ["sand"], diesel: ["diesel", "fuel"], roofing: ["roofing"] };
+  $$("[data-buy]").forEach(b => b.onclick = () => { const terms = BUY[b.dataset.buy] || [], box = b.closest("[data-key]");
+    $$("[data-buy]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    const sel = box && $("[data-money-mat]", box);
+    if (sel) { const o = [...sel.options].find(o => terms.some(t => hit(words(o.value), t))); if (o) { sel.value = o.value; sel.onchange && sel.onchange(); } }
+    if (qbox) { qbox.value = b.textContent.trim(); applyFilters(); } });
   $$("#glance-table thead th[data-sort]").forEach((th, i) => { let asc = false; th.onclick = () => { asc = !asc;
     const tbody = $("#glance-table tbody"), rows = $$("tr", tbody), num = th.dataset.sort === "num";
     rows.sort((a, b) => { const A = a.children[i], B = b.children[i];
       const va = num ? parseFloat(A.dataset.v ?? A.textContent) : A.textContent.trim(), vb = num ? parseFloat(B.dataset.v ?? B.textContent) : B.textContent.trim();
       return (va > vb ? 1 : va < vb ? -1 : 0) * (asc ? 1 : -1); }).forEach(r => tbody.appendChild(r)); }; });
   render();
-  const more = $("#glance-more");
-  if (more) more.onclick = () => { const hid = $$("#glance-table tr.more").some(r => r.hidden);
-    $$("#glance-table tr.more").forEach(r => r.hidden = !hid); more.textContent = hid ? tr("glance.fewer") : tr("glance.more", { n: $$("#glance-table tbody tr").length }); };
 
   /* ---------- share on WhatsApp ---------- */
   /* the phone's own share sheet (WhatsApp, SMS, email…); WhatsApp link where there is none */
