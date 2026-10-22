@@ -161,6 +161,11 @@ LOGO = ("<svg class=logo viewBox='0 0 24 24' width=24 height=24 aria-hidden=true
         "<circle class=orbit cx=12 cy=2.5 r=1.6 fill='var(--teal)'/><circle class=core cx=12 cy=12 r=4 fill='var(--accent-fill)'/></svg>")
 
 
+# Editorial type: Instrument Serif for headings, JetBrains Mono for figures and labels (body text: the phone's own font).
+FONTS = ("<link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin>"
+               "<link rel=stylesheet href='https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap'>")
+
+
 def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc: str = "", head: str = "") -> str:
     nav = [("index.html#countries", "Prices", "home", "nav.prices"), ("calculator.html", "Plan a bid", "calc", "nav.plan"),
            ("report.html", "Report a price", "report", "nav.reportshort"), ("play.html", "Play", "play", "nav.playshort")]
@@ -175,7 +180,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
     return f"""<!doctype html>
 <html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>{e(title)}</title><meta name=description content="{e(desc or 'Construction cost forecasts and prices people pay, in seven African countries.')}">
-<link rel=stylesheet href="{rel}assets/cio.css"><link rel=stylesheet href="{rel}assets/fonts.css" media=print onload="this.media='all'">{head}</head><body data-page="{page}" data-rel="{rel}">
+<link rel=stylesheet href="{rel}assets/cio.css">{FONTS}{head}</head><body data-page="{page}" data-rel="{rel}">
 <header class=topbar><div class=wrap>
  <a class=mark href="{rel}index.html">{LOGO}CiO <span>Costs</span></a>
  <nav class=nav aria-label=Main>{links}</nav>
@@ -652,8 +657,6 @@ def page_embed() -> str:
 
 
 # ------------------------------------------------------- benchmark pages --
-BENCH_FONTS = ("<link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin>"
-               "<link rel=stylesheet href='https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap'>")
 BENCH_REGION = {"united_states": "North America", "united_kingdom": "Europe", "austria": "Europe", "hong_kong": "Asia",
                 "philippines": "Asia", "brazil": "Latin America"}
 
@@ -826,8 +829,8 @@ def build() -> Path:
                                             page_country(c, months, default, crowd(c["key"])), data, rel="../../",
                                             page="bench" if c.get("bench") else "country",
                                             desc=(f"How well CiO Costs forecasts construction prices in {c['country']}: a benchmark."
-                                                  if c.get("bench") else f"Construction cost outlook for {c['country']}."),
-                                            head=BENCH_FONTS if c.get("bench") else ""),
+                                                  if c.get("bench") else f"Construction cost outlook for {c['country']}.")),
+
                                       encoding="utf-8")
     # a convenience entry point at the repo root for opening the site locally
     (ROOT / "index.html").write_text("<!doctype html><meta charset=utf-8><meta http-equiv=refresh content='0; url=public/index.html'>"
