@@ -263,6 +263,7 @@ def _home(cs, months, default, feat, tab_html, cards):
  <aside class=feat-side><h3><span data-i18n=feat.bymaterial>By material, to</span> <span data-when-label></span></h3><ul class=breakdown data-breakdown></ul></aside>
 </section>
 
+{QUICK}
 <nav class=tabs id=countries aria-label="Filter countries">{tab_html}</nav>
 <div class=toolbar><label class=search><span class=sr-only>Search</span>
  <input id=q type=search data-i18n-ph=search.ph placeholder="Search countries and materials — e.g. Kenya Uganda cement" autocomplete=off></label>
@@ -279,6 +280,19 @@ def _home(cs, months, default, feat, tab_html, cards):
 
 BUY = "".join(f"<button type=button class=pill data-buy={k} data-i18n=buy.{k}>{t}</button>" for k, t in
               (("cement", "Cement"), ("steel", "Steel"), ("sand", "Sand"), ("diesel", "Diesel"), ("roofing", "Roofing")))
+QUICK = """<section class=quickrep aria-labelledby=qr-h><div class=qr-head><h2 id=qr-h data-i18n=qr.h>What did you pay this week?</h2>
+ <p class=muted data-i18n=qr.d>Tell us one price. It is anonymous and takes 20 seconds — and once 3 people report an item, everyone sees the typical price.</p>
+ <p class=qr-progress data-qr-progress></p></div>
+ <form class=qr-form><label><span data-i18n=rep.item>Item</span><select name=item></select></label>
+ <label><span><span data-i18n=rep.price>Price</span> <span class=muted data-qr-ccy></span></span><input name=price type=number min=1 step=any inputmode=decimal required></label>
+ <fieldset class=areapick><legend data-i18n=rep.area>Where is that?</legend>
+  <label><input type=radio name=area value=capital checked><span><span data-i18n=rep.incap>In</span> <b data-capital></b></span></label>
+  <label><input type=radio name=area value=other><span data-i18n=rep.elsewhere>Elsewhere in the country</span></label></fieldset>
+ <label class=qr-town hidden><span data-i18n=rep.town>Town or area</span><input name=location></label>
+ <button class='btn primary big' type=submit data-i18n=rep.send>Send price</button>
+ <p class='formmsg muted' role=status></p></form></section>"""
+
+
 MONEY = """<div class=money><b data-i18n=money.h>Your price</b>
  <label><span class=sr-only>Material</span><select data-money-mat></select></label>
  <label class=money-in><span class=sr-only>Your latest price</span><input data-money-price type=number min=0 step=any inputmode=decimal
@@ -397,6 +411,7 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  fittings and paint dearer.</p></div>
  <div class=tile><b>Official data</b><p>{e(c['base'])} is the latest period in the forecast's base. New official releases are
  added within a day of publication.</p></div></div></section>
+<div data-key={c['key']}>{QUICK}</div>
 <section><div class=section-h><h2 data-i18n=sec.crowd>Prices reported by people who buy them</h2>
 <p class=fineprint data-i18n=crowd.note>Typical prices reported by buyers — not official or supplier prices.</p>
 <a class='btn primary' href="../../report.html#{c['key']}" data-i18n=tool.report.t>Report a price</a></div>{crowd_sec}</section>
@@ -563,8 +578,8 @@ anonymous: we publish medians by country, item and week — never names, numbers
  <label><span data-i18n=rep.from>Bought from</span><select name=supplier><option>Hardware shop</option><option>Factory or depot</option><option>Quarry</option>
  <option>Fuel station</option><option>Contractor or site</option><option>Other</option></select></label></div>
  <fieldset class=areapick><legend data-i18n=rep.area>Where is that?</legend>
-  <label><input type=radio name=area value=capital checked> <span data-i18n=rep.incap>In</span> <b data-capital></b></label>
-  <label><input type=radio name=area value=other> <span data-i18n=rep.elsewhere>Elsewhere in the country</span></label></fieldset>
+  <label><input type=radio name=area value=capital checked><span><span data-i18n=rep.incap>In</span> <b data-capital></b></span></label>
+  <label><input type=radio name=area value=other><span data-i18n=rep.elsewhere>Elsewhere in the country</span></label></fieldset>
  <label><span data-i18n=rep.contact>Your phone or email</span> <span class=muted data-i18n=rep.contact.note>(optional, never published — only if you want follow-ups)</span><input name=contact></label>
  <button class='btn primary big' type=submit data-i18n=rep.send>Send price</button><p class='formmsg muted' role=status></p></form>
  <aside class=panel><h2 data-i18n=rep.others>What others report</h2><div id=crowdview></div>
@@ -612,7 +627,10 @@ def build() -> Path:
     slim = {c["key"]: dict({k: c[k] for k in ("country", "flag", "currency", "region", "kind", "official", "base", "head",
                                               "paths", "spark", "drivers", "materials", "step", "items")},
                            cc=ISO2.get(load_country(c["key"])["iso3"], ""),
-                           crowd={r["name"]: r["median"] for r in crowd(c["key"]) if r.get("published")}) for c in cs}
+                           crowd={r["name"]: r["median"] for r in crowd(c["key"]) if r.get("published")},
+                           pitems=[{"code": i["code"], "name": i["name"], "unit": i["unit"]} for i in load_country(c["key"]).get("price_items", [])],
+                           pending={r["item"]: (r["reporters"] if r.get("published") else r.get("pending", 0)) for r in crowd(c["key"])},
+                           capital=CAPITALS.get(c["key"], "")) for c in cs}
     quiz = [{"key": c["key"], "country": c["country"], "flag": c["flag"], "cc": slim[c["key"]]["cc"], "material": m["name"], "period": p, "change": v,
              "step": c["step"]} for c in cs for m in c["materials"]
             for p, v in m.get("history", [])[-(8 if c["step"] == "quarter" else 12):] if abs(v) >= 0.2]   # recent periods only

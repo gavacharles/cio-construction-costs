@@ -6,6 +6,7 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "qr.h": "Ulilipa kiasi gani wiki hii?", "qr.d": "Tuambie bei moja. Ni siri na inachukua sekunde 20 — watu 3 wakiripoti bidhaa, kila mtu anaona bei ya kawaida.", "qr.need": "Ripoti <b>{n} kati ya 3</b> wiki hii kwa {i} nchini {c}. Ongeza yako ili bei ya kawaida ionekane.", "qr.live": "<b>✓ Inaonekana:</b> bei ya kawaida ya {i} nchini {c} imechapishwa — ripoti yako inaiweka sasa.", "qr.town": "Tafadhali andika mji au eneo.",
       "whatis": "CiO Costs ni chombo cha utabiri. Kinakadiria jinsi bei za vifaa vya ujenzi zinavyoweza kubadilika, pamoja na kiwango. Si takwimu rasmi, orodha ya bei wala ushauri wa kifedha.", "fc.note": "Utabiri, si uhakika: mara 8 kati ya 10 mabadiliko halisi huwa ndani ya kiwango.", "crowd.note": "Bei za kawaida zilizoripotiwa na wanunuzi — si bei rasmi wala za wasambazaji.", "emb.notadvice": "Utabiri · si ushauri",
       "rep.area": "Ni wapi?", "rep.incap": "Ndani ya", "rep.elsewhere": "Kwingineko nchini", "rep.check": "{p} {ccy} ni mbali na bei ya kawaida {u} {ccy}. Ni sahihi?", "rep.yes": "Ndiyo, ni sahihi — tuma", "rep.fix": "Niirekebishe", "th.item": "Bidhaa", "th.typical": "Bei ya kawaida", "th.elsewhere": "Kwingineko", "th.reporters": "Waliripoti", "th.vs4": "dhidi ya wiki 4", "crowd.areas": "Bei za maeneo zinatumia wiki 4 zilizopita na zinaonekana watu 3 wakiripoti kutoka eneo hilo.", "track.crowdsoon": "watu 3 wakiripoti bidhaa kwa wiki 4, tutaonyesha wanacholipa kando ya makadirio yetu hapa.", "track.addyours": "Ripoti bei", "track.vscrowd": "makadirio yetu dhidi ya wanacholipa watu", "track.est": "Makadirio yetu ya gharama za uagizaji, mwezi uliopita",
       "emb.lang": "Lugha", "emb.visitor": "Lugha ya mgeni", "emb.theme": "Rangi", "emb.match": "Kulingana na mgeni", "emb.light": "Mwanga", "emb.dark": "Giza", "emb.help": "Nakili msimbo huu kwenye ukurasa wowote wa tovuti. Kwenye WordPress, ongeza kizuizi cha “Custom HTML” na ubandike hapo. Unajisasisha wenyewe.", "emb.copy": "Nakili msimbo", "emb.copied": "Imenakiliwa ✓", "emb.preview": "Hakikisho", "emb.full": "Mtazamo kamili kwenye CiO Costs →", "emb.offline": "Anwani ya tovuti itajazwa yenyewe CiO Costs ikiwa mtandaoni.",
@@ -88,6 +89,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "qr.h": "Combien avez-vous payé cette semaine ?", "qr.d": "Indiquez un prix. C'est anonyme et prend 20 secondes — dès que 3 personnes signalent un article, tout le monde voit le prix habituel.", "qr.need": "<b>{n} sur 3</b> signalements cette semaine pour {i} au {c}. Ajoutez le vôtre pour débloquer le prix habituel.", "qr.live": "<b>✓ En ligne :</b> le prix habituel de {i} au {c} est publié — votre signalement le tient à jour.", "qr.town": "Veuillez indiquer la ville ou la zone.",
       "whatis": "CiO Costs est un outil de prévision. Il estime l'évolution probable des prix des matériaux de construction, avec une fourchette. Ce n'est ni une statistique officielle, ni une liste de prix, ni un conseil financier.", "fc.note": "Prévision, pas une garantie : 8 fois sur 10, la variation réelle tombe dans la fourchette.", "crowd.note": "Prix habituels signalés par des acheteurs — ni prix officiels, ni prix fournisseurs.", "emb.notadvice": "Prévision · pas un conseil",
       "rep.area": "Où ?", "rep.incap": "À", "rep.elsewhere": "Ailleurs dans le pays", "rep.check": "{p} {ccy} est loin du prix habituel de {u} {ccy}. Est-ce exact ?", "rep.yes": "Oui, c'est exact — envoyer", "rep.fix": "Je corrige", "th.item": "Article", "th.typical": "Prix habituel", "th.elsewhere": "Ailleurs", "th.reporters": "Signalements", "th.vs4": "sur 4 semaines", "crowd.areas": "Les prix par zone portent sur les 4 dernières semaines et s'affichent dès que 3 personnes de la zone ont signalé.", "track.crowdsoon": "dès que 3 personnes signalent un article pendant 4 semaines, nous affichons ici ce qu'elles paient à côté de notre estimation.", "track.addyours": "Signaler un prix", "track.vscrowd": "notre estimation vs ce que les gens paient", "track.est": "Notre estimation des coûts d'importation, mois dernier",
       "emb.lang": "Langue", "emb.visitor": "Langue du visiteur", "emb.theme": "Couleurs", "emb.match": "Comme le visiteur", "emb.light": "Clair", "emb.dark": "Sombre", "emb.help": "Copiez ce code dans n'importe quelle page web. Sur WordPress, ajoutez un bloc « HTML personnalisé » et collez-le. Il se met à jour tout seul.", "emb.copy": "Copier le code", "emb.copied": "Copié ✓", "emb.preview": "Aperçu", "emb.full": "Prévision complète sur CiO Costs →", "emb.offline": "L'adresse du site sera remplie automatiquement une fois CiO Costs en ligne.",
@@ -170,6 +172,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "qr.h": "What did you pay this week?", "qr.d": "Tell us one price. It is anonymous and takes 20 seconds — and once 3 people report an item, everyone sees the typical price.", "qr.need": "<b>{n} of 3</b> reports this week for {i} in {c}. Add yours to unlock the typical price.", "qr.live": "<b>✓ Live:</b> the typical price for {i} in {c} is published — your report keeps it current.", "qr.town": "Please type the town or area.",
       "whatis": "CiO Costs is a forecasting tool. It estimates how building material prices are likely to move, with a range. It is not an official statistic, a price list or financial advice.", "fc.note": "Forecast, not a guarantee: 8 times in 10 the real change falls inside the range.", "crowd.note": "Typical prices reported by buyers — not official or supplier prices.", "emb.notadvice": "Forecast · not advice",
       "rep.area": "Where is that?", "rep.incap": "In", "rep.elsewhere": "Elsewhere in the country", "rep.check": "{p} {ccy} is far from the usual {u} {ccy}. Is that right?", "rep.yes": "Yes, it's right — send", "rep.fix": "Let me fix it", "th.item": "Item", "th.typical": "Typical price", "th.elsewhere": "Elsewhere", "th.reporters": "Reporters", "th.vs4": "vs 4 weeks", "crowd.areas": "Area prices use the last 4 weeks and appear once 3 people report from that area.", "track.crowdsoon": "once 3 people report an item for 4 weeks, we show what they pay next to our estimate here.", "track.addyours": "Report a price", "track.vscrowd": "our estimate vs what people pay", "track.est": "Our import-cost estimate, last month",
       "lbl.chance": "chance of a rise",
@@ -507,6 +510,36 @@ window.I18N = (function () {
     catch (e) { msg.textContent = tr("net.unreach"); return false; }
   }
 
+  /* send a reported price; if it is far from the usual price, ask "is that right?" before saving */
+  async function sendPrice(d, msg, ccy, priceField, done) {
+    const j = await post(rel + "api/public/price", d, msg); if (!j) return;
+    if (j.check) {
+      msg.innerHTML = `${tr("rep.check", { p: Math.round(d.price).toLocaleString(), u: Math.round(j.usual).toLocaleString(), ccy })}
+        <span class=actions><button type=button class="btn primary" data-yes>${tr("rep.yes")}</button><button type=button class=btn data-fix>${tr("rep.fix")}</button></span>`;
+      $("[data-yes]", msg).onclick = () => sendPrice(Object.assign({}, d, { confirm: true }), msg, ccy, priceField, done);
+      $("[data-fix]", msg).onclick = () => { msg.textContent = ""; priceField.focus(); priceField.select(); }; return; }
+    msg.textContent = tr("rep.thanks"); priceField.value = ""; if (done) done();
+  }
+
+  /* ---------- quick "what did you pay?" form (home + country pages) ---------- */
+  $$(".quickrep").forEach(box => { const f = $("form", box), msg = $(".formmsg", f), it = f.querySelector("[name=item]"), town = $(".qr-town", f);
+    const key = () => { const h = box.closest("[data-key]"); return h ? h.dataset.key : (($("#mycountry") || {}).value || "uganda"); };
+    function setup() { const c = DATA.countries[key()]; if (!c) return; const prev = it.value;
+      it.innerHTML = (c.pitems || []).map(i => `<option value="${i.code}">${T.mat(i.name)}</option>`).join(""); if (prev) it.value = prev;
+      if (!it.value && it.options.length) it.selectedIndex = 0;
+      $("[data-qr-ccy]", f).textContent = `(${c.currency}${(c.pitems.find(i => i.code === it.value) || {}).unit ? " / " + c.pitems.find(i => i.code === it.value).unit : ""})`;
+      $$("[data-capital]", f).forEach(x => x.textContent = c.capital || "");
+      const n = (c.pending || {})[it.value] || 0, nm = T.mat((c.pitems.find(i => i.code === it.value) || {}).name || "");
+      $("[data-qr-progress]", box).innerHTML = n >= 3 ? tr("qr.live", { i: nm, c: cname(c) }) : tr("qr.need", { n, i: nm, c: cname(c) }); }
+    it.onchange = setup; $$("[name=area]", f).forEach(r => r.onchange = () => { town.hidden = f.querySelector("[name=area]:checked").value !== "other"; });
+    const my = $("#mycountry"); if (my && !box.closest("[data-key]")) my.addEventListener("change", () => { it.value = ""; setup(); });
+    setup();
+    f.onsubmit = ev => { ev.preventDefault(); const c = DATA.countries[key()], area = f.querySelector("[name=area]:checked").value;
+      const loc = area === "capital" ? c.capital : f.querySelector("[name=location]").value.trim();
+      if (!loc) { msg.textContent = tr("qr.town"); f.querySelector("[name=location]").focus(); return; }
+      sendPrice({ country: key(), item: it.value, price: +f.querySelector("[name=price]").value, location: loc, area, supplier: "" }, msg, c.currency,
+        f.querySelector("[name=price]"), () => { c.pending = c.pending || {}; c.pending[it.value] = (c.pending[it.value] || 0) + 1; setup(); msg.textContent = tr("rep.thanks"); }); }; });
+
   /* ---------- alerts (country pages) ---------- */
   $$(".alertbox").forEach(box => { const f = $("form", box), msg = $(".formmsg", box);
     f.onsubmit = async ev => { ev.preventDefault(); const d = Object.fromEntries(new FormData(f));
@@ -528,15 +561,8 @@ window.I18N = (function () {
           : `<span class=muted>${tr("rep.needs", { n: r.pending })}</span>`}</td><td>${r.published ? r.reporters : "–"}</td></tr>`).join("")}</tbody></table>`
         : `<p>${tr("rep.none", { c: R.flag + " " + T.country(R.cc, R.country) })}</p>`; }
     cs.onchange = refresh; refresh();
-    const send = async d => { const j = await post(rel + "api/public/price", d, msg); if (!j) return;
-      if (j.check) {                                  /* far from the usual price: probably a typo, so ask first */
-        const R = DATA.report[cs.value];
-        msg.innerHTML = `${tr("rep.check", { p: Math.round(d.price).toLocaleString(), u: Math.round(j.usual).toLocaleString(), ccy: R.currency })}
-          <span class=actions><button type=button class="btn primary" data-yes>${tr("rep.yes")}</button><button type=button class=btn data-fix>${tr("rep.fix")}</button></span>`;
-        $("[data-yes]", msg).onclick = () => send(Object.assign({}, d, { confirm: true }));
-        $("[data-fix]", msg).onclick = () => { msg.textContent = ""; fld("price").focus(); fld("price").select(); }; return; }
-      msg.textContent = tr("rep.thanks"); fld("price").value = ""; };
-    rf.onsubmit = ev => { ev.preventDefault(); const d = Object.fromEntries(new FormData(rf)); d.price = +d.price; send(d); };
+    rf.onsubmit = ev => { ev.preventDefault(); const d = Object.fromEntries(new FormData(rf)); d.price = +d.price;
+      sendPrice(d, msg, DATA.report[cs.value].currency, fld("price")); };
   }
 
   /* ---------- bid escalation calculator ---------- */

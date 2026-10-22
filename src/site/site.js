@@ -247,6 +247,36 @@
     catch (e) { msg.textContent = tr("net.unreach"); return false; }
   }
 
+  /* send a reported price; if it is far from the usual price, ask "is that right?" before saving */
+  async function sendPrice(d, msg, ccy, priceField, done) {
+    const j = await post(rel + "api/public/price", d, msg); if (!j) return;
+    if (j.check) {
+      msg.innerHTML = `${tr("rep.check", { p: Math.round(d.price).toLocaleString(), u: Math.round(j.usual).toLocaleString(), ccy })}
+        <span class=actions><button type=button class="btn primary" data-yes>${tr("rep.yes")}</button><button type=button class=btn data-fix>${tr("rep.fix")}</button></span>`;
+      $("[data-yes]", msg).onclick = () => sendPrice(Object.assign({}, d, { confirm: true }), msg, ccy, priceField, done);
+      $("[data-fix]", msg).onclick = () => { msg.textContent = ""; priceField.focus(); priceField.select(); }; return; }
+    msg.textContent = tr("rep.thanks"); priceField.value = ""; if (done) done();
+  }
+
+  /* ---------- quick "what did you pay?" form (home + country pages) ---------- */
+  $$(".quickrep").forEach(box => { const f = $("form", box), msg = $(".formmsg", f), it = f.querySelector("[name=item]"), town = $(".qr-town", f);
+    const key = () => { const h = box.closest("[data-key]"); return h ? h.dataset.key : (($("#mycountry") || {}).value || "uganda"); };
+    function setup() { const c = DATA.countries[key()]; if (!c) return; const prev = it.value;
+      it.innerHTML = (c.pitems || []).map(i => `<option value="${i.code}">${T.mat(i.name)}</option>`).join(""); if (prev) it.value = prev;
+      if (!it.value && it.options.length) it.selectedIndex = 0;
+      $("[data-qr-ccy]", f).textContent = `(${c.currency}${(c.pitems.find(i => i.code === it.value) || {}).unit ? " / " + c.pitems.find(i => i.code === it.value).unit : ""})`;
+      $$("[data-capital]", f).forEach(x => x.textContent = c.capital || "");
+      const n = (c.pending || {})[it.value] || 0, nm = T.mat((c.pitems.find(i => i.code === it.value) || {}).name || "");
+      $("[data-qr-progress]", box).innerHTML = n >= 3 ? tr("qr.live", { i: nm, c: cname(c) }) : tr("qr.need", { n, i: nm, c: cname(c) }); }
+    it.onchange = setup; $$("[name=area]", f).forEach(r => r.onchange = () => { town.hidden = f.querySelector("[name=area]:checked").value !== "other"; });
+    const my = $("#mycountry"); if (my && !box.closest("[data-key]")) my.addEventListener("change", () => { it.value = ""; setup(); });
+    setup();
+    f.onsubmit = ev => { ev.preventDefault(); const c = DATA.countries[key()], area = f.querySelector("[name=area]:checked").value;
+      const loc = area === "capital" ? c.capital : f.querySelector("[name=location]").value.trim();
+      if (!loc) { msg.textContent = tr("qr.town"); f.querySelector("[name=location]").focus(); return; }
+      sendPrice({ country: key(), item: it.value, price: +f.querySelector("[name=price]").value, location: loc, area, supplier: "" }, msg, c.currency,
+        f.querySelector("[name=price]"), () => { c.pending = c.pending || {}; c.pending[it.value] = (c.pending[it.value] || 0) + 1; setup(); msg.textContent = tr("rep.thanks"); }); }; });
+
   /* ---------- alerts (country pages) ---------- */
   $$(".alertbox").forEach(box => { const f = $("form", box), msg = $(".formmsg", box);
     f.onsubmit = async ev => { ev.preventDefault(); const d = Object.fromEntries(new FormData(f));
@@ -268,15 +298,8 @@
           : `<span class=muted>${tr("rep.needs", { n: r.pending })}</span>`}</td><td>${r.published ? r.reporters : "–"}</td></tr>`).join("")}</tbody></table>`
         : `<p>${tr("rep.none", { c: R.flag + " " + T.country(R.cc, R.country) })}</p>`; }
     cs.onchange = refresh; refresh();
-    const send = async d => { const j = await post(rel + "api/public/price", d, msg); if (!j) return;
-      if (j.check) {                                  /* far from the usual price: probably a typo, so ask first */
-        const R = DATA.report[cs.value];
-        msg.innerHTML = `${tr("rep.check", { p: Math.round(d.price).toLocaleString(), u: Math.round(j.usual).toLocaleString(), ccy: R.currency })}
-          <span class=actions><button type=button class="btn primary" data-yes>${tr("rep.yes")}</button><button type=button class=btn data-fix>${tr("rep.fix")}</button></span>`;
-        $("[data-yes]", msg).onclick = () => send(Object.assign({}, d, { confirm: true }));
-        $("[data-fix]", msg).onclick = () => { msg.textContent = ""; fld("price").focus(); fld("price").select(); }; return; }
-      msg.textContent = tr("rep.thanks"); fld("price").value = ""; };
-    rf.onsubmit = ev => { ev.preventDefault(); const d = Object.fromEntries(new FormData(rf)); d.price = +d.price; send(d); };
+    rf.onsubmit = ev => { ev.preventDefault(); const d = Object.fromEntries(new FormData(rf)); d.price = +d.price;
+      sendPrice(d, msg, DATA.report[cs.value].currency, fld("price")); };
   }
 
   /* ---------- bid escalation calculator ---------- */
