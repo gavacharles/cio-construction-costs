@@ -194,7 +194,7 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
  <div class=odds><div><span class=pct data-pct>–</span><span class=pct-l data-i18n=lbl.chance>chance of a rise</span></div><div class=spark-slot data-spark></div></div>
  <div class=pbar><span data-bar></span></div>
  <dl class=facts><div><dt data-i18n=lbl.expected.cap>Expected change</dt><dd data-exp>–</dd></div><div><dt data-i18n=lbl.range.cap>Likely range (8 in 10)</dt><dd data-rng>–</dd></div></dl>
- <p class=advice data-advice></p>
+ <p class=advice data-advice></p><ul class=match data-match hidden></ul>
  <div class=card-foot><a class='btn primary' href="countries/{c['key']}/index.html"><span data-i18n=btn.seecosts data-c="{e(c['country'])}">See costs in {e(c['country'])}</span> <span aria-hidden=true>→</span></a>
  <a class=link href="play.html#{c['key']}" data-i18n=link.makecall>Make your call</a></div></article>""" for c in cs)
     order = sorted(cs, key=lambda c: (c["key"] not in FEATURED, FEATURED.index(c["key"]) if c["key"] in FEATURED else 0, c["country"]))
@@ -238,7 +238,7 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
 
 <nav class=tabs id=countries aria-label="Filter countries">{tab_html}</nav>
 <div class=toolbar><label class=search><span class=sr-only>Search</span>
- <input id=q type=search data-i18n-ph=search.ph placeholder="Search a country, material or currency — e.g. cement" autocomplete=off></label>
+ <input id=q type=search data-i18n-ph=search.ph placeholder="Search countries and materials — e.g. Kenya Uganda cement" autocomplete=off></label>
  <span class=count id=count aria-live=polite></span></div>
 <div class=grid id=grid>{cards}</div>
 <p class=empty id=empty data-i18n=empty>No country matches. Try “cement”, “Kenya” or “West”.</p>
@@ -517,7 +517,7 @@ def build() -> Path:
     default = f"M:{months[2]}"
     updated = max((c["generated"] for c in cs), default=date.today().isoformat())
     slim = {c["key"]: dict({k: c[k] for k in ("country", "flag", "currency", "region", "kind", "official", "base", "head",
-                                              "paths", "spark", "drivers", "materials", "step")},
+                                              "paths", "spark", "drivers", "materials", "step", "items")},
                            cc=ISO2.get(load_country(c["key"])["iso3"], ""),
                            crowd={r["name"]: r["median"] for r in crowd(c["key"]) if r.get("published")}) for c in cs}
     quiz = [{"key": c["key"], "country": c["country"], "flag": c["flag"], "cc": slim[c["key"]]["cc"], "material": m["name"], "period": p, "change": v,

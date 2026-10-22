@@ -6,6 +6,7 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "match.by": "inayotarajiwa kufikia {when}", "match.last": "rasmi, ya karibuni ({p})", "match.ind": "gharama za uagizaji {x} kufikia {when}",
       "share": "Shiriki", "wa.weekly": "Taarifa ya kila wiki bure kwenye WhatsApp",
       "nav.prices": "Bei", "nav.plan": "Panga zabuni", "nav.reportshort": "Ripoti bei", "nav.playshort": "Cheza", "pick.country": "Nchi yako", "chip.yours": "Nchi yako", "chip.officialdata": "Takwimu rasmi", "chip.estimate": "Makadirio", "tip.official": "Imejengwa kutoka takwimu rasmi za bei za ujenzi za nchi, ikisasishwa kwa mabadiliko ya mafuta na sarafu ya wiki hii.", "tip.estimate": "Bado hakuna fahirisi rasmi ya bei za ujenzi inayotumika: haya ni makadirio ya shinikizo kwa vifaa vinavyoagizwa kutoka bei za mafuta na kiwango cha ubadilishaji. Vifaa vya ndani na kazi havijajumuishwa.", "trust.sources": "Takwimu rasmi kutoka UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD na Statistics Mauritius", "trust.track": "Rekodi ya usahihi", "trust.ago": "imesasishwa saa {h} zilizopita", "trust.justnow": "imesasishwa sasa hivi", "wa.follow": "Fuata kwenye WhatsApp (bure)", "money.h": "Bei yako", "money.ph": "Bei yako ya mwisho", "money.need": "Andika bei uliyolipa mara ya mwisho kuona bei inayotarajiwa.", "money.out": "Tarajia takriban {p} kufikia {when} (kwa uwezekano mkubwa {lo} – {hi}).", "alert.email": "Barua pepe", "tab.official": "Takwimu rasmi", "tab.indicator": "Makadirio",
       "nav.countries": "Nchi", "nav.glance": "Gharama kwa muhtasari", "nav.calc": "Kikokotoo cha zabuni", "nav.report": "Ripoti bei",
@@ -23,7 +24,7 @@ window.I18N = (function () {
       "lbl.chance": "uwezekano wa kupanda", "lbl.expected": "mabadiliko yanayotarajiwa", "lbl.range": "kiwango kinachowezekana (8 kati ya 10)",
       "lbl.expected.cap": "Mabadiliko yanayotarajiwa", "lbl.range.cap": "Kiwango kinachowezekana (8 kati ya 10)",
       "btn.seecosts": "Ona gharama: {c}", "link.makecall": "Toa kisio lako", "btn.bymaterial": "Ona gharama kwa kila kifaa", "btn.play": "Cheza The Cost Call",
-      "feat.bymaterial": "Kwa kila kifaa, hadi", "search.ph": "Tafuta nchi, kifaa au sarafu — mf. saruji", "empty": "Hakuna nchi inayolingana. Jaribu “saruji”, “Kenya” au “Magharibi”.",
+      "feat.bymaterial": "Kwa kila kifaa, hadi", "search.ph": "Tafuta nchi na vifaa — mf. Kenya Uganda saruji", "empty": "Hakuna nchi inayolingana. Jaribu “saruji”, “Kenya” au “Magharibi”.",
       "glance.h": "Gharama kwa muhtasari", "glance.sort": "Bofya safu kupanga", "th.country": "Nchi", "th.latest": "Takwimu rasmi za karibuni",
       "th.offyear": "Mabadiliko rasmi, mwaka", "th.expby": "Yanayotarajiwa kufikia", "th.range": "Kiwango kinachowezekana", "th.chance": "Uwezekano wa kupanda",
       "th.fx": "Sarafu dhidi ya USD, wiki 13", "game.eyebrow": "Mpya · mchezo wa kila siku",
@@ -82,6 +83,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "match.by": "attendu d'ici {when}", "match.last": "officiel, dernier ({p})", "match.ind": "coûts d'importation {x} d'ici {when}",
       "share": "Partager", "wa.weekly": "Point hebdomadaire gratuit sur WhatsApp",
       "nav.prices": "Prix", "nav.plan": "Préparer une offre", "nav.reportshort": "Signaler un prix", "nav.playshort": "Jouer", "pick.country": "Votre pays", "chip.yours": "Votre pays", "chip.officialdata": "Données officielles", "chip.estimate": "Estimation", "tip.official": "Construit à partir des statistiques officielles des prix de la construction du pays, mis à jour avec les variations du pétrole et de la monnaie de la semaine.", "tip.estimate": "Pas encore d'indice officiel utilisable des prix de la construction : estimation de la pression sur les matériaux importés à partir du prix du pétrole et du taux de change. Matériaux locaux et main-d'œuvre non inclus.", "trust.sources": "Données officielles de l'UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD et Statistics Mauritius", "trust.track": "Historique de précision", "trust.ago": "mis à jour il y a {h} h", "trust.justnow": "mis à jour à l'instant", "wa.follow": "Suivre sur WhatsApp (gratuit)", "money.h": "Votre prix", "money.ph": "Votre dernier prix", "money.need": "Saisissez le dernier prix payé pour voir le prix attendu.", "money.out": "Prévoyez environ {p} d'ici {when} (le plus probable : {lo} – {hi}).", "alert.email": "E-mail", "tab.official": "Données officielles", "tab.indicator": "Estimations",
       "nav.countries": "Pays", "nav.glance": "Coûts en un coup d'œil", "nav.calc": "Calculateur d'offre", "nav.report": "Signaler des prix",
@@ -99,7 +101,7 @@ window.I18N = (function () {
       "lbl.chance": "probabilité de hausse", "lbl.expected": "variation attendue", "lbl.range": "fourchette probable (8 sur 10)",
       "lbl.expected.cap": "Variation attendue", "lbl.range.cap": "Fourchette probable (8 sur 10)",
       "btn.seecosts": "Voir les coûts : {c}", "link.makecall": "Faire votre pronostic", "btn.bymaterial": "Voir les coûts par matériau", "btn.play": "Jouer à The Cost Call",
-      "feat.bymaterial": "Par matériau, jusqu'à", "search.ph": "Rechercher un pays, un matériau ou une monnaie — ex. ciment", "empty": "Aucun pays ne correspond. Essayez « ciment », « Kenya » ou « Ouest ».",
+      "feat.bymaterial": "Par matériau, jusqu'à", "search.ph": "Rechercher pays et matériaux — ex. Kenya Ouganda ciment", "empty": "Aucun pays ne correspond. Essayez « ciment », « Kenya » ou « Ouest ».",
       "glance.h": "Coûts en un coup d'œil", "glance.sort": "Cliquez sur une colonne pour trier", "th.country": "Pays", "th.latest": "Dernière donnée officielle",
       "th.offyear": "Variation officielle sur un an", "th.expby": "Attendu d'ici", "th.range": "Fourchette probable", "th.chance": "Probabilité de hausse",
       "th.fx": "Monnaie face à l'USD, 13 semaines", "game.eyebrow": "Nouveau · jeu quotidien",
@@ -158,6 +160,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "match.by": "expected by {when}", "match.last": "official, latest ({p})", "match.ind": "import costs {x} by {when}",
       "share": "Share", "wa.weekly": "Free weekly update on WhatsApp",
       "nav.prices": "Prices", "nav.plan": "Plan a bid", "nav.reportshort": "Report a price", "nav.playshort": "Play", "pick.country": "Your country", "chip.yours": "Your country", "chip.officialdata": "Official data", "chip.estimate": "Estimate", "tip.official": "Built from the country's official construction price statistics, updated with this week's oil and currency moves.", "tip.estimate": "No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.", "trust.sources": "Official data from UBOS, KNBS, Stats SA, GSS, ZimStat, ANSD and Statistics Mauritius", "trust.track": "Track record", "trust.ago": "updated {h} h ago", "trust.justnow": "updated just now", "wa.follow": "Follow on WhatsApp (free)", "money.h": "Your price", "money.ph": "Your latest price", "money.need": "Type what you paid last to see the expected price.", "money.out": "Expect about {p} by {when} (most likely {lo} – {hi}).", "alert.email": "Email", "tab.official": "Official data", "tab.indicator": "Estimates",
       "q.official": "Will {c}'s construction input prices rise by {when}?", "q.indicator": "Will import costs push {c}'s building prices up by {when}?",

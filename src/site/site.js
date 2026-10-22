@@ -134,11 +134,44 @@
 
   /* ---------- filters + search ---------- */
   const tabs = $$(".tabs button"), qbox = $("#q"), count = $("#count"), empty = $("#empty"); let tab = "all";
+  /* search: countries and materials together. "uganda kenya cement" = (Uganda or Kenya) with cement.
+     Country words are OR-ed, material words AND-ed; every word matches the start of a word, in any language shown. */
+  const norm = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const words = x => norm(x).split(/[^a-z0-9]+/).filter(Boolean);
+  const STOP = new Set(["and", "in", "of", "the", "for", "price", "prices", "cost", "costs", "africa", "na", "ya", "za", "bei", "gharama",
+    "et", "de", "du", "la", "le", "les", "en", "prix", "cout", "couts", "afrique"]);
+  const STEEL = ["steel", "rebar", "reinforc"];
+  const SYN = { steel: STEEL, rebar: STEEL, iron: STEEL, nondo: STEEL, chuma: STEEL, fer: STEEL, acier: STEEL, petrol: ["fuel"], gasoil: ["fuel", "diesel"],
+    gazole: ["diesel"], dizeli: ["diesel"], ballast: ["stone", "aggregate"], gravel: ["stone", "aggregate"], aggregate: ["stone", "ballast"],
+    concrete: ["ready"], saruji: ["cement"], ciment: ["cement"], mchanga: ["sand"], sable: ["sand"], labor: ["labour"], kazi: ["labour"] };
+  const REG = { east: ["east", "mashariki", "est"], south: ["southern", "kusini", "australe"], west: ["west", "magharibi", "ouest"], north: ["north", "kaskazini", "nord"] };
+  const idx = {};
+  function index(k) { if (idx[k]) return idx[k]; const c = DATA.countries[k];
+    const mats = [...new Set([...Object.keys(c.paths || {}), ...(c.materials || []).map(m => m.name), ...(c.items || [])])];
+    const names = ["en", "fr", "sw"].map(l => { try { return new Intl.DisplayNames([l], { type: "region" }).of(c.cc) || ""; } catch (e) { return ""; } });
+    return (idx[k] = { place: words([c.country, cname(c), ...names, k.replace("_", " "), c.currency, c.cc].join(" ")), region: REG[c.region] || [],
+      mats: mats.map(m => ({ name: m, w: words(m + " " + T.mat(m)) })) }); }
+  const hit = (ws, t) => ws.some(w => w.startsWith(t) || (SYN[t] || []).some(y => w.startsWith(y)));
+  function matchLine(c, name) {
+    const p = (c.paths || {})[name], m = (c.materials || []).find(x => x.name === name);
+    if (p) { const x = at(p, target); if (x) return `<b>${T.mat(name)}</b> ${pct(x.q.median)} <span class=muted>${tr("match.by", { when: tLabel(target) })}</span>`; }
+    if (m && m.change_period != null) return `<b>${T.mat(name)}</b> ${pct(m.change_period)} <span class=muted>${tr("match.last", { p: qlabel(m.period, c.step) })}</span>`;
+    const h = at(c.paths[c.head], target); if (!h) return "";
+    return `<b>${T.mat(name)}</b> <span class=muted>${tr("match.ind", { x: pct(h.q.median), when: tLabel(target) })}</span>`; }
   function applyFilters() {
-    const cards = $$("#grid .card"); if (!cards.length) return; const s = (qbox && qbox.value || "").trim().toLowerCase(); let n = 0;
-    cards.forEach(c => { const d = c.dataset;
+    const cards = $$("#grid .card"); if (!cards.length) return; let n = 0;
+    const toks = words(qbox && qbox.value).filter(t => !STOP.has(t)), keys = cards.map(c => c.dataset.key);
+    const isPlace = t => keys.some(k => hit(index(k).place, t) || index(k).region.some(r => r.startsWith(t)));
+    const places = toks.filter(isPlace), mats = toks.filter(t => !isPlace(t));
+    cards.forEach(c => { const d = c.dataset, ix = index(d.key);
       const okTab = tab === "all" || (tab === "official" || tab === "indicator" ? d.type === tab : (tab === "rising" || tab === "easing") ? d.trend === tab : d.region === tab);
-      const ok = okTab && (!s || d.search.indexOf(s) >= 0); c.hidden = !ok; if (ok) n++; });
+      const okPlace = !places.length || places.some(t => hit(ix.place, t) || ix.region.some(r => r.startsWith(t)));
+      let found = mats.length ? ix.mats.filter(m => mats.every(t => hit(m.w, t))) : [];
+      const c0 = DATA.countries[d.key], measured = found.filter(m => (c0.paths || {})[m.name] || (c0.materials || []).some(x => x.name === m.name));
+      if (measured.length) found = measured;               /* official countries: show the measured series, not the report item */
+      const ok = okTab && okPlace && (!mats.length || found.length); c.hidden = !ok; if (ok) n++;
+      const box = $("[data-match]", c); if (box) { box.hidden = !(ok && found.length);
+        box.innerHTML = ok ? found.slice(0, 3).map(m => `<li>${matchLine(DATA.countries[d.key], m.name)}</li>`).join("") : ""; } });
     if (count) count.textContent = tr("count", { n, m: cards.length }); if (empty) empty.style.display = n ? "none" : "block";
   }
   tabs.forEach(b => b.onclick = () => { tab = b.dataset.tab; tabs.forEach(x => x.setAttribute("aria-pressed", String(x === b))); applyFilters(); });
