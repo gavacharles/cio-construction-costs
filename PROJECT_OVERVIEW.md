@@ -126,6 +126,7 @@ key** (see `docs/DEPLOY.md` §1). No personal GitHub password or token goes on t
 |---|---|---|
 | Daily 06:30 | `cycle.py daily` | Harvest official releases, settle contracts, refit on a new UBOS release, open new contracts |
 | Monday 05:00 | `cycle.py weekly` | Refresh drivers and write the 18 weekly notes |
+| Every 3 hours | `cycle.py refresh` | Latest oil and exchange rates → all 18 forecasts → public site pages (seconds) |
 | Nightly 02:00 | `deploy/backup.sh` | Consistent SQLite backup, kept 30 days |
 
 Each step is logged to `data/live/cycle_log.csv`, and cron output to `data/live/cron.log`.

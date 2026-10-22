@@ -24,7 +24,7 @@ Status: available: quarterly Construction Price Index (materials 68.6%); adapter
 |---|---|---|
 | Last 3 months (observed) | +4.5% | – |
 | Next 3 months | +0.4% | -1.9% to +3.2% |
-| Next 6 months | +0.5% | -2.9% to +5.0% |
+| Next 6 months | +0.6% | -2.9% to +4.9% |
 
 In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
@@ -38,4 +38,4 @@ _No open contracts._
 
 ## Sources
 
-UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall); methods in docs/FORECAST_MODEL.md and docs/OPERATIONS.md.
+UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall). How the forecasts work: see How it works on the CiO site.

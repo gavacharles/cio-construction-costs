@@ -3,7 +3,8 @@
 cycle.py — the automated operating cycle (run from cron; see deploy/crontab.example).
 
     python src/market/cycle.py daily    # harvest UBOS + KNBS; on a new release: settle, refit, open
-    python src/market/cycle.py weekly   # refresh weekly drivers + rainfall, write the weekly note
+    python src/market/cycle.py weekly   # refresh weekly drivers + rainfall, write the weekly notes
+    python src/market/cycle.py refresh  # every few hours: latest oil/FX -> forecasts -> site pages
 
 Both are idempotent: running twice does nothing new. Every step is logged to
 data/live/cycle_log.csv; a failing step is logged and the rest still run.
@@ -81,6 +82,14 @@ def daily(db: str | None) -> None:
         run(f"open {c}", *mkt, *(["--db", db] if db else []), "open", "--country", c)
 
 
+def refresh(db: str | None) -> None:
+    """Every few hours: latest oil and exchange rates -> every country's forecast -> site pages.
+    Takes seconds; the forecasts move as the outlook moves. Notes stay weekly."""
+    run("drivers", "src/ingest/build_weekly_drivers.py")
+    run("forecasts", "src/forecast/weekly_note.py", "--country", "all", "--no-fetch", "--data-only", db=db)
+    run("site", "src/site/build_index.py")
+
+
 def weekly(db: str | None) -> None:
     run("rainfall", "src/ingest/build_rainfall_block.py")
     run("fx history", "src/ingest/build_fx_history.py")
@@ -90,8 +99,8 @@ def weekly(db: str | None) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("job", choices=["daily", "weekly"])
+    ap.add_argument("job", choices=["daily", "weekly", "refresh"])
     ap.add_argument("--db", default=os.environ.get("CIO_DB"),
                     help="ledger path (default: $CIO_DB, the app's database; else data/live/exchange.sqlite)")
     a = ap.parse_args()
-    (daily if a.job == "daily" else weekly)(a.db)
+    {"daily": daily, "weekly": weekly, "refresh": refresh}[a.job](a.db)

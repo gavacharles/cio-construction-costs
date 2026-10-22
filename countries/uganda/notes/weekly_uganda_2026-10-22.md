@@ -16,18 +16,18 @@ Change from the last UBOS release (**April 2026**), with the 6 months of Brent a
 
 | Series | Month | Expected | Range | Without new data |
 |---|---|---|---|---|
-| Overall construction inputs | Oct 2026 | +2.9% | +2.0% to +5.2% | +3.1% |
-| Overall construction inputs | Jan 2027 | +5.6% | +4.1% to +8.5% | +4.1% |
-| Diesel | Oct 2026 | +11.8% | +5.5% to +22.9% | +12.1% |
-| Diesel | Jan 2027 | +24.3% | +15.0% to +39.2% | +14.2% |
-| Cement | Oct 2026 | +2.5% | -2.2% to +8.1% | +3.6% |
-| Cement | Jan 2027 | +4.8% | -2.1% to +12.4% | +4.3% |
-| Rebar | Oct 2026 | +4.2% | +1.8% to +8.6% | +2.2% |
-| Rebar | Jan 2027 | +6.7% | +2.9% to +12.1% | +3.8% |
-| Sand | Oct 2026 | +1.3% | -1.0% to +11.3% | +1.5% |
-| Sand | Jan 2027 | +2.6% | -1.0% to +12.8% | +2.5% |
-| Labour | Oct 2026 | +0.9% | -0.2% to +2.5% | +0.9% |
-| Labour | Jan 2027 | +1.5% | +0.1% to +4.3% | +1.5% |
+| Overall construction inputs | Oct 2026 | +2.9% | +1.9% to +5.5% | +3.1% |
+| Overall construction inputs | Jan 2027 | +5.6% | +4.0% to +8.9% | +4.1% |
+| Diesel | Oct 2026 | +12.0% | +5.3% to +23.3% | +12.0% |
+| Diesel | Jan 2027 | +24.4% | +14.9% to +39.6% | +14.3% |
+| Cement | Oct 2026 | +2.4% | -2.2% to +8.4% | +3.6% |
+| Cement | Jan 2027 | +4.6% | -2.0% to +12.6% | +4.1% |
+| Rebar | Oct 2026 | +4.2% | +1.9% to +8.7% | +2.2% |
+| Rebar | Jan 2027 | +6.7% | +2.9% to +12.5% | +3.8% |
+| Sand | Oct 2026 | +1.2% | -0.9% to +10.9% | +1.4% |
+| Sand | Jan 2027 | +2.5% | -0.7% to +12.6% | +2.5% |
+| Labour | Oct 2026 | +1.0% | -0.2% to +2.7% | +1.0% |
+| Labour | Jan 2027 | +1.6% | +0.1% to +4.7% | +1.5% |
 
 July 2026 excise changes (fuel +Shs200/l, cement, paint) are included at 50% pass-through.
 
@@ -41,4 +41,4 @@ _No open contracts._
 
 ## Sources
 
-UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall); methods in docs/FORECAST_MODEL.md and docs/OPERATIONS.md.
+UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall). How the forecasts work: see How it works on the CiO site.

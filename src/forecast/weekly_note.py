@@ -64,6 +64,48 @@ def _spark(label: str, series) -> None:
                       "values": [round(float(v), 3) for v in s.values]}
 
 
+def _calib(h: int) -> float:
+    """Backtest calibration factor for Uganda's 80% bands at horizon h (1.0 if not available)."""
+    f = ROOT / "countries" / "uganda" / "outputs" / "forecast" / "interval_calibration.csv"
+    if not f.exists():
+        return 1.0
+    c = pd.read_csv(f)
+    return float(np.interp(h, c.h, c.scale))
+
+
+def _entry(month, lo, med, hi) -> dict:
+    return {"month": pd.Timestamp(month).strftime("%Y-%m"), "median": round(float(med), 3),
+            "lo": round(float(lo), 3), "hi": round(float(hi), 3)}
+
+
+def _boot_path(changes: pd.Series, start, H: int = 12, n: int = 4000, block: int = 3, seed: int = 0) -> list[dict]:
+    """Cumulative % change paths from block-resampled recent monthly changes (last 60 months)."""
+    x = changes.dropna().tail(60).values
+    rng = np.random.default_rng(seed)
+    nb = int(np.ceil(H / block))
+    st = rng.integers(0, len(x) - block + 1, size=(n, nb))
+    cum = np.cumsum(x[(st[..., None] + np.arange(block)).reshape(n, -1)[:, :H]], axis=1)
+    months = pd.date_range(pd.Timestamp(start) + pd.DateOffset(months=1), periods=H, freq="MS")
+    return [_entry(m, *np.percentile(cum[:, i], [10, 50, 90])) for i, m in enumerate(months)]
+
+
+def _materials(items, step: str) -> None:
+    """Latest official change per material: on the previous period and on a year earlier."""
+    lag = 4 if step == "quarter" else 12
+    out = []
+    for name, lv in items:
+        lv = pd.Series(lv).dropna()
+        if len(lv) < 2:
+            continue
+        yr = (lv.iloc[-1] / lv.iloc[-1 - lag] - 1) * 100 if len(lv) > lag else None
+        ch = (lv / lv.shift(1) - 1).dropna().tail(24) * 100
+        out.append({"name": name, "period": pd.Timestamp(lv.index[-1]).strftime("%Y-%m"),
+                    "change_period": round(float((lv.iloc[-1] / lv.iloc[-2] - 1) * 100), 2),
+                    "change_year": None if yr is None else round(float(yr), 2),
+                    "history": [[pd.Timestamp(d).strftime("%Y-%m"), round(float(v), 2)] for d, v in ch.items()]})
+    _DATA["materials"] = {"step": step, "items": out}
+
+
 def _p_up(probs, cuts) -> float:
     """P(change > 0) from bucket probabilities: buckets whose lower edge is at or above zero,
     excluding an explicit "unchanged" bucket [0, 0.01)."""
@@ -112,11 +154,11 @@ def drivers_section(weekly: pd.DataFrame, country: str) -> list[str]:
     return out
 
 
-def forecast_section(cfg, structure, macro, ext, events, months_ahead: int = 4):
+def forecast_section(cfg, structure, macro, ext, events, months_ahead: int = 4, path_months: int = 12):
     m = ForecastModel(cfg).fit(structure, macro)
     m.events = events
     today = pd.Timestamp(date.today()).to_period("M").to_timestamp()
-    H = max(1, (today.to_period("M") - m.origin.to_period("M")).n + months_ahead)
+    H = max(1, (today.to_period("M") - m.origin.to_period("M")).n + max(months_ahead, path_months))
     known = known_primitives(macro, ext, cfg, m.origin, H, m.prim_cols)
     P_known = m.simulate(H, n_paths=1000, known=known)
     P_blind = m.simulate(H, n_paths=1000)
@@ -137,7 +179,19 @@ def forecast_section(cfg, structure, macro, ext, events, months_ahead: int = 4):
             rows.append({"series": name, "month": d.strftime("%b %Y"), "median": q[1], "lo": q[0], "hi": q[2],
                          "without_new_data": blind})
     n_known = int((~np.isnan(known)).any(axis=1).sum())
-    return pd.DataFrame(rows), m.origin, n_known
+    paths = {}
+    for key, name in KEY.items():
+        if key == "ALL":
+            pk, base = m.aggregate_paths(P_known, "ALL"), structure.published["ALL"].iloc[-1]
+        else:
+            pk, base = P_known[:, :, cols.index(key)], structure.levels[key].iloc[-1]
+        ent = []
+        for i, d in enumerate(months):
+            lo, med, hi = np.percentile(pk[:, i] / base * 100 - 100, [10, 50, 90])
+            k = _calib(i + 1)
+            ent.append(_entry(d, med - k * (med - lo), med, med + k * (hi - med)))
+        paths[name] = ent
+    return pd.DataFrame(rows), m.origin, n_known, paths
 
 
 def crowd_section(db_path: Path, country: str) -> list[str]:
@@ -195,7 +249,16 @@ def uganda_body(weekly) -> list[str]:
     macro = load_macro(cfg, ROOT)
     ext_f = ROOT / "data" / "shared" / "macro_extension_monthly.csv"
     ext = pd.read_csv(ext_f, parse_dates=["date"]).set_index("date") if ext_f.exists() else None
-    fc, origin, n_known = forecast_section(cfg, structure, macro, ext, load_policy_events(cfg, ROOT))
+    fc, origin, n_known, paths = forecast_section(cfg, structure, macro, ext, load_policy_events(cfg, ROOT))
+    _DATA.update(paths=paths, base=f"{origin:%b %Y}")
+    lv = structure.levels
+    _materials([(n, lv[c]) for n, c in [
+        ("Cement", "cement"), ("Reinforcement steel", "high tensile steel bars"),
+        ("Roofing sheets", "sheet steel, roofing sheets and similar"), ("Diesel", "diesel"), ("Sand", "sand"),
+        ("Aggregate", "aggregate, hardcore, crushed or broken stone"), ("Concrete blocks", "concrete bricks, blocks and slabs"),
+        ("Timber", "timber, coniferous, greater than 6mm thick"), ("Paint", "paints and varnishes"),
+        ("Plastic pipes", "plastic pipes and fittings"), ("Tiles", "ceramic wall and floor tiles"), ("Labour", "labour")]
+        if c in lv], "month")
     lines = ["## Expected change in input prices", "",
              f"Change from the last UBOS release (**{origin:%B %Y}**), with the {n_known} months of Brent and "
              "shilling readings since then built in. Apply these to your own last known quote for the "
@@ -239,8 +302,18 @@ def kenya_body(weekly) -> list[str]:
         m = next(x for x in cfg["markets"] if x["code"] == code)
         lv = history(rel, m["label"], cfg)
         mod = QuarterlyModel().fit(lv, D)
-        paths, futq = mod.simulate(2, known=D[D.index > mod.origin])
+        paths, futq = mod.simulate(4, known=D[D.index > mod.origin])
         bt = backtest(lv, D)
+        halves = {h: float(np.quantile(np.abs(bt[bt.h == h].actual - bt[bt.h == h].model), 0.8))
+                  for h in (1, 2) if len(bt[bt.h == h])}
+        ent = []
+        for h in range(1, 5):
+            sim = 100 * np.log(paths[:, h - 1] / mod.last_level)
+            md = float(np.median(sim))
+            hf = halves.get(h, halves.get(2, 1.0) * np.sqrt(h / 2))
+            for k in range(3):                        # each month of the quarter shows that quarter's print
+                ent.append(_entry(futq[h - 1] + pd.DateOffset(months=k), md - hf, md, md + hf))
+        _DATA.setdefault("paths", {})[m["title"]] = ent
         for h in (1, 2):
             sim = 100 * np.log(paths[:, h - 1] / mod.last_level)
             med = float(np.median(sim))
@@ -253,6 +326,12 @@ def kenya_body(weekly) -> list[str]:
                  lo=med - half, hi=med + half)
     _spark("Overall construction input index (KNBS, quarterly)",
            history(rel, next(x for x in cfg["markets"] if x["code"] == "KE_CIPI")["label"], cfg))
+    _DATA["base"] = f"Q{latest.quarter} {latest.year}"
+    _materials([(n, history(rel, f"all|{l}", cfg)) for n, l in [
+        ("Cement", "cement"), ("Steel and reinforcement", "steel and reinforced bars"), ("Roofing sheets", "roofing sheets"),
+        ("Fuel and lubricants", "fuel and lubricants"), ("Sand", "sand"), ("Ballast and crushed stone", "ballast/gravel and graded crushed stones"),
+        ("Hardcore", "hardcore"), ("Timber", "timber and wood"), ("Paint", "paints"), ("Tiles", "tiles"), ("Labour", "labour")]
+        if (rel.series_label == f"all|{l}").any()], "quarter")
     _DATA.update(kind="quarterly", basis=f"Change from the latest KNBS print (Q{latest.quarter} {latest.year}), "
                  "conditioned on the oil and shilling months already observed")
     return lines
@@ -281,11 +360,22 @@ def south_africa_body(weekly) -> list[str]:
         exp = expected_change(probs, m["cuts"]) if probs is not None else np.nan
         lines.append(f"| {m['title']} | {_fmt(fp['value'] if fp else None, 2, pct=True)} | "
                      f"{_fmt(y1, pct=True)} | {_fmt(exp, 2, pct=True)} |")
-        _rec(series=m["title"], period=f"{nxt:%b %Y}", median=None if pd.isna(exp) else exp, lo=None, hi=None,
+        pth = _boot_path(r, latest)
+        if not pd.isna(exp):                          # anchor the path on the contract's own next-month estimate
+            shift = exp - pth[0]["median"]
+            pth = [dict(q, median=q["median"] + shift, lo=q["lo"] + shift, hi=q["hi"] + shift) for q in pth]
+        _DATA.setdefault("paths", {})[m["title"]] = pth
+        _rec(series=m["title"], period=f"{nxt:%b %Y}", median=None if pd.isna(exp) else exp,
+             lo=pth[0]["lo"], hi=pth[0]["hi"],
              last_change=fp["value"] if fp else None, year_change=None if pd.isna(y1) else y1,
              p_up=_p_up(probs, m["cuts"]) if probs is not None else None)
         if m["code"] == "ZA_CIPI":
             _spark("Construction input index (Stats SA, chained)", h)
+    _DATA["base"] = f"{latest:%b %Y}"
+    _materials([(n, history(rel, f"cipi|{l}", cfg)) for n, l in [
+        ("Cement", "cement"), ("Ready-mix concrete", "ready-mix concrete"), ("Reinforcing steel", "reinforcing metal work"),
+        ("Aggregate stone", "aggregate stone"), ("Sand", "sand"), ("Bricks", "bricks"), ("Tiles", "tiles"), ("Paint", "paints"),
+        ("Asphalt", "pre-mix asphalt")] if (rel.series_label == f"cipi|{l}").any()], "month")
     _DATA.update(kind="nowcast", basis=f"Stats SA {latest:%B %Y} release; expected change next month "
                  "from recent patterns (contract opening price)")
     lines += ["", f"Expected = the opening price of the {nxt:%B %Y} contract (recent change patterns; backtest over "
@@ -315,7 +405,8 @@ def pressure_section(country: str) -> list[str]:
     if load_country(country).get("pressure_currency") == "USD":     # dollarised construction pricing
         ccy_code, col = "USD", None
     try:
-        hist, fc = pressure_history(col), forecast(col)
+        hist, fc_all = pressure_history(col), forecast(col, horizons=tuple(range(1, 13)))
+        fc = {h: fc_all[h] for h in (3, 6) if h in fc_all}
     except Exception:
         return ["_Cost-pressure indicator unavailable (no exchange-rate history)._"]
     if hist.empty or not fc:
@@ -327,6 +418,10 @@ def pressure_section(country: str) -> list[str]:
              f"| Last 3 months (observed) | {last3:+.1f}% | – |"]
     _spark(f"Imported-input cost pressure (index, 100 = 24 months ago)",
            100 * np.exp(hist.tail(24).cumsum() / 100))
+    start = pd.Timestamp(hist.index[-1])
+    _DATA["paths"] = {"Imported-input cost pressure": [
+        _entry(start + pd.DateOffset(months=h), lo, med, hi) for h, (med, lo, hi) in sorted(fc_all.items())]}
+    _DATA["base"] = f"{start:%b %Y}"
     _DATA.update(kind="pressure", basis=f"Imported-input cost pressure from oil in {ccy_code} and the exchange "
                  "rate; an indicator, not a price index", observed_3m=last3)
     for h, (med, lo, hi) in fc.items():
@@ -348,7 +443,7 @@ def generic_body(weekly, country: str) -> list[str]:
 BODIES = {"uganda": uganda_body, "kenya": kenya_body, "south_africa": south_africa_body}
 
 
-def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_DB) -> Path:
+def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_DB, write_note: bool = True) -> Path:
     if fetch:
         import build_weekly_drivers
         build_weekly_drivers.build()
@@ -370,11 +465,13 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
     lines += ["", "## Open forecasting contracts", ""] + market_section(db_path, country)
     lines += ["", "## Sources", "",
               "UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), "
-              "ERA5 (rainfall); methods in docs/FORECAST_MODEL.md and docs/OPERATIONS.md."]
+              "ERA5 (rainfall). How the forecasts work: see How it works on the CiO site."]
     out = ROOT / "countries" / country / "outputs"
     out.mkdir(parents=True, exist_ok=True)
     clean = json.loads(json.dumps(_DATA, default=lambda x: None if x is None else float(x)).replace("NaN", "null"))
     (out / "forecast_latest.json").write_text(json.dumps(clean, indent=1), encoding="utf-8")
+    if not write_note:
+        return out / "forecast_latest.json"
     return _write(country, "\n".join(lines) + "\n", today)
 
 
@@ -431,8 +528,9 @@ if __name__ == "__main__":
     ap.add_argument("--country", default="all", choices=["all", *list_countries()])
     ap.add_argument("--no-fetch", action="store_true", help="use the drivers already on disk")
     ap.add_argument("--db", default=str(DEFAULT_DB))
+    ap.add_argument("--data-only", action="store_true", help="refresh forecast_latest.json only; no new note files")
     a = ap.parse_args()
     fetch = not a.no_fetch
     for c in (list_countries() if a.country == "all" else [a.country]):
-        print("wrote", build(c, fetch=fetch, db_path=Path(a.db)))
+        print("wrote", build(c, fetch=fetch, db_path=Path(a.db), write_note=not a.data_only))
         fetch = False                      # drivers fetched once per run

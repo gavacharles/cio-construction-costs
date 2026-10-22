@@ -35,4 +35,4 @@ _No open contracts._
 
 ## Sources
 
-UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall); methods in docs/FORECAST_MODEL.md and docs/OPERATIONS.md.
+UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall). How the forecasts work: see How it works on the CiO site.

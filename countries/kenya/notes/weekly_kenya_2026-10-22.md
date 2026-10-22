@@ -33,9 +33,9 @@ Quarterly model driven by the shilling and Brent in shillings, conditioned on th
 | Overall construction input prices | Q3 2026 | -1.5% | -3.0% to -0.1% | 3 of 3 |
 | Overall construction input prices | Q4 2026 | +0.7% | -1.6% to +3.1% | 1 of 3 |
 | Building cost index | Q3 2026 | -0.8% | -2.4% to +0.7% | 3 of 3 |
-| Building cost index | Q4 2026 | +0.9% | -1.4% to +3.1% | 1 of 3 |
+| Building cost index | Q4 2026 | +0.8% | -1.4% to +3.1% | 1 of 3 |
 | Civil engineering cost index | Q3 2026 | -1.7% | -3.2% to -0.2% | 3 of 3 |
-| Civil engineering cost index | Q4 2026 | +0.7% | -1.9% to +3.3% | 1 of 3 |
+| Civil engineering cost index | Q4 2026 | +0.7% | -1.8% to +3.3% | 1 of 3 |
 
 ## Prices reported by participants
 
@@ -47,4 +47,4 @@ _No open contracts._
 
 ## Sources
 
-UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall); methods in docs/FORECAST_MODEL.md and docs/OPERATIONS.md.
+UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), ERA5 (rainfall). How the forecasts work: see How it works on the CiO site.

@@ -131,6 +131,7 @@ error comes from forecasting the economy itself. Details: `countries/uganda/outp
 
 | When | Job (`src/market/cycle.py`) | What happens |
 |---|---|---|
+| **Every 3 hours** | `cycle.py refresh` | Latest oil and exchange rates → every country's forecast and 12-month path → public site (`index.html`, country pages, The Cost Call) |
 | **Every Monday, 05:00** | `cycle.py weekly` | Refresh Brent, the 18 exchange rates, the IMF history and rainfall → refit each country's model at its latest official release, fixed to everything observed since → write 18 notes |
 | **Every day, 06:30** | `cycle.py daily` | Check UBOS, KNBS and Stats SA for new releases → settle contracts whose official figure appeared → on a new UBOS release, re-run the backtest (which recalibrates the ranges) and the forecast → open the next contracts |
 | **Each June** | By hand | Add the new budget's tax measures to `countries/uganda/policy_events.yaml`, with sources |

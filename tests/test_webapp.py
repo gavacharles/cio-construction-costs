@@ -214,12 +214,13 @@ def test_cycle_follows_app_database(monkeypatch):
     assert str(run_market.DEFAULT_DB) == "/tmp/demo.sqlite"
 
 
-def test_front_page_builds(tmp_path, monkeypatch):
+def test_front_page_builds():
     sys.path.insert(0, str(ROOT / "src" / "site"))
     import build_index
-    monkeypatch.setattr(build_index, "ROOT", tmp_path)
-    for c in ("countries",):
-        (tmp_path / c).symlink_to(ROOT / c)
-    out = build_index.build()
-    t = out.read_text()
-    assert t.count("<article") == 18 and "Uganda" in t and "Kenya" in t and "https://" not in t.split("<footer")[0]
+    build_index.build()
+    idx = (ROOT / "index.html").read_text()
+    assert idx.count("<article class=card") == 18 and "[hidden]" in (ROOT / "assets" / "cio.css").read_text()
+    assert ".md" not in idx and "docs/" not in idx                        # no internal documents linked
+    for page in ("play.html", "method.html", "countries/uganda/index.html", "countries/ghana/index.html"):
+        t = (ROOT / page).read_text()
+        assert "cio-data" in t and ".md'" not in t and '.md"' not in t
