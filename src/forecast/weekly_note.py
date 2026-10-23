@@ -183,7 +183,7 @@ def _add_trend_paths() -> None:
     paths = _DATA.setdefault("paths", {})
     country = _DATA.get("key", "")
     try:
-        drv = MM.country_drivers(FXCOL.get(country, ccy(country)[1]), with_rain=(country == "uganda"))
+        drv = MM.country_drivers(FXCOL.get(country, ccy(country)[1]), with_rain=country if country in ("uganda", "kenya", "south_africa") else False)
     except Exception:
         drv = None
     trend, stats = [], {}
@@ -212,7 +212,8 @@ def _add_trend_paths() -> None:
         trend.append(name)
         stats[name] = st
     if trend:
-        _DATA["trend"], _DATA["trend_stats"] = trend, stats
+        _DATA["trend"] = trend
+    _DATA.setdefault("trend_stats", {}).update(stats)          # keep stats set earlier (e.g. Uganda's main model)
 
 
 def _p_up(probs, cuts) -> float:
@@ -352,6 +353,41 @@ def _write(country: str, md: str, today: date) -> Path:
     return stem.with_suffix(".md")
 
 
+UG_COMPONENTS = {"cement": ("Cement", "Cement"), "high tensile steel bars": ("Rebar", "Reinforcement steel"),
+                 "diesel": ("Diesel", "Diesel"), "labour": ("Labour", "Labour")}
+
+
+def _choose_uganda_components(paths: dict) -> None:
+    """Uganda's main (structural) model, material by material: choose between it and "no change" on the first half of
+    its backtest (3 months ahead, the model must win by 5%), judge the choice on the second half. Where "no change"
+    is chosen (Oct 2026: cement, steel bars), the path keeps today's level with a range from past 1-month changes."""
+    f = ROOT / "countries" / "uganda" / "outputs" / "forecast" / "backtest_errors.csv"
+    if not f.exists():
+        return
+    b = pd.read_csv(f)
+    stats = _DATA.setdefault("trend_stats", {})
+    for target, (path_name, mat_name) in UG_COMPONENTS.items():
+        g = b[(b.target == target) & (b.h == 3)].sort_values("origin")
+        g1 = b[(b.target == target) & (b.h == 1)].sort_values("origin")
+        if len(g) < 20 or path_name not in paths:
+            continue
+        half = len(g) // 2
+        first, later = g.iloc[:half], g.iloc[half:]
+        miss = lambda d, col: float(np.mean(np.abs(d.actual - d[col])))
+        use_model = miss(first, "structural") < 0.95 * miss(first, "no_change")
+        later1 = g1.iloc[len(g1) // 2:]
+        inside = float(((later1.actual >= later1.lo) & (later1.actual <= later1.hi)).mean()) if use_model else None
+        if not use_model:
+            lo, hi = np.percentile(g1.actual, [10, 90])           # past 1-month changes give the range
+            inside = float(((later1.actual >= lo) & (later1.actual <= hi)).mean())
+            paths[path_name] = [dict(q, median=0.0, lo=round(lo * np.sqrt(h), 3), hi=round(hi * np.sqrt(h), 3))
+                                for h, q in enumerate(paths[path_name], 1)]
+        stats[mat_name] = {"n": int(len(later)), "inside": inside, "mae": round(miss(later, "structural" if use_model else "no_change"), 3),
+                           "mae_nochange": round(miss(later, "no_change"), 3), "kind": "structural" if use_model else "nochange",
+                           "how": "CiO's main Uganda model (index structure, oil, exchange rate, rainfall, tax changes)" if use_model else "",
+                           "drivers": ["model"] if use_model else []}
+
+
 def uganda_body(weekly) -> list[str]:
     cfg = yaml.safe_load(open(ROOT / "countries" / "uganda" / "forecast_model.yaml", encoding="utf-8"))
     structure = read_release(latest_weighted_release([ROOT / "countries" / "uganda" / "raw", ROOT / "countries" / "uganda" / "raw" / "downloads"]))
@@ -360,6 +396,7 @@ def uganda_body(weekly) -> list[str]:
     ext = pd.read_csv(ext_f, parse_dates=["date"]).set_index("date") if ext_f.exists() else None
     fc, origin, n_known, paths = forecast_section(cfg, structure, macro, ext, load_policy_events(cfg, ROOT))
     _DATA.update(paths=paths, base=f"{origin:%b %Y}")
+    _choose_uganda_components(paths)
     lv = structure.levels
     _materials([(n, lv[c]) for n, c in [
         ("Cement", "cement"), ("Reinforcement steel", "high tensile steel bars"),
@@ -544,6 +581,34 @@ def pressure_section(country: str) -> list[str]:
     return lines
 
 
+def _reported_item_paths(country: str, db_path) -> None:
+    """Items whose reported-price index has 12+ months get their own forecast ("<item> (reported prices)"), using the
+    tested per-material method with the country's drivers; estimate countries also get the series as an index."""
+    import material_models as MM
+    try:
+        from reports import Participants
+        from country import load_country
+        with Participants(db_path) as p:
+            series = {i["name"]: p.crowd_index(country, i["code"]) for i in load_country(country).get("price_items", [])}
+        drv = MM.country_drivers(ccy(country)[1])
+    except Exception:
+        return
+    paths, stats, items = _DATA.setdefault("paths", {}), _DATA.setdefault("trend_stats", {}), _DATA.setdefault("items", {})
+    for name, rows in series.items():
+        if len(rows) < 12:
+            continue
+        lv = pd.Series([r["price"] for r in rows], index=pd.to_datetime([r["m"] for r in rows]))
+        label = f"{name} (reported prices)"
+        sel = MM.discover(lv, "month", drv, name)
+        q = MM.path(sel, lv.index.max(), 12, False)
+        paths[label] = [_entry(lv.index.max() + pd.DateOffset(months=h), lo, md, hi) for h, (md, lo, hi) in enumerate(q, 1)]
+        stats[label] = {"n": sel["periods_tested"], "inside": sel["inside"], "mae": sel["test"]["model"], "mae_nochange": sel["test"]["nochange"],
+                        "how": MM.describe(sel), "kind": sel["kind"], "drivers": sel["drivers"]}
+        items[label] = {"kind": "reported", "rows": [{"m": r["m"], "v": r["v"], "s": "reported"} for r in rows]}
+    if not items:
+        _DATA.pop("items", None)
+
+
 def _items_for_estimate_country(country: str) -> None:
     """Countries without official material indices: official prices of single items (e.g. Zambia's ERB pump prices,
     data/shared/official_item_prices.csv) and tested proxies (fuel from oil; steel, roughly, from world steel prices).
@@ -569,7 +634,7 @@ def _items_for_estimate_country(country: str) -> None:
             paths[label] = [_entry(lv.index.max() + pd.DateOffset(months=h), lo, md, hi) for h, (md, lo, hi) in enumerate(q, 1)]
             stats[label] = {"n": sel["periods_tested"], "inside": sel["inside"], "mae": sel["test"]["model"], "mae_nochange": sel["test"]["nochange"],
                             "how": MM.describe(sel), "kind": sel["kind"], "drivers": sel["drivers"]}
-        have_fuel = have_fuel or item == "diesel"
+        have_fuel = have_fuel or (item == "diesel" and len(lv) >= 12)      # one notice is not yet a series
     for kind, spec in MM.PROXIES.items():
         if kind == "fuel" and have_fuel:
             continue                                    # an official price beats an estimate
@@ -754,6 +819,7 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
               "UBOS (Uganda CIPI), KNBS (Kenya CIPI), EIA (Brent), IMF and currency-api (exchange rates), "
               "ERA5 (rainfall). How the forecasts work: see How it works on the CiO site."]
     _add_trend_paths()
+    _reported_item_paths(country, db_path)
     check_estimate_method(country)
     out = ROOT / "countries" / country / "outputs"
     out.mkdir(parents=True, exist_ok=True)

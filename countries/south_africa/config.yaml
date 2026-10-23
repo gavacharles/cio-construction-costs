@@ -53,3 +53,5 @@ price_items:
   - { code: stone,        name: "19 mm stone, per m3",            unit: m3 }
   - { code: brick_1000,   name: "Clay stock bricks, per 1,000",   unit: thousand }
   - { code: builder_day,  name: "Builder / bricklayer, daily wage", unit: day }
+  - { code: labour_mason,  name: "Skilled mason, per day",      unit: day }
+  - { code: labour_casual, name: "Casual labourer, per day",    unit: day }

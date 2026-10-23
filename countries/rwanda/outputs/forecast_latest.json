@@ -310,6 +310,32 @@
  ],
  "trend_stats": {},
  "items": {
+  "Diesel (official pump price)": {
+   "kind": "official",
+   "unit": "RWF per litre (maximum retail)",
+   "source": "https://www.rura.rw/fileadmin/user_upload/RURA/Documents/Tariffs/Applicaple_pump_prices_and_Public_Transport_tariffs.pdf",
+   "verified": "typed from the official notice",
+   "rows": [
+    {
+     "m": "2026-04",
+     "v": 2205.0,
+     "s": "official"
+    }
+   ]
+  },
+  "Petrol (official pump price)": {
+   "kind": "official",
+   "unit": "RWF per litre (maximum retail)",
+   "source": "https://www.rura.rw/fileadmin/user_upload/RURA/Documents/Tariffs/Applicaple_pump_prices_and_Public_Transport_tariffs.pdf",
+   "verified": "typed from the official notice",
+   "rows": [
+    {
+     "m": "2026-04",
+     "v": 2303.0,
+     "s": "official"
+    }
+   ]
+  },
   "Fuel (CiO estimate from oil)": {
    "kind": "estimate",
    "quality": "good",

@@ -215,7 +215,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
 </div></header>
 <main class=wrap>{body}</main>
 <nav class=bottombar aria-label=Main>{bottom}</nav>
-<footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="{rel}calculator.html#adjust" data-i18n=ci.short>Contract index</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
+<footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}methodology.html" data-i18n=ft.methodology>Methodology</a> · <a href="{rel}terms.html" data-i18n=ft.terms>Terms</a> · <a href="{rel}privacy.html" data-i18n=ft.privacy>Privacy</a> · <a href="{rel}glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="{rel}calculator.html#adjust" data-i18n=ci.short>Contract index</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
 {f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else ""}</p><span data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
 value. Official data: UBOS, KNBS, Stats SA; benchmarks: US BLS, Statistics Austria (Eurostat), PSA Philippines, FGV Brazil; oil and exchange rates from public
 market sources. Updated {e(data.get('updated', ''))}.</span></footer>
@@ -434,7 +434,10 @@ def single_items(c: dict) -> str:
         v = [x["v"] for x in r[-12:]]
         lo, hi = min(v), max(v)
         pts = " ".join(f"{i * 60 / max(1, len(v) - 1):.1f},{18 - (x - lo) * 16 / ((hi - lo) or 1):.1f}" for i, x in enumerate(v))
-        if it["kind"] == "official":
+        if it["kind"] == "reported":
+            val = f"{last['v']:.1f} <small data-i18n=si.idx>index</small>"
+            src = "<span data-i18n=si.reported>Reported by buyers (3+ people a month)</span>"
+        elif it["kind"] == "official":
             val = f"{last['v']:,.2f} <small>{e(it['unit'])}</small>"
             src = f"<a href='{e(it['source'])}' target=_blank rel=noopener data-i18n=si.notice>official notice</a> · {e(it['verified'])}"
         else:
@@ -641,6 +644,40 @@ def track_record() -> str:
             f"</table></div><p class=muted>Each month we will also publish our forecast next to the official figure.</p>")
 
 
+def live_track_record() -> str:
+    """Every saved forecast checked against the official figure once it is published (all live countries with an
+    official index, and the benchmarks). Also written to public/data/track_record.csv."""
+    sys.path.insert(0, str(ROOT / "src" / "market"))
+    try:
+        import pilot_report
+    except Exception:
+        return ""
+    rows, detail = [], []
+    for key in LIVE:
+        cfg = load_country(key)
+        acc = [a for a in pilot_report.accuracy(key)]
+        if not acc:
+            continue
+        ins = sum(a["inside"] for a in acc) / len(acc)
+        miss = sum(abs(a["actual"] - a["median"]) for a in acc) / len(acc)
+        nc = sum(abs(a["actual"]) for a in acc) / len(acc)
+        rows.append(f"<tr><td>{e(cfg['country'])}</td><td>{len(acc)}</td><td>{ins:.0%}</td><td>{miss:.2f} / {nc:.2f}</td></tr>")
+        detail += [(cfg["country"], a) for a in acc]
+    (OUT / "data").mkdir(parents=True, exist_ok=True)
+    with open(OUT / "data" / "track_record.csv", "w", newline="", encoding="utf-8") as fh:
+        import csv as _csv
+        w = _csv.writer(fh)
+        w.writerow(["country", "forecast_made", "for_period", "median", "lo", "hi", "official", "inside"])
+        w.writerows([c, a["made"], a["target"], round(a["median"], 3), round(a["lo"], 3), round(a["hi"], 3), round(a["actual"], 3), a["inside"]] for c, a in detail)
+    body = ("".join(rows) if rows else "<tr><td colspan=4 data-i18n=tr.none>No saved forecast has reached its official release yet. "
+            "The first checks appear as the next figures come out (benchmarks monthly, UBOS and Stats SA monthly, KNBS quarterly).</td></tr>")
+    return (f"<h2 id=live data-i18n=tr.h>Live track record</h2><p data-i18n=tr.d>Every forecast the site publishes is saved. When the official "
+            f"figure comes out, it is checked here automatically: was it inside the likely range, and how far off was it compared with "
+            f"assuming no change?</p><div class=tablewrap><table class=glance><thead><tr><th data-i18n=th.country>Country</th>"
+            f"<th data-i18n=tr.n>Forecasts checked</th><th data-i18n=tr.in>Inside the range (aim 80%)</th><th data-i18n=tr.miss>Average miss, ours / no change</th>"
+            f"</tr></thead><tbody>{body}</tbody></table></div><p class=muted><a href=data/track_record.csv data-i18n=tr.csv>Download every check (CSV)</a></p>")
+
+
 def page_method() -> str:
     return f"""
 <section class=prose><p class=eyebrow data-i18n=nav.method>How it works</p><h1 data-i18n=m.h1>From official statistics to a forecast you can use</h1>
@@ -661,6 +698,7 @@ it had been run at the time, and kept only if it beats simple rules of thumb. In
 and the forecasts with them. Official data is added within a day of publication. A written note for each country comes
 out every Monday.</p></div></div>
 {track_record()}
+{live_track_record()}
 <h2 data-i18n=m.read>Reading the numbers</h2><ul class=plain>
 <li><b>Chance of a rise</b>: how likely prices are to be higher by the month you pick.</li>
 <li><b>Expected change</b>: the most likely move, measured from the latest official reading (or from today for
@@ -995,6 +1033,147 @@ def page_benchmark(c: dict, number: int) -> str:
 </article>"""
 
 
+# ------------------------------------------------------------ trust pages --
+def _contact() -> str:
+    em = str(SITE_CFG.get("contact_email") or "").strip()
+    if em:
+        return f"<a href='mailto:{e(em)}'>{e(em)}</a>"
+    return f"<a href='{e(CHANNEL)}' target=_blank rel=noopener>the CiO Costs WhatsApp channel</a>" if CHANNEL else "the CiO Lab team"
+
+
+def page_methodology() -> str:
+    return f"""
+<section class="prose doc"><p class=eyebrow>Methodology</p><h1>How CiO Costs builds its numbers</h1>
+<p class=lede>A plain description of every figure on the site: where it comes from, how forecasts are made, how they are tested,
+and where the limits are. It describes the site as it runs today; it changes when the methods change.</p>
+
+<h2>1. Official data</h2>
+<ul class=plain>
+<li><b>Uganda</b> — UBOS Construction Input Price Index (monthly, base 2016/17 = 100): overall index, building and civil works,
+and each material. The index is rebuilt from its own weights to check every release.</li>
+<li><b>Kenya</b> — KNBS Construction Input Price Indices (quarterly). Six releases are scanned images; their headline values
+are read by OCR and accepted only when the quarters before them match the text releases exactly.</li>
+<li><b>South Africa</b> — Stats SA P0151.1 construction materials price indices (monthly). Rebasing is handled by chaining each
+release's own month-on-month changes.</li>
+<li><b>Rwanda, Tanzania, Zambia, Nigeria</b> — no official construction price index. Official prices of single items are used where
+published (Zambia: ERB monthly pump price notices, each checked against the next notice; Rwanda: RURA notices).</li>
+<li><b>Drivers</b> — Brent crude (EIA/FRED), exchange rates (IMF and a daily reference API), world commodity prices (IMF via FRED:
+iron ore, copper, aluminium, coal, natural gas; US iron and steel prices), rainfall (ERA5 via Open-Meteo).</li>
+<li><b>Benchmarks</b> — official monthly indices from the US (BLS), UK (DBT/ONS), Austria (Eurostat), Hong Kong (C&amp;SD),
+the Philippines (PSA) and Brazil (FGV), used only to show how the method performs where data is good.</li></ul>
+
+<h2>2. Forecasts</h2>
+<ul class=plain>
+<li><b>Uganda's main model</b> follows the structure of the official index and links each part to its drivers (oil and the exchange
+rate, rainfall for quarry products, announced tax changes at 50% pass-through). Months since the last UBOS release are filled
+with the oil and currency readings already known: that is how the gap after a late release is covered.</li>
+<li><b>Kenya</b> uses a quarterly model with the same kind of drivers; <b>South Africa</b> a model of recent monthly changes anchored on
+the latest release.</li>
+<li><b>Each material</b> is then checked separately. A driver model (oil for fuel; the exchange rate for labour; oil and rain for sand and
+stone) is used only where it clearly beats "no change" in testing; otherwise the forecast is "no change" with a tested range. Each
+material's choice and test result is shown next to it on the country page.</li>
+<li><b>Countries without an official index</b> get an import-cost estimate: oil in local currency (weight 0.10) and the exchange rate
+(0.40), a share similar to imported inputs in the Ugandan and South African baskets. Where we can check it, its three-month direction
+matched the official index about 6 times in 10. It covers imported inputs only, not local materials or labour.</li>
+<li><b>Per-item estimates</b> for those countries exist only where testing supports them: fuel from oil (tracks official fuel and asphalt
+indices well) and steel from world steel prices (only roughly). There is no estimate for cement, sand or blocks, because nothing we
+tested tracks them; those come from prices people report.</li>
+<li><b>Likely range</b> = where the real change should land 8 times in 10. Ranges are calibrated from past errors.</li></ul>
+
+<h2>3. How forecasts are tested</h2>
+<ul class=plain>
+<li><b>Walk-forward tests</b>: every past month, a forecast is made with only the data that existed then, and compared with what was
+published later. Calibration of the ranges uses only errors that were already known at each point.</li>
+<li><b>Choose, then judge</b>: where several methods compete, the choice is made on the first half of the test period and judged on the
+second half, which played no part in the choice. Results are shown even when they are not flattering.</li>
+<li><b>Live record</b>: every published forecast is saved and checked automatically when the official figure comes out
+(<a href=method.html#live>live track record</a>). Benchmark results are on each <a href=index.html#countries>benchmark page</a>.</li>
+<li><b>Data checks</b> run every three hours: complete and ordered ranges, plausible history, fresh oil and currency data, downloads,
+the published contract index, and the weekly notes.</li></ul>
+
+<h2>4. Prices people report</h2>
+<ul class=plain>
+<li>A typical price is published only from <b>3 or more different people</b>, pooling the last two months; each person counts once
+(their own median), so repeated or extreme entries cannot move it.</li>
+<li>A price far from the usual one (more than three times higher or lower) is queried before it is saved.</li>
+<li>The monthly reported-price index for an item is its typical price relative to the first published month (= 100). After 12 months it
+also gets its own tested forecast.</li></ul>
+
+<h2>5. Price adjustment (contracts)</h2>
+<ul class=plain>
+<li>The IPC tool follows FIDIC (Sub-Clause 13.7 of the 2017 books, 13.8 of 1999): P<sub>n</sub> = a + Σ coefficient × I<sub>n</sub> / I<sub>0</sub>,
+with I<sub>0</sub> at the Base Date and I<sub>n</sub> 49 days before the end of each IPC period.</li>
+<li>Index values are marked <b>official</b>, <b>provisional</b> (a CiO forecast, used only for periods that have ended and until the official
+figure is published) or <b>CiO estimate</b>. Contracting parties should agree in writing which sources apply and that provisional values
+are replaced.</li></ul>
+
+<h2>6. Limits</h2>
+<ul class=plain><li>Forecasts are estimates with ranges, not certainties. Many materials move mostly at random month to month; for them the
+honest forecast is "no change" with a range.</li><li>Estimates for countries without official indices cover imported inputs only.</li>
+<li>Nothing on the site is financial, legal or contractual advice.</li></ul>
+<p class=muted>{e(str(SITE_CFG.get("legal_version") or ""))} · Questions: {_contact()}</p></section>"""
+
+
+def page_terms() -> str:
+    op, law = e(str(SITE_CFG.get("operator") or "CiO Lab")), e(str(SITE_CFG.get("jurisdiction") or "Uganda"))
+    return f"""
+<section class="prose doc"><p class=eyebrow>Terms of use</p><h1>Terms of use</h1>
+<p class=lede>Please read these before relying on CiO Costs. By using the site you agree to them.</p>
+<h2>1. What CiO Costs is</h2><p>CiO Costs, run by {op}, is a forecasting and information tool. It estimates how construction costs are
+likely to move, with a range, and publishes typical prices reported by buyers. It is not an official statistic, a price list, or
+financial, legal or contractual advice.</p>
+<h2>2. No guarantee</h2><p>Forecasts are estimates and can be wrong; the likely range is expected to miss about 2 times in 10. Data comes
+from official and public sources and from users, and may contain errors, delays or revisions. The site is provided "as is", without
+warranties of any kind, to the extent the law allows.</p>
+<h2>3. Using the figures in contracts</h2><p>The price adjustment tool and the indices are a reference that contracting parties may choose
+to use. If you use them in a contract, the parties should agree in writing which index sources apply, how provisional or estimated values
+are treated, and that they are replaced when official figures are published. {op} is not a party to any contract and is not responsible
+for decisions or payments made using the site. Official figures remain those of the statistics offices and regulators.</p>
+<h2>4. Prices you report</h2><p>When you report a price you confirm it is genuine and was paid or quoted to you. You allow {op} to use
+it, combined with other reports, to publish typical prices, indices and forecasts. Single reports and personal details are never published.
+Do not submit false, misleading or automated reports; reports may be checked and removed.</p>
+<h2>5. Downloads and the website widget</h2><p>You may use, share and embed the published figures, CSV downloads and widget, including
+commercially, with credit to "CiO Costs". Do not present them as official statistics or remove their labels (official, provisional,
+estimate).</p>
+<h2>6. Free and paid versions</h2><p>The site is free during the pilot. Some features (for example more than three IPCs per contract)
+may later be part of a paid version; anything free today will be announced before it changes.</p>
+<h2>7. Liability</h2><p>To the extent the law allows, {op} is not liable for losses arising from use of the site or reliance on its figures,
+including in tenders, contracts or payments.</p>
+<h2>8. Changes and law</h2><p>These terms may change; the version below shows which one applies. They are governed by the laws of {law}.</p>
+<p class=muted>{e(str(SITE_CFG.get("legal_version") or ""))} · Contact: {_contact()}</p></section>"""
+
+
+def page_privacy() -> str:
+    op = e(str(SITE_CFG.get("operator") or "CiO Lab"))
+    return f"""
+<section class="prose doc"><p class=eyebrow>Privacy</p><h1>Privacy policy</h1>
+<p class=lede>What CiO Costs collects, why, and what it never does. There are no accounts, no advertising and no tracking cookies.</p>
+<h2>1. What we collect</h2>
+<ul class=plain>
+<li><b>Price reports</b>: country, item, price, town or area, whether it is the main city or elsewhere, where you bought, when you paid,
+and — only if you choose to give it — a phone number or email for follow-up questions. Each reporter is identified only by a scrambled
+code derived from the connection, so the same person counts once; the connection address itself is not stored with the report.</li>
+<li><b>Price alerts</b>: your email and what you asked to be alerted about, with your consent.</li>
+<li><b>Pro waitlist</b>: your email, and optionally your organisation and role, with your consent.</li>
+<li><b>Visit counts</b>: the page and actions (for example "a price was reported"), language, and the website you came from. A visitor is a
+code that changes every day, so you cannot be followed from one day to the next. No cookies and no IP addresses are stored. Browsers that
+send "Do Not Track" are not counted.</li>
+<li><b>On your own device only</b>: your country, language, bills of quantities and IPC entries are kept in your browser (local storage).
+They are not sent to us.</li></ul>
+<h2>2. How it is used</h2><p>To publish typical prices, indices and forecasts (only as combinations of at least three people's reports),
+to send the alerts and emails you asked for, to check data quality, and to understand which parts of the site are useful.</p>
+<h2>3. What we never do</h2><p>We never publish single reports, names, numbers or emails; never sell or rent personal data; never use it for
+advertising.</p>
+<h2>4. Who can see it</h2><p>Only the {op} team running the site. Data is kept on the site's own server; service providers used to run it
+(hosting, email sending) process it only on our instructions.</p>
+<h2>5. How long</h2><p>Price reports are kept to build history (the published figures are aggregates). Contact details given with a report,
+alert sign-ups and waitlist entries are deleted on request, and alert and waitlist entries when the service ends.</p>
+<h2>6. Your rights</h2><p>You can ask to see, correct or delete personal data you gave us, or withdraw consent for emails, at any time
+(every email has a one-click way to stop). We aim to follow the data protection laws of the countries we serve, including Uganda's Data
+Protection and Privacy Act 2019, Kenya's Data Protection Act 2019, South Africa's POPIA and Nigeria's Data Protection Act 2023.</p>
+<p class=muted>{e(str(SITE_CFG.get("legal_version") or ""))} · Contact: {_contact()}</p></section>"""
+
+
 # ------------------------------------------------------------------ build --
 BUILT = ""
 BUILT_TAG = ""                                     # cache-busting tag on assets, new on every build
@@ -1048,6 +1227,10 @@ def build() -> Path:
                                            page="home"), encoding="utf-8")
     (OUT / "glance.html").write_text(shell("Costs at a glance — CiO Costs", page_glance(cs, months, default), base, page="glance"),
                                       encoding="utf-8")
+    for fname, title, body, desc in (("methodology.html", "Methodology", page_methodology(), "How CiO Costs builds and tests its numbers."),
+                                     ("terms.html", "Terms of use", page_terms(), "Terms of use for CiO Costs."),
+                                     ("privacy.html", "Privacy", page_privacy(), "What CiO Costs collects and why.")):
+        (OUT / fname).write_text(shell(f"{title} — CiO Costs", body, {"updated": updated}, page="doc", desc=desc), encoding="utf-8")
     (OUT / "method.html").write_text(shell("How it works — CiO Costs", page_method(), {"updated": updated}, page="method"),
                                       encoding="utf-8")
     (OUT / "play.html").write_text(shell("The Cost Call — CiO Costs", page_play(), dict(base, quiz=quiz), page="play",

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>Methodology — CiO Costs</title><meta name=description content="How CiO Costs builds and tests its numbers.">
+<link rel=stylesheet href="assets/cio.css?v=20261023122537"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href='https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap'></head><body data-page="doc" data-rel="">
+<header class=topbar><div class=wrap>
+ <a class=mark href="index.html"><svg class=logo viewBox='0 0 24 24' width=24 height=24 aria-hidden=true><circle class=ring cx=12 cy=12 r=9.5 fill=none stroke='var(--accent-fill)' stroke-width=2 stroke-linecap=round pathLength=100 stroke-dasharray='62 38'/><circle class=orbit cx=12 cy=2.5 r=1.6 fill='var(--teal)'/><circle class=core cx=12 cy=12 r=4 fill='var(--accent-fill)'/></svg>CiO <span>Costs</span></a>
+ <nav class=nav aria-label=Main><a href='index.html#countries' data-i18n='nav.prices'>Prices</a><a href='calculator.html' data-i18n='nav.plan'>Bids & contracts</a><a href='report.html' data-i18n='nav.reportshort'>Report a price</a><a href='play.html' data-i18n='nav.playshort'>Play</a></nav>
+ 
+ <a class="btn primary cta" href="report.html" data-i18n=cta.report>Report a price</a>
+ <select class=lang id=lang aria-label="Language"><option value=en>EN</option><option value=sw>Kiswahili</option><option value=fr>Français</option></select>
+ <button class=theme id=theme type=button aria-label=Theme>◐</button>
+</div></header>
+<main class=wrap>
+<section class="prose doc"><p class=eyebrow>Methodology</p><h1>How CiO Costs builds its numbers</h1>
+<p class=lede>A plain description of every figure on the site: where it comes from, how forecasts are made, how they are tested,
+and where the limits are. It describes the site as it runs today; it changes when the methods change.</p>
+
+<h2>1. Official data</h2>
+<ul class=plain>
+<li><b>Uganda</b> — UBOS Construction Input Price Index (monthly, base 2016/17 = 100): overall index, building and civil works,
+and each material. The index is rebuilt from its own weights to check every release.</li>
+<li><b>Kenya</b> — KNBS Construction Input Price Indices (quarterly). Six releases are scanned images; their headline values
+are read by OCR and accepted only when the quarters before them match the text releases exactly.</li>
+<li><b>South Africa</b> — Stats SA P0151.1 construction materials price indices (monthly). Rebasing is handled by chaining each
+release's own month-on-month changes.</li>
+<li><b>Rwanda, Tanzania, Zambia, Nigeria</b> — no official construction price index. Official prices of single items are used where
+published (Zambia: ERB monthly pump price notices, each checked against the next notice; Rwanda: RURA notices).</li>
+<li><b>Drivers</b> — Brent crude (EIA/FRED), exchange rates (IMF and a daily reference API), world commodity prices (IMF via FRED:
+iron ore, copper, aluminium, coal, natural gas; US iron and steel prices), rainfall (ERA5 via Open-Meteo).</li>
+<li><b>Benchmarks</b> — official monthly indices from the US (BLS), UK (DBT/ONS), Austria (Eurostat), Hong Kong (C&amp;SD),
+the Philippines (PSA) and Brazil (FGV), used only to show how the method performs where data is good.</li></ul>
+
+<h2>2. Forecasts</h2>
+<ul class=plain>
+<li><b>Uganda's main model</b> follows the structure of the official index and links each part to its drivers (oil and the exchange
+rate, rainfall for quarry products, announced tax changes at 50% pass-through). Months since the last UBOS release are filled
+with the oil and currency readings already known: that is how the gap after a late release is covered.</li>
+<li><b>Kenya</b> uses a quarterly model with the same kind of drivers; <b>South Africa</b> a model of recent monthly changes anchored on
+the latest release.</li>
+<li><b>Each material</b> is then checked separately. A driver model (oil for fuel; the exchange rate for labour; oil and rain for sand and
+stone) is used only where it clearly beats "no change" in testing; otherwise the forecast is "no change" with a tested range. Each
+material's choice and test result is shown next to it on the country page.</li>
+<li><b>Countries without an official index</b> get an import-cost estimate: oil in local currency (weight 0.10) and the exchange rate
+(0.40), a share similar to imported inputs in the Ugandan and South African baskets. Where we can check it, its three-month direction
+matched the official index about 6 times in 10. It covers imported inputs only, not local materials or labour.</li>
+<li><b>Per-item estimates</b> for those countries exist only where testing supports them: fuel from oil (tracks official fuel and asphalt
+indices well) and steel from world steel prices (only roughly). There is no estimate for cement, sand or blocks, because nothing we
+tested tracks them; those come from prices people report.</li>
+<li><b>Likely range</b> = where the real change should land 8 times in 10. Ranges are calibrated from past errors.</li></ul>
+
+<h2>3. How forecasts are tested</h2>
+<ul class=plain>
+<li><b>Walk-forward tests</b>: every past month, a forecast is made with only the data that existed then, and compared with what was
+published later. Calibration of the ranges uses only errors that were already known at each point.</li>
+<li><b>Choose, then judge</b>: where several methods compete, the choice is made on the first half of the test period and judged on the
+second half, which played no part in the choice. Results are shown even when they are not flattering.</li>
+<li><b>Live record</b>: every published forecast is saved and checked automatically when the official figure comes out
+(<a href=method.html#live>live track record</a>). Benchmark results are on each <a href=index.html#countries>benchmark page</a>.</li>
+<li><b>Data checks</b> run every three hours: complete and ordered ranges, plausible history, fresh oil and currency data, downloads,
+the published contract index, and the weekly notes.</li></ul>
+
+<h2>4. Prices people report</h2>
+<ul class=plain>
+<li>A typical price is published only from <b>3 or more different people</b>, pooling the last two months; each person counts once
+(their own median), so repeated or extreme entries cannot move it.</li>
+<li>A price far from the usual one (more than three times higher or lower) is queried before it is saved.</li>
+<li>The monthly reported-price index for an item is its typical price relative to the first published month (= 100). After 12 months it
+also gets its own tested forecast.</li></ul>
+
+<h2>5. Price adjustment (contracts)</h2>
+<ul class=plain>
+<li>The IPC tool follows FIDIC (Sub-Clause 13.7 of the 2017 books, 13.8 of 1999): P<sub>n</sub> = a + Σ coefficient × I<sub>n</sub> / I<sub>0</sub>,
+with I<sub>0</sub> at the Base Date and I<sub>n</sub> 49 days before the end of each IPC period.</li>
+<li>Index values are marked <b>official</b>, <b>provisional</b> (a CiO forecast, used only for periods that have ended and until the official
+figure is published) or <b>CiO estimate</b>. Contracting parties should agree in writing which sources apply and that provisional values
+are replaced.</li></ul>
+
+<h2>6. Limits</h2>
+<ul class=plain><li>Forecasts are estimates with ranges, not certainties. Many materials move mostly at random month to month; for them the
+honest forecast is "no change" with a range.</li><li>Estimates for countries without official indices cover imported inputs only.</li>
+<li>Nothing on the site is financial, legal or contractual advice.</li></ul>
+<p class=muted>Pilot version 0.1, October 2026 · Questions: <a href='https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L' target=_blank rel=noopener>the CiO Costs WhatsApp channel</a></p></section></main>
+<nav class=bottombar aria-label=Main><a href='index.html#countries'><svg viewBox='0 0 24 24' aria-hidden=true><path d='M3 11l9-7 9 7v9h-6v-6H9v6H3z'/></svg><span data-i18n='nav.prices'>Prices</span></a><a href='calculator.html'><svg viewBox='0 0 24 24' aria-hidden=true><path d='M6 3h12v18H6zM9 7h6M9 11h2M13 11h2M9 15h2M13 15h2'/></svg><span data-i18n='nav.plan'>Bids & contracts</span></a><a href='report.html'><svg viewBox='0 0 24 24' aria-hidden=true><path d='M4 20h4L19 9l-4-4L4 16zM14 6l4 4'/></svg><span data-i18n='nav.reportshort'>Report a price</span></a><a href='play.html'><svg viewBox='0 0 24 24' aria-hidden=true><path d='M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8v8M8 12h8'/></svg><span data-i18n='nav.playshort'>Play</span></a></nav>
+<footer class=wrap><p class=footlinks><a href="method.html" data-i18n=nav.method>How it works</a> · <a href="methodology.html" data-i18n=ft.methodology>Methodology</a> · <a href="terms.html" data-i18n=ft.terms>Terms</a> · <a href="privacy.html" data-i18n=ft.privacy>Privacy</a> · <a href="glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="calculator.html#adjust" data-i18n=ci.short>Contract index</a> · <a href="method.html#track" data-i18n=trust.track>Track record</a>
+ · <a href='https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a></p><span data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
+value. Official data: UBOS, KNBS, Stats SA; benchmarks: US BLS, Statistics Austria (Eurostat), PSA Philippines, FGV Brazil; oil and exchange rates from public
+market sources. Updated 2026-10-23.</span></footer>
+<script id=cio-data type="application/json">{"updated":"2026-10-23"}</script>
+<script src="assets/cio.js?v=20261023122537"></script></body></html>

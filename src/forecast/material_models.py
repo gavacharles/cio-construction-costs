@@ -196,9 +196,9 @@ def describe(sel: dict) -> str:
     return " and ".join(LABEL.get(c, c) for c in sel["drivers"]) + f" (shows up {lag})"
 
 
-def country_drivers(fx_col: str, with_rain: bool = False) -> pd.DataFrame:
-    """Monthly drivers in local currency: fx, oil (Brent), world steel, iron ore, copper, coal, natural gas
-    (+ rainfall anomaly for Uganda, the only country with a rainfall series so far)."""
+def country_drivers(fx_col: str, with_rain=False) -> pd.DataFrame:
+    """Monthly drivers in local currency: fx, oil (Brent), world steel, iron ore, copper, coal, natural gas, and the
+    rainfall anomaly where a rainfall series exists (with_rain = True/"uganda", "kenya" or "south_africa")."""
     from pathlib import Path
     import cost_pressure
     root = Path(__file__).resolve().parents[2]
@@ -212,7 +212,7 @@ def country_drivers(fx_col: str, with_rain: bool = False) -> pd.DataFrame:
         for c in ("steel", "iron_ore", "copper", "coal", "natgas"):
             if c in com:
                 out[c] = (com[c] * fx).reindex(out.index)
-    rf = root / "data" / "shared" / "rainfall_era5_monthly.csv"
+    rf = root / "data" / "shared" / ("rainfall_era5_monthly.csv" if with_rain is True or with_rain == "uganda" else f"rainfall_era5_monthly_{with_rain}.csv")
     if with_rain and rf.exists():
         r = pd.read_csv(rf, parse_dates=["date"]).set_index("date")["rain_anomaly"]
         r.index = r.index.to_period("M").to_timestamp()

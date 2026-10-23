@@ -6,6 +6,9 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "ft.methodology": "Mbinu", "ft.terms": "Masharti", "ft.privacy": "Faragha",
+      "tr.h": "Rekodi ya usahihi ya moja kwa moja", "tr.n": "Utabiri uliokaguliwa", "tr.in": "Ndani ya kiwango (lengo 80%)", "tr.miss": "Wastani wa kukosea, yetu / hakuna mabadiliko", "tr.csv": "Pakua ukaguzi wote (CSV)", "si.reported": "Imeripotiwa na wanunuzi (watu 3+ kwa mwezi)",
+      "mm.main": "modeli kuu", "mm.tipmain": "Utabiri kutoka modeli kuu ya CiO ya nchi hii (muundo wa fahirisi, mafuta, sarafu, mvua, mabadiliko ya kodi).",
       "si.h": "Bei za bidhaa moja moja", "si.latest": "Ya karibuni", "si.chg": "Mabadiliko kwa mwezi", "si.trend": "Miezi 12", "si.src": "Chanzo", "si.notice": "tangazo rasmi", "si.idx": "fahirisi", "si.good": "Makadirio ya CiO, yamejaribiwa", "si.rough": "Makadirio ya CiO, ya jumla",
       "pro.eyebrow": "CiO Costs Pro · inakuja hivi karibuni", "pro.h": "Kwa mikataba yenye vyeti vingi vya malipo", "pro.f1": "IPC zisizo na kikomo, kwa muda wote wa mkataba", "pro.f2": "Mikataba iliyohifadhiwa, ikishirikiwa na mteja au mshauri wako", "pro.f3": "Taarifa zenye nembo yako, tayari kuambatisha kwa kila IPC", "pro.f4": "Marekebisho ya moja kwa moja fahirisi ya muda ikibadilishwa na rasmi", "pro.f5": "Fahirisi kwa kifaa na mji, pamoja na historia kamili na mtiririko wa data", "pro.email": "Barua pepe", "pro.org": "Shirika (si lazima)", "pro.role": "Wewe ni", "pro.r1": "Mkandarasi", "pro.r2": "Mshauri / mkadiriaji wa kiasi", "pro.r3": "Mteja / mwajiri", "pro.r4": "Mkopeshaji au bima", "pro.r5": "Nyingine", "pro.consent": "Nitumie barua pepe Pro ikiwa tayari. Hakuna barua taka; bofya mara moja kuacha.", "pro.join": "Jiunge na orodha ya kusubiri", "pro.thanks": "Uko kwenye orodha ✓ Tutakutumia barua pepe Pro ikifunguliwa.", "pro.free": "Bure: hadi IPC {n} kwa kila mkataba.", "pro.cap": "Toleo la bure linashughulikia IPC {n} kwa kila mkataba.", "pro.more": "Zaidi na CiO Costs Pro →",
       "th.cidx": "Fahirisi ya bei", "fd.crowd": "Bei zilizoripotiwa: {i} (CiO)",
@@ -106,6 +109,9 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "ft.methodology": "Méthodologie", "ft.terms": "Conditions", "ft.privacy": "Confidentialité",
+      "tr.h": "Historique en direct", "tr.n": "Prévisions vérifiées", "tr.in": "Dans la fourchette (objectif 80 %)", "tr.miss": "Erreur moyenne, la nôtre / sans changement", "tr.csv": "Télécharger toutes les vérifications (CSV)", "si.reported": "Signalé par des acheteurs (3+ personnes par mois)",
+      "mm.main": "modèle principal", "mm.tipmain": "Prévision du modèle principal de CiO pour ce pays (structure de l'indice, pétrole, change, pluie, changements fiscaux).",
       "si.h": "Prix d'articles particuliers", "si.latest": "Dernier", "si.chg": "Variation sur le mois", "si.trend": "12 mois", "si.src": "Source", "si.notice": "avis officiel", "si.idx": "indice", "si.good": "Estimation CiO, testée", "si.rough": "Estimation CiO, approximative",
       "pro.eyebrow": "CiO Costs Pro · bientôt", "pro.h": "Pour les contrats à nombreux décomptes", "pro.f1": "Décomptes (IPC) illimités, pour toute la durée du contrat", "pro.f2": "Contrats enregistrés, partagés avec votre client ou consultant", "pro.f3": "États à votre en-tête, prêts à joindre à chaque IPC", "pro.f4": "Révision automatique quand un indice provisoire est remplacé par l'officiel", "pro.f5": "Indices par matériau et par ville, historique complet et flux de données", "pro.email": "E-mail", "pro.org": "Organisation (facultatif)", "pro.role": "Vous êtes", "pro.r1": "Entreprise", "pro.r2": "Consultant / économiste de la construction", "pro.r3": "Maître d'ouvrage", "pro.r4": "Prêteur ou assureur", "pro.r5": "Autre", "pro.consent": "Prévenez-moi par e-mail quand Pro sera prêt. Pas de spam ; désinscription en un clic.", "pro.join": "Rejoindre la liste d'attente", "pro.thanks": "Vous êtes sur la liste ✓ Nous vous écrirons à l'ouverture de Pro.", "pro.free": "Gratuit : jusqu'à {n} IPC par contrat.", "pro.cap": "La version gratuite couvre {n} IPC par contrat.", "pro.more": "Plus avec CiO Costs Pro →",
       "th.cidx": "Indice des prix", "fd.crowd": "Prix signalés : {i} (CiO)",
@@ -206,6 +212,9 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "ft.methodology": "Methodology", "ft.terms": "Terms", "ft.privacy": "Privacy",
+      "tr.h": "Live track record", "tr.d": "Every forecast the site publishes is saved. When the official figure comes out, it is checked here automatically: was it inside the likely range, and how far off was it compared with assuming no change?", "tr.n": "Forecasts checked", "tr.in": "Inside the range (aim 80%)", "tr.miss": "Average miss, ours / no change", "tr.csv": "Download every check (CSV)", "tr.none": "No saved forecast has reached its official release yet. The first checks appear as the next figures come out (benchmarks monthly, UBOS and Stats SA monthly, KNBS quarterly).", "si.reported": "Reported by buyers (3+ people a month)",
+      "mm.main": "main model", "mm.tipmain": "Forecast from CiO's main model for this country (index structure, oil, exchange rate, rainfall, tax changes).",
       "si.h": "Prices of single items", "si.latest": "Latest", "si.chg": "Change on month", "si.trend": "12 months", "si.src": "Source", "si.notice": "official notice", "si.idx": "index", "si.good": "CiO estimate, tested", "si.rough": "CiO estimate, rough",
       "pro.eyebrow": "CiO Costs Pro · coming soon", "pro.h": "For contracts with many payment certificates", "pro.f1": "Unlimited IPCs, for the whole life of the contract", "pro.f2": "Saved contracts, shared with your client or consultant", "pro.f3": "Statements with your letterhead, ready to attach to each IPC", "pro.f4": "Automatic revision when a provisional index is replaced by the official one", "pro.f5": "Indices by material and city, with full history and a data feed", "pro.email": "Email", "pro.org": "Organisation (optional)", "pro.role": "You are", "pro.r1": "Contractor", "pro.r2": "Consultant / quantity surveyor", "pro.r3": "Client / employer", "pro.r4": "Lender or insurer", "pro.r5": "Other", "pro.consent": "Email me when Pro is ready. No spam; one click to stop.", "pro.join": "Join the waitlist", "pro.thanks": "You're on the list ✓ We'll email you when Pro opens.", "pro.free": "Free: up to {n} IPCs per contract.", "pro.cap": "The free version covers {n} IPCs per contract.", "pro.more": "More with CiO Costs Pro →",
       "th.cidx": "Price index", "fd.crowd": "Reported prices: {i} (CiO)",
@@ -291,7 +300,7 @@ window.I18N = (function () {
   }
   /* materials and series names (Kiswahili, French) */
   const MAT = {
-    sw: { "Cement": "Saruji", "Diesel": "Dizeli", "Rebar": "Nondo", "Reinforcement steel": "Nondo (chuma cha kuimarisha)", "Reinforcing steel": "Nondo",
+    sw: { "Cement": "Saruji", "Skilled mason, per day": "Fundi mwashi, kwa siku", "Casual labourer, per day": "Kibarua, kwa siku", "Diesel": "Dizeli", "Rebar": "Nondo", "Reinforcement steel": "Nondo (chuma cha kuimarisha)", "Reinforcing steel": "Nondo",
       "Sand": "Mchanga", "Labour": "Nguvu kazi", "Roofing sheets": "Mabati", "Aggregate": "Kokoto", "Aggregate stone": "Kokoto",
       "Concrete blocks": "Matofali ya saruji", "Timber": "Mbao", "Paint": "Rangi", "Plastic pipes": "Mabomba ya plastiki", "Tiles": "Vigae",
       "Bricks": "Matofali", "Asphalt": "Lami", "Ready-mix concrete": "Zege tayari", "Steel and reinforcement": "Chuma na nondo",
@@ -300,7 +309,7 @@ window.I18N = (function () {
       "Building cost index": "Fahirisi ya gharama za majengo", "Civil engineering cost index": "Fahirisi ya gharama za uhandisi wa kiraia",
       "Construction input prices (whole industry)": "Bei za vifaa vya ujenzi (sekta nzima)", "Construction stone and sand": "Mawe na mchanga wa ujenzi",
       "Civil engineering materials": "Vifaa vya uhandisi wa kiraia", "Imported-input cost pressure": "Shinikizo la gharama za vifaa vinavyoagizwa" },
-    fr: { "Cement": "Ciment", "Diesel": "Gazole", "Rebar": "Fer à béton", "Reinforcement steel": "Acier d'armature", "Reinforcing steel": "Acier d'armature",
+    fr: { "Cement": "Ciment", "Skilled mason, per day": "Maçon qualifié, par jour", "Casual labourer, per day": "Manœuvre, par jour", "Diesel": "Gazole", "Rebar": "Fer à béton", "Reinforcement steel": "Acier d'armature", "Reinforcing steel": "Acier d'armature",
       "Sand": "Sable", "Labour": "Main-d'œuvre", "Roofing sheets": "Tôles de toiture", "Aggregate": "Granulats", "Aggregate stone": "Granulats",
       "Concrete blocks": "Parpaings", "Timber": "Bois", "Paint": "Peinture", "Plastic pipes": "Tuyaux en plastique", "Tiles": "Carreaux",
       "Bricks": "Briques", "Asphalt": "Enrobé", "Ready-mix concrete": "Béton prêt à l'emploi", "Steel and reinforcement": "Acier et armatures",

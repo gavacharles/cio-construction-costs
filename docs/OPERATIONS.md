@@ -158,6 +158,19 @@ Three kinds of per-item series, labelled on the site:
 3. Reported prices — the index built from what people pay (`Participants.crowd_index`), the main path for cement,
    sand and blocks.
 
+## Trust pages and accuracy (Oct 2026)
+
+- Public pages: `methodology.html` (how every figure is built and tested), `terms.html`, `privacy.html`. Operator, contact email,
+  jurisdiction and version come from `config/site.yaml` (`operator`, `contact_email`, `jurisdiction`, `legal_version`).
+  Have a lawyer review the terms and privacy text before launch; fill in `contact_email`.
+- Uganda's main model is now checked material by material (choose on the first half of its backtest, judge on the second):
+  cement and steel bars use "no change" (the model did not beat it), diesel and labour keep the model.
+- Live track record (method page, `public/data/track_record.csv`): every saved forecast checked automatically when the
+  official figure is published; rebuilt with the site every refresh.
+- Reported prices feed forecasts: an item with 12+ months of reported-price index gets its own tested forecast.
+- Rainfall now covers Kenya and South Africa (five main markets each); labour rates (skilled mason, casual labourer, per day)
+  can be reported in every pilot country.
+
 ## Before going live
 
 - Legal: play money only (`regulation.mode` is enforced). Get a one-page opinion per country

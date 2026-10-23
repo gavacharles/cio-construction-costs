@@ -116,3 +116,5 @@ price_items:
   - { code: block_6in,    name: "Concrete block, 6 in",         unit: piece }
   - { code: timber_2x4,   name: "Timber 2x4, per foot",         unit: foot }
   - { code: mason_day,    name: "Mason, daily wage",            unit: day }
+  - { code: labour_mason,  name: "Skilled mason, per day",      unit: day }
+  - { code: labour_casual, name: "Casual labourer, per day",    unit: day }

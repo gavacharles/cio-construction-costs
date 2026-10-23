@@ -42,3 +42,5 @@ price_items:
   - { code: aggregate,    name: "Aggregate / gravel, per tonne", unit: tonne }
   - { code: brick,        name: "Burnt clay brick",            unit: piece }
   - { code: mason_day,    name: "Mason, daily wage",           unit: day }
+  - { code: labour_mason,  name: "Skilled mason, per day",      unit: day }
+  - { code: labour_casual, name: "Casual labourer, per day",    unit: day }

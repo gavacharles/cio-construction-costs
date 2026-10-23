@@ -500,3 +500,4 @@ footer{border-top:1px solid var(--rule)}.footlinks{font-size:12px}
 .pro-form .consent,.pro-form .formmsg{grid-column:1/-1}.pro-form button{justify-self:start}
 @media (max-width:760px){.pro-form{grid-template-columns:1fr}}@media print{.pro{display:none!important}}
 .si-src{font-size:13px;color:var(--ink-2);max-width:280px}
+.doc{max-width:760px}.doc h2{font-size:1.5rem;margin:26px 0 8px}.doc .plain li{margin:0 0 8px;line-height:1.55}.doc p{line-height:1.6}

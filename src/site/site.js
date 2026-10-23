@@ -128,9 +128,9 @@
     const fan = $(".fan", el); if (fan) { const xs = JSON.parse(fan.dataset.xs || "{}"), mk = $(".marker", fan), m = tMonth(tg);
       const x = xs[m] || xs[Object.keys(xs).filter(k => k <= m).pop()]; if (mk && x) { mk.setAttribute("x1", x); mk.setAttribute("x2", x); } }
     $$("tr[data-mat]").forEach(row => { const pth = c.paths[row.dataset.mat] || (row.dataset.mat === "Reinforcement steel" ? c.paths["Rebar"] : null);
-      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.innerHTML = x ? `${apct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})${(c.trend || []).includes(row.dataset.mat) ? ` ${(() => { const st = (c.trend_stats || {})[row.dataset.mat] || {}, drv = st.kind && st.kind !== "nochange" && (st.drivers || []).length;
-        const tag = drv ? tr("mm.model") : tr("mm.nochange");
-        const tip = (drv ? tr("mm.tipmodel", { how: st.how || "" }) : tr("mm.tipnc")) + (st.n ? " " + tr("mm.test", { n: st.n, p: Math.round((st.inside || 0) * 100),
+      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.innerHTML = x ? `${apct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})${(c.trend_stats || {})[row.dataset.mat] ? ` ${(() => { const st = (c.trend_stats || {})[row.dataset.mat] || {}, drv = st.kind && st.kind !== "nochange" && (st.drivers || []).length;
+        const tag = st.kind === "structural" ? tr("mm.main") : drv ? tr("mm.model") : tr("mm.nochange");
+        const tip = (st.kind === "structural" ? tr("mm.tipmain") : drv ? tr("mm.tipmodel", { how: st.how || "" }) : tr("mm.tipnc")) + (st.n ? " " + tr("mm.test", { n: st.n, p: Math.round((st.inside || 0) * 100),
           r: st.mae_nochange ? Math.round((1 - st.mae / st.mae_nochange) * 100) : 0 }) : "");
         return ` <span class="trendtag${drv ? " mdl" : ""}" title="${esc(tip)}">${tag}</span>`; })()}` : ""}` : tr("notsep"); } });
   }
@@ -457,7 +457,8 @@
         const single = Object.keys(c.single || {}).filter(n => c.paths[n]);
         const fuel = w.some(t => ["diesel", "fuel", "petrol", "dizeli", "gazole"].some(x => t.startsWith(x))) && single.find(n => /diesel|fuel/i.test(n));
         const steel = w.some(t => ["steel", "rebar", "iron", "nondo", "chuma", "acier", "roofing", "mabati"].some(x => t.startsWith(x))) && single.find(n => /steel/i.test(n));
-        return fuel || steel || c.head; }
+        const rep = single.find(n => /reported/i.test(n) && w.some(t => t.length > 3 && words(n).some(x => x.startsWith(t))));
+        return rep || fuel || steel || c.head; }
       return Object.keys(c.paths).find(n => { const nw = words(n + " " + T.mat(n)); return w.some(t => nw.some(x => x.startsWith(t) || t.startsWith(x) || (SYN[t] || []).some(y => x.startsWith(y)))); }) ?? c.head; };
     const fmt = v => Math.round(v).toLocaleString(T.loc || undefined);
     function addRow(v = {}) {

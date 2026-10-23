@@ -55,3 +55,5 @@ price_items:
   - { code: sand,         name: "River sand, per tonne",           unit: tonne }
   - { code: block_6in,    name: "Machine-cut stone / block, 6 in", unit: piece }
   - { code: mason_day,    name: "Mason, daily wage",               unit: day }
+  - { code: labour_mason,  name: "Skilled mason, per day",      unit: day }
+  - { code: labour_casual, name: "Casual labourer, per day",    unit: day }

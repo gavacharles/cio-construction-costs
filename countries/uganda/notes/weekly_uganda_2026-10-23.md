@@ -12,9 +12,9 @@ For every **1,000,000 UGX** you spend on materials today, budget about **1,026,0
 
 - ⬆ **Diesel** — up about 11% by January 2027
 - ⬆ **All building inputs** — up about 2.6% by January 2027
-- ⬆ **Rebar** — up about 2.5% by January 2027
-- ⬆ **Cement** — up about 2.1% by January 2027
 - ⬆ **Sand** — up about 1.2% by January 2027
+- ⬆ **Labour** — up about 0.6% by January 2027
+- ➡ **Rebar** — about the same by January 2027
 
 ## Why
 

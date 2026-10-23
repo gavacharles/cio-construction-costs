@@ -17,3 +17,8 @@ site_url: ""
 pilot_countries: [uganda, south_africa, kenya, rwanda, zambia, tanzania, nigeria]
 # Benchmark country (global north): same forecasting tool on timely official data, to show how it performs.
 benchmark_countries: [united_states, united_kingdom, austria, hong_kong, philippines, brazil]
+# Legal pages (terms, privacy): who runs the site, how to reach them, and which law applies. Review with a lawyer.
+operator: "CiO Lab"
+contact_email: ""            # e.g. hello@yourdomain — shown on the terms and privacy pages
+jurisdiction: "Uganda"
+legal_version: "Pilot version 0.1, October 2026"

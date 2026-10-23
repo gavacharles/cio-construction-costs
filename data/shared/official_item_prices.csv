@@ -1,4 +1,6 @@
 country,item,month,price,unit,source,verified
+rwanda,diesel,2026-04,2205.0,RWF per litre (maximum retail),https://www.rura.rw/fileadmin/user_upload/RURA/Documents/Tariffs/Applicaple_pump_prices_and_Public_Transport_tariffs.pdf,typed from the official notice
+rwanda,petrol,2026-04,2303.0,RWF per litre (maximum retail),https://www.rura.rw/fileadmin/user_upload/RURA/Documents/Tariffs/Applicaple_pump_prices_and_Public_Transport_tariffs.pdf,typed from the official notice
 zambia,diesel,2025-01,32.43,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJanuary2025.pdf,next notice agrees
 zambia,diesel,2025-02,32.54,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesFebruary2025.pdf,next notice agrees
 zambia,diesel,2025-03,32.54,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesMarch2025.pdf,next notice agrees

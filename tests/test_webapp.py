@@ -403,3 +403,25 @@ def test_every_page_has_valid_data():
         m = re.search(r'id=cio-data type=["\']application/json["\']>(.*?)</script>', f.read_text(), re.S)
         if m:
             json.loads(m.group(1).replace("<\\/", "</"), parse_constant=lambda c: (_ for _ in ()).throw(ValueError(f"{f.name}: {c}")))
+
+
+def test_reported_prices_feed_a_forecast(tmp_path):
+    """An item with 12+ months of reported-price index gets its own tested forecast and series."""
+    if not (ROOT / "data" / "shared" / "fx_imf_monthly.csv").exists():
+        pytest.skip("no driver history")
+    import weekly_note
+    from reports import Participants
+    db = tmp_path / "r.sqlite"
+    today = date.today().replace(day=15)
+    with Participants(db) as p:
+        for k in range(14):
+            for h in ("a", "b", "c"):
+                p.add_report(h, "rwanda", "cement_50kg", 10000 * (1 + 0.01 * k) + (20 if h == "b" else 0), "Kigali",
+                             on=today - timedelta(days=30 * (13 - k)), area="capital")
+    weekly_note._DATA.clear()
+    weekly_note._reported_item_paths("rwanda", db)
+    label = "Cement, 50 kg bag (reported prices)"
+    assert label in weekly_note._DATA["paths"] and len(weekly_note._DATA["paths"][label]) == 12
+    assert weekly_note._DATA["items"][label]["kind"] == "reported" and weekly_note._DATA["trend_stats"][label]["kind"]
+    q = weekly_note._DATA["paths"][label][0]
+    assert q["lo"] <= q["median"] <= q["hi"]
