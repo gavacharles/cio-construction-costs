@@ -103,13 +103,31 @@ def zambia(start: str = "2025-01") -> list[dict]:
     return rows
 
 
+CURATED_LABELS = {"typed from the official notice", "found by the data scout, checked against the notice by the organiser"}
+
+
+def curated() -> pd.DataFrame:
+    cur = pd.read_csv(CURATED) if CURATED.exists() else pd.DataFrame()
+    if len(cur):
+        cur["verified"] = cur["checked"].fillna("typed from the official notice") if "checked" in cur else "typed from the official notice"
+        cur = cur.drop(columns=["checked"], errors="ignore")
+    return cur
+
+
+def write(fetched: pd.DataFrame) -> pd.DataFrame:
+    out = pd.concat([fetched, curated()], ignore_index=True)
+    out.sort_values(["country", "item", "month"]).to_csv(OUT, index=False)
+    return out
+
+
+def merge_curated() -> None:
+    """Re-merge the curated file without fetching anything (after the organiser approves a data-scout proposal)."""
+    old = pd.read_csv(OUT) if OUT.exists() else pd.DataFrame(columns=["country", "verified"])
+    write(old[~old.verified.isin(CURATED_LABELS)])                           # keep the rows read automatically (ERB)
+
+
 if __name__ == "__main__":
     if not (shutil.which("curl") and shutil.which("pdftotext")):
         raise SystemExit("official prices: needs curl and pdftotext")
-    rows = zambia()
-    out = pd.DataFrame(rows)
-    cur = pd.read_csv(CURATED) if CURATED.exists() else pd.DataFrame()
-    if len(cur):
-        out = pd.concat([out, cur.assign(verified="typed from the official notice")], ignore_index=True)
-    out.sort_values(["country", "item", "month"]).to_csv(OUT, index=False)
+    out = write(pd.DataFrame(zambia()))
     print(f"official prices: {len(out)} rows ({', '.join(f'{c}/{i} {len(g)}' for (c, i), g in out.groupby(['country', 'item']))})")

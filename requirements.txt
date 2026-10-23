@@ -12,3 +12,4 @@ scikit-learn>=1.3      # Huber regression in the forecaster
 pyyaml>=6.0            # configs
 pytest>=7.4
 httpx>=0.27            # tests (FastAPI TestClient)
+anthropic>=0.125      # the assistant (src/ai/): data scout and contract reader; off without ANTHROPIC_API_KEY

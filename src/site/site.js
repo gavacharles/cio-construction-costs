@@ -154,7 +154,11 @@
   if (bcPanes.length) { const go = t => { $$("[data-bc]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.bc === t)));
       bcPanes.forEach(p => p.hidden = p.dataset.bcPane !== t); };
     $$("[data-bc]").forEach(b => b.onclick = () => { go(b.dataset.bc); history.replaceState(null, "", location.pathname + location.search + "#" + b.dataset.bc); });
-    go(location.hash === "#adjust" ? "adjust" : "bid"); window.addEventListener("hashchange", () => go(location.hash === "#adjust" ? "adjust" : "bid")); }
+    /* #adjust, or a link to anything inside the adjust pane (e.g. #reader, #pro), opens that tab */
+    const pick = () => { let el = null; try { el = location.hash.length > 1 && document.querySelector(location.hash); } catch (e) {}
+      const pane = el && el.closest("[data-bc-pane]"); const t = location.hash === "#adjust" ? "adjust" : pane ? pane.dataset.bcPane : "bid";
+      go(t); if (pane) el.scrollIntoView(); };
+    pick(); window.addEventListener("hashchange", pick); }
 
   /* "+ Add to my bill": a material from a country page goes straight into the bill of quantities */
   $$("[data-addbill]").forEach(b => b.onclick = () => { const k = Object.keys(DATA.countries)[0], c = DATA.countries[k], name = b.dataset.addbill;
@@ -627,6 +631,32 @@
       $("[data-fd-cap]").innerHTML = full ? tr("pro.cap", { n: FREE_IPCS }) + ` <a href="#pro">${tr("pro.more")}</a>` : tr("pro.free", { n: FREE_IPCS }); };
     $("[data-fd-addipc]").onclick = () => { if (st.ipcs.length >= FREE_IPCS) { capNote(); return; } const last = st.ipcs[st.ipcs.length - 1], d = last ? new Date(last.end) : new Date();
       const e = new Date(d.getFullYear(), d.getMonth() + 2, 0); st.ipcs.push({ no: st.ipcs.length + 1, end: ymd(e), value: last ? last.value : 0 }); drawIpcs(); compute(); capNote(); };
+    /* contract reader (Pro): the adjustment data read from an uploaded contract, each value with its words and page */
+    const cr = $("#cr-form");
+    if (cr) { const out = $(".cr-out"), saved = store.get("cio-pro-code", ""); if (saved) cr.elements.code.value = saved;
+      cr.onsubmit = async ev => { ev.preventDefault(); const f = cr.elements.file.files[0]; if (!f) return;
+        const fdata = new FormData(), btn = $("button", cr); fdata.append("file", f); fdata.append("country", cis.value);
+        fdata.append("options", JSON.stringify(Object.fromEntries(sources(X()).filter(([v]) => v !== "manual"))));
+        fdata.append("code", cr.elements.code.value.trim()); btn.disabled = true; out.innerHTML = `<p class=muted>${tr("cr.wait")}</p>`;
+        let j; try { j = await (await fetch(rel + "api/pro/contract", { method: "POST", body: fdata })).json(); } catch (e) { j = { ok: false, error: tr("cr.err") }; }
+        btn.disabled = false; track("contract", cis.value);
+        if (!j.ok) { out.innerHTML = `<p class=bad>${esc(j.error || tr("cr.err"))}</p>`; return; }
+        if (j.pro) store.set("cio-pro-code", cr.elements.code.value.trim());
+        const lab = Object.fromEntries(sources(X())), chk = c => `<span class="crchk ${/^found/.test(c || "") ? "ok" : ""}">${esc(c || "")}</span>`;
+        const q = (t, p) => t ? `<span class=crq>“${esc(t)}”${p ? ` · p. ${p}` : ""}</span>` : "";
+        if (!j.found || !j.elements.length) { out.innerHTML = `<h4>${tr("cr.none")}</h4><p>${esc(j.note)}</p>`; return; }
+        out.innerHTML = `<h4>${tr("cr.found")}</h4><p class=muted>${esc(j.note)}</p>
+          <div class=tablewrap><table class="glance fd-table"><thead><tr><th>${tr("fd.el")}</th><th>${tr("fd.coef")}</th><th>${tr("cr.idx")}</th><th>${tr("fd.src")}</th><th>${tr("cr.check")}</th></tr></thead><tbody>
+          <tr><td>${tr("cr.base")}</td><td>${esc(j.base_date || "–")}</td><td>${q(j.base_date_quote, j.base_date_page)}</td><td></td><td>${chk(j.base_date_check)}</td></tr>
+          ${j.fixed_coef != null ? `<tr><td>${tr("cr.fixed")}</td><td>${j.fixed_coef}</td><td>${q(j.fixed_quote, j.fixed_page)}</td><td>${tr("fd.notadj")}</td><td>${chk(j.fixed_check)}</td></tr>` : ""}
+          ${j.elements.map(x => `<tr><td>${esc(x.label)}</td><td>${x.coef}</td><td>${esc(x.index_named)}${q(x.quote, x.page)}</td><td>${esc(lab[x.source] || tr("fd.manual"))}</td><td>${chk(x.check)}</td></tr>`).join("")}
+          </tbody></table></div>
+          <p>${j.sum_ok ? tr("cr.sumok") : `<span class=bad>${tr("cr.sumbad", { s: j.sum })}</span>`}</p>
+          <p class=actions><button type=button class="btn primary" data-cr-use>${tr("cr.use")}</button></p>`;
+        $("[data-cr-use]", out).onclick = () => { if (j.base_date) st.base = j.base_date;
+          st.sched = [...(j.fixed_coef != null ? [{ el: tr("fd.fixed"), coef: j.fixed_coef, src: "fixed" }] : []),
+            ...j.elements.map(x => ({ el: x.label, coef: x.coef, src: x.source }))];
+          all(); out.insertAdjacentHTML("beforeend", `<p class=good>${tr("cr.used")}</p>`); fd.scrollIntoView({ behavior: "smooth" }); }; }; }
     all();
   }
 

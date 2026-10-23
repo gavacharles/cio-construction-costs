@@ -1,0 +1,32 @@
+# The data scout (src/ai/scout.py): where Claude may look for official prices, and what to look for.
+# Only the listed sites are searched and read. Every price it finds waits for the organiser in /admin.
+# Zambia is not here: its ERB notices are read automatically (src/ingest/official_prices.py).
+countries:
+  rwanda:
+    office: Rwanda Utilities Regulatory Authority (RURA)
+    sites: [rura.rw]
+    unit: RWF per litre (maximum retail)
+    where: the maximum pump price in Kigali
+    how_often: RURA sets pump prices every two months, in a communique on rura.rw
+    items:
+      diesel: diesel (gasoil)
+      petrol: petrol (gasoline, premium motor spirit)
+  tanzania:
+    office: Energy and Water Utilities Regulatory Authority (EWURA)
+    sites: [ewura.go.tz]
+    unit: TZS per litre (Dar es Salaam cap price)
+    where: the retail cap price in Dar es Salaam
+    how_often: EWURA publishes cap prices every month, usually on the first Wednesday
+    items:
+      diesel: diesel
+      petrol: petrol
+      kerosene: kerosene
+  nigeria:
+    office: National Bureau of Statistics (NBS)
+    sites: [nigerianstat.gov.ng]
+    unit: NGN per litre (national average retail)
+    where: the national average retail price
+    how_often: NBS publishes a Price Watch for petrol (PMS) and diesel (AGO) every month
+    items:
+      diesel: diesel (automotive gas oil, AGO)
+      petrol: petrol (premium motor spirit, PMS)

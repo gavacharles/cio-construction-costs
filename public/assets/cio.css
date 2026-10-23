@@ -526,3 +526,10 @@ footer{border-top:1px solid var(--rule)}.footlinks{font-size:12px}
 .fc-head h2{font-size:clamp(1.8rem,4vw,2.6rem);margin:4px 0 10px;max-width:22ch}
 @media (max-width:860px){.lp-cards{grid-template-columns:1fr}.landing{padding-top:32px}}
 @media (max-width:560px){.lp-cta .btn{white-space:normal;max-width:100%;text-align:center}.landing{overflow-wrap:anywhere}}
+
+/* contract reader (Pro) */
+.cr{border-top:3px solid var(--accent-fill)}.cr h3{margin:4px 0 6px}
+.cr-form{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;margin:12px 0 6px}.cr-form label{display:flex;flex-direction:column;gap:4px;font-size:14px}
+.cr-out h4{margin:16px 0 4px;font-size:1.25rem}.crq{display:block;font-size:13px;color:var(--ink-3);margin-top:3px}
+.crchk{font-size:13px;color:var(--miss)}.crchk.ok{color:var(--hit)}
+#reader,#pro{scroll-margin-top:84px}

@@ -12,7 +12,9 @@ Public site: public/ is served at / (built by src/site/build_index.py). Anyone c
   POST /api/public/price   a price someone paid (anonymous; queried first when far from the usual price)
   POST /api/public/alert   an email alert on a forecast
   POST /api/public/hit     anonymous visit counting (no cookies, no IP stored)
-Organiser: /admin (password = CIO_ADMIN_KEY) for the monthly pilot report.
+  POST /api/pro/contract   read the price adjustment data out of an uploaded contract (Claude; file never stored)
+Organiser: /admin (password = CIO_ADMIN_KEY): monthly pilot report, data checks, data-scout proposals, Pro codes.
+Assistant (src/ai/): on when ANTHROPIC_API_KEY is set; CIO_AI_MONTHLY_USD caps the spending.
 """
 from __future__ import annotations
 
@@ -29,17 +31,21 @@ from collections import defaultdict, deque
 from pathlib import Path
 
 import numpy as np
-from fastapi import FastAPI, Form, Request
+from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src" / "market"))
 sys.path.insert(0, str(ROOT / "src" / "forecast"))
+sys.path.insert(0, str(ROOT / "src" / "ai"))
+sys.path.insert(0, str(ROOT / "src" / "ingest"))
 
 from country import load_country, list_countries        # noqa: E402
 from reports import Participants, ReportError           # noqa: E402
 from usage import Usage, visitor_id                      # noqa: E402
 import pilot_report                                      # noqa: E402
+import claude                                            # noqa: E402
+import contract_reader                                   # noqa: E402
 
 DB = Path(os.environ.get("CIO_DB", ROOT / "data" / "live" / "exchange.sqlite"))
 NOTES = ROOT / "countries"
@@ -118,7 +124,7 @@ def _ip(request: Request) -> str:
 
 e = html.escape
 
-CSS = """
+CSS = """form.inline{display:inline;margin:0}code{font-weight:600}
 :root{--bg:#fbfaf7;--card:#fff;--fg:#1d1d1b;--mut:#6b6a66;--line:#e3e0d8;--acc:#b5651d;--acc2:#1f6f78;--bar:#f1e3d3}
 @media (prefers-color-scheme:dark){:root{--bg:#141412;--card:#1d1c1a;--fg:#ecebe6;--mut:#a3a29c;--line:#33322e;--acc:#e0a060;--acc2:#5fb3bc;--bar:#3a2c1e}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif}
@@ -168,10 +174,39 @@ def waitlist_html() -> str:
     rows = people().waitlist()
     if not rows:
         return "<p class=mut>No sign-ups yet.</p>"
+    codes = people().pro_codes()
+
+    def code(email: str) -> str:
+        if email in codes:
+            return f"<code>{e(codes[email])}</code>"
+        return (f"<form method=post action=/admin/pro-code class=inline><input type=hidden name=email value='{e(email)}'>"
+                f"<button>Give a Pro code</button></form>")
     body = "".join(f"<tr><td>{e(r['created'][:10])}</td><td>{e(r['email'])}</td><td>{e(r['org'] or '')}</td><td>{e(r['role'] or '')}</td>"
-                   f"<td>{e(r['country'] or '')}</td><td>{e(r['feature'] or '')}</td></tr>" for r in rows)
-    return (f"<p class=mut>{len(rows)} sign-ups (private: never shown on the public site).</p><div class=tw><table><tr><th>Date</th><th>Email</th>"
-            f"<th>Organisation</th><th>Role</th><th>Country</th><th>For</th></tr>{body}</table></div>")
+                   f"<td>{e(r['country'] or '')}</td><td>{e(r['feature'] or '')}</td><td>{code(r['email'])}</td></tr>"
+                   for r in {r['email']: r for r in rows}.values())
+    return (f"<p class=mut>{len(rows)} sign-ups (private: never shown on the public site). A Pro code lets that person use "
+            f"the contract reader up to {PRO_READS} times a day; send it to them yourself.</p><div class=tw><table><tr><th>Date</th><th>Email</th>"
+            f"<th>Organisation</th><th>Role</th><th>Country</th><th>For</th><th>Pro code</th></tr>{body}</table></div>")
+
+
+def scout_html() -> str:
+    """Prices the data scout found in official notices, waiting for a decision."""
+    on = "on" if claude.enabled() else "off (set ANTHROPIC_API_KEY to switch it on)"
+    spent = people().ai_spend()
+    head = (f"<p class=mut>Assistant {on}. Spent this month: US${spent:.2f} of US${claude.MONTHLY_USD:.0f}. "
+            f"Each price below was read by Claude from an official notice and checked by code; nothing goes live until you approve it. "
+            f"Open the notice and look for the quote before approving.</p>")
+    rows = people().proposals()
+    if not rows:
+        return head + "<p class=mut>Nothing waiting.</p>"
+    body = "".join(
+        f"<tr><td>{e(r['country'])}</td><td>{e(r['item'])}</td><td>{e(r['month'])}</td><td><b>{r['price']:g}</b><br><span class=mut>{e(r['unit'])}</span></td>"
+        f"<td>“{e(r['quote'])}”<br><a href='{e(r['source'])}' target=_blank rel=noopener>open the notice</a></td>"
+        f"<td class={'ok' if r['checks'].startswith('quote found') and ';' not in r['checks'] else 'err'}>{e(r['checks'])}</td>"
+        f"<td><form method=post action=/admin/scout/{r['id']} class=inline><button name=decision value=approve>Approve</button> "
+        f"<button name=decision value=reject>Reject</button></form></td></tr>" for r in rows)
+    return head + (f"<div class=tw><table><tr><th>Country</th><th>Item</th><th>Month</th><th>Price</th><th>Quote</th>"
+                   f"<th>Checks</th><th></th></tr>{body}</table></div>")
 
 
 @app.get("/admin", response_class=HTMLResponse)
@@ -195,6 +230,7 @@ def admin(request: Request, err: str = ""):
     ok = sum(r["status"] == "ok" for r in checks["checks"])
     return page("Organiser", f"""<div class=card><h1>Pilot</h1><p>Live countries: {live}.
 Anyone can view the site and report prices; there are no accounts.</p><h2>Monthly pilot reports</h2><ul>{links}</ul></div>
+<div class=card id=scout><h2>Data scout: official prices to review</h2>{scout_html()}</div>
 <div class=card><h2>CiO Costs Pro waitlist</h2>{waitlist_html()}</div>
 <div class=card><h2>Data checks</h2><p class=mut>Last run {e(checks['run'])}: {ok} ok, {len(probs)} to look at.</p>
 <div class=tw><table><tr><th>Status</th><th>Country</th><th>Check</th><th>Detail</th></tr>{rows}</table></div></div>""")
@@ -211,6 +247,28 @@ def admin_login(request: Request, key: str = Form(...)):
     r = RedirectResponse("/admin", status_code=303)
     r.set_cookie(ADMIN_COOKIE, _admin_token(), httponly=True, samesite="strict", secure=SECURE, max_age=60 * 60 * 12)
     return r
+
+
+@app.post("/admin/scout/{pid}")
+def admin_scout(request: Request, pid: int, decision: str = Form(...)):
+    if not _is_admin(request):
+        return RedirectResponse("/admin", status_code=303)
+    p = people().decide_proposal(pid, decision == "approve")
+    if p and decision == "approve":
+        import scout
+        import official_prices
+        scout.approve_to_curated(p)
+        official_prices.merge_curated()                 # in the site's data at the next refresh (every 3 hours)
+    return RedirectResponse("/admin#scout", status_code=303)
+
+
+@app.post("/admin/pro-code")
+def admin_pro_code(request: Request, email: str = Form(...)):
+    if not _is_admin(request):
+        return RedirectResponse("/admin", status_code=303)
+    if email.strip().lower() not in people().pro_codes():
+        people().issue_pro_code(email)
+    return RedirectResponse("/admin", status_code=303)
 
 
 @app.get("/admin/logout")
@@ -334,6 +392,46 @@ async def public_waitlist(request: Request):
         return {"ok": True, "id": wid}
     except (ReportError, ValueError, TypeError) as err:
         return JSONResponse({"ok": False, "error": str(err)}, status_code=400)
+
+
+# ------------------------------------------------- contract reader (Pro) --
+FREE_READS = 1          # per person (anonymous IP hash) per day, to try it during the pilot
+PRO_READS = 20          # per Pro code per day
+ALL_READS = 60          # everyone together per day: protects the monthly budget
+
+
+@app.post("/api/pro/contract")
+async def pro_contract(request: Request, file: UploadFile = File(...), country: str = Form(...),
+                       options: str = Form("{}"), code: str = Form("")):
+    """The price adjustment data in an uploaded contract, with the words and page for each value.
+    The file is read in memory and never stored."""
+    def no(msg: str, status: int = 400):
+        return JSONResponse({"ok": False, "error": msg}, status_code=status)
+    if not claude.enabled():
+        return no("The contract reader is not switched on yet. Join the Pro waitlist below and we will tell you when it is.", 503)
+    if country not in LIVE:
+        return no("unknown country")
+    db = people()
+    pro = db.pro_code_ok(code)
+    who = code.strip().upper() if pro else _anon(request)
+    if db.ai_spend() >= claude.MONTHLY_USD or db.ai_uses_today("contract") >= ALL_READS:
+        return no("The contract reader has reached its limit for now. Please try again tomorrow.", 429)
+    if code and not pro:
+        return no("That Pro code is not valid.")
+    if db.ai_uses_today("contract", who) >= (PRO_READS if pro else FREE_READS):
+        return no("You have used today's free reading. Join the Pro waitlist for more." if not pro
+                  else f"You have used today's {PRO_READS} readings.", 429)
+    try:
+        opts = {str(k)[:40]: str(v)[:80] for k, v in json.loads(options or "{}").items()}
+    except (ValueError, AttributeError):
+        opts = {}
+    pdf = await file.read(contract_reader.MAX_BYTES + 1)
+    try:
+        out, usd = contract_reader.read(pdf, country, dict(list(opts.items())[:60]))
+    except (contract_reader.ReadError, claude.AIError) as err:
+        return no(str(err))
+    db.log_ai("contract", who, round(usd, 4), country)
+    return {"ok": True, "pro": pro, **out}
 
 
 # The public site (built into public/ by src/site/build_index.py) is served at the root.

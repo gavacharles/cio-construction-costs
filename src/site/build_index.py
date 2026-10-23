@@ -914,6 +914,16 @@ def page_contract_index(cs: list[dict]) -> str:
 <section class=prose><h2 data-i18n=fd.h>Price adjustment for an Interim Payment Certificate</h2>
 <p class=lede data-i18n=fd.lede>The FIDIC way (Sub-Clause 13.7 of the 2017 books, 13.8 of 1999): enter the Schedule of cost indexation from your
 Contract Data, the Base Date and the value of work in each IPC. CiO Costs looks up the indices and works out each adjustment.</p></section>
+<div class="panel cr" id=reader><p class=eyebrow data-i18n=cr.eyebrow>CiO Costs Pro · try it free once a day</p>
+ <h3 data-i18n=cr.h>Read the adjustment data from my contract</h3>
+ <p data-i18n=cr.d>Upload the Contract Data or Particular Conditions (PDF, up to 80 pages). CiO's assistant finds the Base Date and the
+ Schedule of cost indexation, with the page and the words for each value, and checks them against the document. You check the values before they fill the form.</p>
+ <form id=cr-form class=cr-form autocomplete=off><label><span data-i18n=cr.file>Contract (PDF)</span><input type=file name=file accept="application/pdf,.pdf" required></label>
+ <label><span data-i18n=cr.code>Pro code (optional)</span><input name=code placeholder="PRO-…" autocapitalize=characters></label>
+ <button class='btn primary' type=submit data-i18n=cr.go>Read it</button></form>
+ <p class=fineprint><span data-i18n=cr.priv>Your file is read and then discarded; it is never stored. It is sent to Anthropic (Claude) to be read.</span>
+ <a href=privacy.html data-i18n=ft.privacy>Privacy</a></p>
+ <div class=cr-out aria-live=polite></div></div>
 <form id=fd-form class=fd autocomplete=off>
  <div class="panel fd-step"><h3><span class=fd-n>1</span> <span data-i18n=fd.s1>Contract</span></h3>
   <div class=fd-row><label><span data-i18n=th.country>Country</span><select id=ci-country>{opts}</select></label>
@@ -1212,6 +1222,9 @@ to send the alerts and emails you asked for, to check data quality, and to under
 advertising.</p>
 <h2>4. Who can see it</h2><p>Only the {op} team running the site. Data is kept on the site's own server; service providers used to run it
 (hosting, email sending) process it only on our instructions.</p>
+<p>Contracts uploaded to the contract reader are read in memory and then discarded: we do not store the file or its contents. To read it,
+the text (or, for a scan, the PDF) is sent to Anthropic, the maker of Claude, which processes it to answer and does not use it to train its models.
+We keep only a count of readings, to apply the daily limits.</p>
 <h2>5. How long</h2><p>Price reports are kept to build history (the published figures are aggregates). Contact details given with a report,
 alert sign-ups and waitlist entries are deleted on request, and alert and waitlist entries when the service ends.</p>
 <h2>6. Your rights</h2><p>You can ask to see, correct or delete personal data you gave us, or withdraw consent for emails, at any time

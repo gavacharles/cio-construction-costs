@@ -33,6 +33,14 @@ CREATE TABLE IF NOT EXISTS price_reports (
 CREATE INDEX IF NOT EXISTS price_reports_item ON price_reports (country, item, week);
 CREATE TABLE IF NOT EXISTS pro_waitlist (
     id INTEGER PRIMARY KEY, created TEXT NOT NULL, email TEXT NOT NULL, org TEXT, role TEXT, country TEXT, feature TEXT);
+CREATE TABLE IF NOT EXISTS scout_proposals (
+    id INTEGER PRIMARY KEY, created TEXT NOT NULL, country TEXT NOT NULL, item TEXT NOT NULL, month TEXT NOT NULL,
+    price REAL NOT NULL, unit TEXT NOT NULL, source TEXT NOT NULL, quote TEXT NOT NULL, checks TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending', decided TEXT);
+CREATE TABLE IF NOT EXISTS pro_codes (
+    code TEXT PRIMARY KEY, email TEXT NOT NULL, created TEXT NOT NULL, active INTEGER DEFAULT 1);
+CREATE TABLE IF NOT EXISTS ai_usage (
+    id INTEGER PRIMARY KEY, ts TEXT NOT NULL, kind TEXT NOT NULL, who TEXT NOT NULL, country TEXT, usd REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS alerts (
     id INTEGER PRIMARY KEY, created TEXT NOT NULL, country TEXT NOT NULL, series TEXT NOT NULL,
     threshold REAL NOT NULL, channel TEXT NOT NULL, contact TEXT NOT NULL, last_sent TEXT, active INTEGER DEFAULT 1);
@@ -57,6 +65,10 @@ class ReportError(ValueError):
 def week_of(d: date) -> str:
     """ISO week start (Monday) as YYYY-MM-DD."""
     return (d - timedelta(days=d.weekday())).isoformat()
+
+
+def _now() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
 class Participants:
@@ -165,6 +177,55 @@ class Participants:
 
     def waitlist(self) -> list[dict]:
         return [dict(r) for r in self.db.execute("SELECT * FROM pro_waitlist ORDER BY created DESC")]
+
+    # ---- assistant (Claude): data scout proposals, Pro codes, spending ----
+    def add_proposal(self, country: str, item: str, month: str, price: float, unit: str, source: str, quote: str,
+                     checks: str) -> int:
+        """A price the data scout found in an official notice; waits for the organiser. One pending row per item-month."""
+        with self.db:
+            if self.db.execute("SELECT 1 FROM scout_proposals WHERE country=? AND item=? AND month=? AND price=? AND status!='rejected'",
+                               (country, item, month, price)).fetchone():
+                return 0
+            cur = self.db.execute("INSERT INTO scout_proposals (created, country, item, month, price, unit, source, quote, checks) "
+                                  "VALUES (?,?,?,?,?,?,?,?,?)", (_now(), country, item, month, float(price), unit, source, quote, checks))
+        return cur.lastrowid
+
+    def proposals(self, status: str = "pending") -> list[dict]:
+        return [dict(r) for r in self.db.execute("SELECT * FROM scout_proposals WHERE status=? ORDER BY country, item, month", (status,))]
+
+    def decide_proposal(self, pid: int, approve: bool) -> dict | None:
+        with self.db:
+            r = self.db.execute("SELECT * FROM scout_proposals WHERE id=? AND status='pending'", (pid,)).fetchone()
+            if r:
+                self.db.execute("UPDATE scout_proposals SET status=?, decided=? WHERE id=?",
+                                ("approved" if approve else "rejected", _now(), pid))
+        return dict(r) if r else None
+
+    def issue_pro_code(self, email: str) -> str:
+        code = "PRO-" + secrets.token_hex(4).upper()
+        with self.db:
+            self.db.execute("INSERT INTO pro_codes (code, email, created) VALUES (?,?,?)", (code, email.strip().lower(), _now()))
+        return code
+
+    def pro_code_ok(self, code: str) -> bool:
+        return bool(code) and bool(self.db.execute("SELECT 1 FROM pro_codes WHERE code=? AND active=1", (code.strip().upper(),)).fetchone())
+
+    def pro_codes(self) -> dict[str, str]:
+        return {r["email"]: r["code"] for r in self.db.execute("SELECT email, code FROM pro_codes WHERE active=1 ORDER BY created")}
+
+    def log_ai(self, kind: str, who: str, usd: float, country: str = "") -> None:
+        with self.db:
+            self.db.execute("INSERT INTO ai_usage (ts, kind, who, country, usd) VALUES (?,?,?,?,?)", (_now(), kind, who, country, usd))
+
+    def ai_spend(self, month: str | None = None) -> float:
+        month = month or _now()[:7]                       # ts is UTC, so the month and day are UTC too
+        return float(self.db.execute("SELECT COALESCE(SUM(usd),0) FROM ai_usage WHERE substr(ts,1,7)=?", (month,)).fetchone()[0])
+
+    def ai_uses_today(self, kind: str, who: str | None = None) -> int:
+        q, a = "SELECT COUNT(*) FROM ai_usage WHERE kind=? AND substr(ts,1,10)=?", [kind, _now()[:10]]
+        if who is not None:
+            q, a = q + " AND who=?", a + [who]
+        return int(self.db.execute(q, a).fetchone()[0])
 
     def active_alerts(self) -> list[dict]:
         return [dict(r) for r in self.db.execute("SELECT * FROM alerts WHERE active = 1")]

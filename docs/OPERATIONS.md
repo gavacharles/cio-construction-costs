@@ -177,3 +177,20 @@ Three kinds of per-item series, labelled on the site:
   before any prize or cash element.
 - Verify the cement excise in `countries/uganda/policy_events.yaml` (the sources conflict).
 - Set a strong `CIO_ADMIN_KEY` and serve over HTTPS.
+
+## The assistant (Claude): data scout and contract reader
+
+Both are off until `ANTHROPIC_API_KEY` is set in the web app's and the cycle's environment. `CIO_AI_MONTHLY_USD`
+(default 30) caps the spending per month; `CIO_AI_MODEL` changes the model (default claude-opus-5-5).
+Spending is shown in /admin.
+
+- **Data scout** (`src/ai/scout.py`, in the daily cycle). For the countries in `config/scout.yaml` (Rwanda RURA,
+  Tanzania EWURA, Nigeria NBS) it searches only the listed official sites for pump prices we lack (the last 24
+  months). Code re-opens each notice and checks the quote and the price; then each proposal waits in /admin →
+  "Data scout". **Open the notice and find the quote before approving.** Approved rows go to
+  `data/shared/official_item_prices_curated.csv` and are in the site's data at the next refresh. A country is looked
+  at only when its current month is missing, at most once a week. Run by hand: `python src/ai/scout.py --country rwanda --force`.
+- **Contract reader** (`src/ai/contract_reader.py`, `POST /api/pro/contract`, on the Bids & contracts page). Reads
+  the FIDIC price adjustment data from an uploaded PDF; code checks every quote against the document and that the
+  coefficients add up to 1. The file is never stored. Limits: 1 reading per person per day free; 20 a day with a Pro
+  code (give one from the Pro waitlist in /admin); 60 a day in total.
