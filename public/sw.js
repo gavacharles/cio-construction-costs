@@ -1,5 +1,5 @@
-/* CiO Costs offline cache: pages network-first (fall back to the last copy), assets cache-first. Build 2026-10-23T14:35+00:00 */
-const CACHE = "cio-2026-10-23T14:35+00:00";
+/* CiO Costs offline cache: pages network-first (fall back to the last copy), assets cache-first. Build 2026-10-23T14:52+00:00 */
+const CACHE = "cio-2026-10-23T14:52+00:00";
 self.addEventListener("install", e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./"]).catch(() => {}))); });
 self.addEventListener("activate", e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener("fetch", e => {

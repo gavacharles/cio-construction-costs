@@ -206,3 +206,18 @@ Spending is shown in /admin.
   Chromium (`apt install chromium`; set `CIO_CHROME` if it is not found). Result: `data/live/site_check.json` and
   /admin → Health.
 - **Usage**: /admin → Usage (7, 30 or 90 days). Robots and Do-Not-Track browsers are not counted.
+
+## Running on this Mac (until there is a server)
+
+`python3 deploy/mac/install.py` installs launchd agents that keep the web app and a free Cloudflare tunnel running
+and run the refresh (every 3 hours), daily, weekly and monthly jobs and the nightly backup — no one needs to start
+anything. `--status` shows each job and **the current public link** (also in /admin → Health); `--remove` stops it all.
+
+- The public link changes whenever the tunnel restarts (after a reboot, for example). A fixed address needs a
+  domain and a named Cloudflare tunnel, or the server in `docs/DEPLOY.md`.
+- Nothing runs while the Mac is off; jobs missed during sleep run on waking. For the site to stay up, keep the Mac
+  on and set it not to sleep (System Settings → Displays/Battery → prevent automatic sleeping).
+- Settings and the admin password: `~/Library/Application Support/cio/cio.env`. Backups:
+  `~/Library/Application Support/cio/backups` (copy them off the Mac now and then; macOS blocks background jobs from
+  writing into OneDrive without Full Disk Access).
+- Logs: `data/live/launchd-<job>.log`, plus `cycle_log.csv`.

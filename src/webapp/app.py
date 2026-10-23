@@ -301,7 +301,11 @@ def problems_html() -> str:
         items = "".join(f"<li>{e(x)}</li>" for x in r["problems"][:20]) + "".join(f"<li class=mut>{e(x)}</li>" for x in r["warnings"])
         site = (f"<h2>Robot visitor</h2><p class={'err' if r['status'] == 'fail' else 'mut'}>Last run {e(r['run'])}: opened {r['pages_opened']} "
                 f"page views at {e(r['site'])}; {len(r['problems'])} problems, {len(r['warnings'])} warnings.</p>{'<ul>' + items + '</ul>' if items else ''}")
-    head = (f"<p class=err><b>Problems in the last 3 days</b></p><ul>{''.join(out)}</ul>" if out
+    import re as _re
+    tl = ROOT / "data" / "live" / "launchd-tunnel.log"           # Mac install: the current public link
+    links = _re.findall(r"https://[a-z0-9-]+\.trycloudflare\.com", tl.read_text(errors="replace")) if tl.exists() else []
+    link = f"<p>Public link now: <a href='{e(links[-1])}' target=_blank rel=noopener>{e(links[-1])}</a> (changes when the tunnel restarts)</p>" if links else ""
+    head = link + (f"<p class=err><b>Problems in the last 3 days</b></p><ul>{''.join(out)}</ul>" if out
             else "<p class=ok>No problems in the automatic runs in the last 3 days.</p>")
     return head + site
 
