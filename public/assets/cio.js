@@ -6,6 +6,9 @@ window.I18N = (function () {
   "use strict";
   const D = {
     sw: {
+      "rep.sum": "{c}: bidhaa {n} kati ya {m} zina bei ya kawaida hadi sasa. Gusa bidhaa kuiripoti.", "rep.people": "watu {n}", "rep.vsprev": "dhidi ya miezi 2 iliyotangulia", "rep.per": "kwa {u}",
+      "boq.imported": "Vifaa vya kuagiza (makadirio ya CiO)", "boq.local": "Kifaa cha ndani — makisio yangu", "boq.labour": "Kazi — makisio yangu", "boq.assume": "Mabadiliko yanayotarajiwa, % kwa mwaka", "boq.peryear": "% kwa mwaka", "boq.kind.idx": "{c} inachapisha fahirisi rasmi za bei kwa kila kifaa ({o}). Kila mstari unafuata utabiri wa kifaa chake.", "boq.kind.est": "{c} haina fahirisi rasmi ya bei kwa kila kifaa. Vifaa vya kuagiza vinafuata makadirio ya CiO (mafuta na sarafu). Kwa vifaa vya ndani na kazi, weka mabadiliko unayotarajia kwa mwaka — bei zinazoripotiwa zitachukua nafasi hii zikiingia.", "ci.mode": "Fahirisi", "ci.one": "Fahirisi moja ya jumla", "ci.multi": "Fahirisi moja kwa kila kifaa", "ci.wnote": "Uzito: sehemu ya kiasi kinachorekebishwa inayofungwa na kila kifaa (vinapimwa kujumlisha).", "ci.nomonth": "Hakuna fahirisi ya {m} katika miezi uliyochagua: chagua miezi mingine au weka uzito 0.", "ci.multif": "Kanuni ya fahirisi nyingi: kiasi × (a + Σ wᵢ × Iᵢ₁ / Iᵢ₀), fahirisi rasmi ya kila kifaa (msingi 100).",
+      "mm.model": "modeli ya visababishi", "mm.nochange": "hakuna mabadiliko", "mm.tipmodel": "Utabiri kutoka kinachosukuma bei ya kifaa hiki: {how}.", "mm.tipnc": "Hakuna kisababishi kilichoshinda “hakuna mabadiliko” katika majaribio, kwa hivyo utabiri ni hakuna mabadiliko, pamoja na kiwango kilichojaribiwa.", "mm.test": "Imejaribiwa kwa vipindi {n} ambavyo haikuona: ndani ya kiwango mara {p}%; makosa madogo kwa {r}% kuliko “hakuna mabadiliko”.",
       "dv.usdidx": "Dola ya Marekani dhidi ya sarafu kuu (fahirisi)", "dv.usdup": "imeimarika katika miezi 3 — bidhaa za kuagiza zinagharimu kidogo", "dv.usddown": "imedhoofika katika miezi 3 — bidhaa za kuagiza zinagharimu zaidi",
       "bc.h1": "Zabuni na mikataba", "bc.lede": "Kabla ya kazi: panga bei ya zabuni kwa mabadiliko yanayotarajiwa ya gharama za vifaa. Wakati wa kazi: rekebisha malipo kwa fahirisi ya kila mwezi ambayo pande zote zinaweza kuikagua.", "bc.bid": "Panga zabuni", "bc.adjust": "Rekebisha malipo", "bc.quick": "Huna jedwali la kiasi? Makadirio ya haraka", "bc.pricebid": "Panga zabuni", "bc.useindex": "Tumia kama fahirisi ya mkataba", "bc.add": "+ Ongeza kwenye jedwali", "trend.test": "Imejaribiwa kwa vipindi {n} vilivyopita: mabadiliko halisi yalikuwa ndani ya kiwango mara {p}%.",
       "tip.fc": "utabiri", "tip.exp": "Inatarajiwa {x} kutoka {base}", "tip.rng": "Kiwango {lo} hadi {hi}", "tip.lvl": "Fahirisi", "tip.off": "iliyochapishwa", "tip.mom": "dhidi ya kipindi kilichopita",
@@ -99,6 +102,9 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Takwimu rasmi, robo ya karibuni:",
     },
     fr: {
+      "rep.sum": "{c} : {n} articles sur {m} ont déjà un prix habituel. Touchez un article pour le signaler.", "rep.people": "{n} personnes", "rep.vsprev": "vs 2 mois précédents", "rep.per": "par {u}",
+      "boq.imported": "Matériaux importés (estimation CiO)", "boq.local": "Matériau local — mon hypothèse", "boq.labour": "Main-d'œuvre — mon hypothèse", "boq.assume": "Variation attendue, % par an", "boq.peryear": "% par an", "boq.kind.idx": "{c} publie des indices officiels de prix pour chaque matériau ({o}). Chaque ligne suit la prévision de son matériau.", "boq.kind.est": "{c} n'a pas d'indice officiel par matériau. Les matériaux importés suivent l'estimation CiO (pétrole et change). Pour les matériaux locaux et la main-d'œuvre, indiquez la variation attendue par an — les prix signalés la remplaceront au fur et à mesure.", "ci.mode": "Indice", "ci.one": "Un indice global", "ci.multi": "Un indice par matériau", "ci.wnote": "Pondérations : part de la partie révisable liée à chaque matériau (ramenées à 100 %).", "ci.nomonth": "Pas d'indice pour {m} aux mois choisis : choisissez d'autres mois ou mettez son poids à 0.", "ci.multif": "Formule multi-indices : montant × (a + Σ wᵢ × Iᵢ₁ / Iᵢ₀), indice officiel de chaque matériau (base 100).",
+      "mm.model": "modèle à facteurs", "mm.nochange": "sans changement", "mm.tipmodel": "Prévision à partir de ce qui fait bouger ce matériau : {how}.", "mm.tipnc": "Aucun facteur n'a battu « sans changement » pour ce matériau lors des tests : la prévision est sans changement, avec une fourchette testée.", "mm.test": "Testé sur {n} périodes jamais vues : dans la fourchette {p} % du temps ; erreurs {r} % plus petites que « sans changement » (négatif = plus grandes).",
       "dv.usdidx": "Dollar US face aux grandes devises (indice)", "dv.usdup": "plus fort en 3 mois — importations un peu moins chères", "dv.usddown": "plus faible en 3 mois — importations plus chères",
       "bc.h1": "Offres et contrats", "bc.lede": "Avant le chantier : chiffrez votre offre avec l'évolution attendue du coût des matériaux. Pendant le chantier : révisez les paiements avec un indice mensuel vérifiable par les deux parties.", "bc.bid": "Chiffrer une offre", "bc.adjust": "Réviser un paiement", "bc.quick": "Pas de devis quantitatif ? Estimation rapide", "bc.pricebid": "Chiffrer une offre", "bc.useindex": "Utiliser comme indice de contrat", "bc.add": "+ Ajouter à mon devis", "trend.test": "Testé sur {n} périodes passées : la variation réelle est tombée dans la fourchette {p} % du temps.",
       "tip.fc": "prévision", "tip.exp": "Attendu {x} depuis {base}", "tip.rng": "Fourchette {lo} à {hi}", "tip.lvl": "Indice", "tip.off": "publié", "tip.mom": "sur la période précédente",
@@ -192,6 +198,9 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "rep.sum": "{c}: {n} of {m} items have a typical price so far. Tap an item to report it.", "rep.people": "{n} people", "rep.vsprev": "vs previous 2 months", "rep.per": "per {u}",
+      "boq.imported": "Imported materials (CiO estimate)", "boq.local": "Local material — my assumption", "boq.labour": "Labour — my assumption", "boq.assume": "Expected change, % a year", "boq.peryear": "% a year", "boq.kind.idx": "{c} publishes official price indices for each material ({o}). Each line follows the forecast for its own material.", "boq.kind.est": "{c} has no official price index per material. Imported materials follow CiO's import-cost estimate (oil and the exchange rate). For local materials and labour, enter the change you expect per year — reported prices will replace this as they come in.", "ci.mode": "Index", "ci.one": "One overall index", "ci.multi": "One index per material", "ci.wnote": "Weights: the share of the adjustable part tied to each material (they are scaled to add up).", "ci.nomonth": "No index for {m} in the chosen months: pick other months or set its weight to 0.", "ci.multif": "Multi-index formula: amount × (a + Σ wᵢ × Iᵢ₁ / Iᵢ₀), each material's own official index (rebased to 100).",
+      "mm.model": "driver model", "mm.nochange": "no change", "mm.tipmodel": "Forecast from what drives this material: {how}.", "mm.tipnc": "No driver beat “no change” for this material in testing, so the forecast is no change, with a tested range.", "mm.test": "Tested on {n} periods it never saw: inside the range {p}% of the time; misses {r}% smaller than “no change” (negative = larger).",
       "dv.usdidx": "US dollar vs major currencies (index)", "dv.usdup": "stronger in 3 months — imports cost a little less", "dv.usddown": "weaker in 3 months — imports cost more",
       "bc.h1": "Bids & contracts", "bc.lede": "Before the job: price your bid with the expected change in material costs. During the job: adjust payments with a monthly index both sides can check.", "bc.bid": "Price a bid", "bc.adjust": "Adjust a payment", "bc.quick": "No bill of quantities? Quick estimate", "bc.pricebid": "Price a bid", "bc.useindex": "Use as contract index", "bc.add": "+ Add to my bill", "trend.test": "Tested on {n} past periods: the real change fell inside the range {p}% of the time.",
       "tip.fc": "forecast", "tip.exp": "Expected {x} from {base}", "tip.rng": "Likely range {lo} to {hi}", "tip.lvl": "Index", "tip.off": "published", "tip.mom": "on the previous period",
@@ -422,7 +431,11 @@ window.I18N = (function () {
     const fan = $(".fan", el); if (fan) { const xs = JSON.parse(fan.dataset.xs || "{}"), mk = $(".marker", fan), m = tMonth(tg);
       const x = xs[m] || xs[Object.keys(xs).filter(k => k <= m).pop()]; if (mk && x) { mk.setAttribute("x1", x); mk.setAttribute("x2", x); } }
     $$("tr[data-mat]").forEach(row => { const pth = c.paths[row.dataset.mat] || (row.dataset.mat === "Reinforcement steel" ? c.paths["Rebar"] : null);
-      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.innerHTML = x ? `${apct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})${(c.trend || []).includes(row.dataset.mat) ? ` <span class=trendtag title="${esc(tr("trend.tip") + ((c.trend_stats || {})[row.dataset.mat] ? " " + tr("trend.test", { p: Math.round(c.trend_stats[row.dataset.mat].inside * 100), n: c.trend_stats[row.dataset.mat].n }) : ""))}">${tr("trend")}</span>` : ""}` : tr("notsep"); } });
+      const cell = $("[data-mexp]", row); if (cell) { const x = at(pth, tg); cell.innerHTML = x ? `${apct(x.q.median)}  (${pct(x.q.lo)} – ${pct(x.q.hi)})${(c.trend || []).includes(row.dataset.mat) ? ` ${(() => { const st = (c.trend_stats || {})[row.dataset.mat] || {}, drv = st.kind && st.kind !== "nochange" && (st.drivers || []).length;
+        const tag = drv ? tr("mm.model") : tr("mm.nochange");
+        const tip = (drv ? tr("mm.tipmodel", { how: st.how || "" }) : tr("mm.tipnc")) + (st.n ? " " + tr("mm.test", { n: st.n, p: Math.round((st.inside || 0) * 100),
+          r: st.mae_nochange ? Math.round((1 - st.mae / st.mae_nochange) * 100) : 0 }) : "");
+        return ` <span class="trendtag${drv ? " mdl" : ""}" title="${esc(tip)}">${tag}</span>`; })()}` : ""}` : tr("notsep"); } });
   }
 
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register(rel + "sw.js").catch(() => {});
@@ -658,10 +671,18 @@ window.I18N = (function () {
       it.innerHTML = R.items.map(i => `<option value="${i.code}">${i.name}</option>`).join(""); $$("[data-ccy]").forEach(x => x.textContent = R.currency);
       unit.value = "per " + (R.items[0] || {}).unit; $$("[data-capital]", rf).forEach(x => x.textContent = R.capital || "");
       fld("location").placeholder = R.capital ? `e.g. ${R.capital}` : ""; it.onchange = () => { const i = R.items.find(x => x.code === it.value); unit.value = "per " + (i ? i.unit : ""); };
-      cv.innerHTML = R.crowd.length ? `<table class=glance><thead><tr><th>Item</th><th>Median</th><th>Reporters</th></tr></thead><tbody>${R.crowd.map(r =>
-        `<tr><td>${r.name}</td><td>${r.published ? Math.round(r.median).toLocaleString() + " " + R.currency + " / " + r.unit
-          : `<span class=muted>${tr("rep.needs", { n: r.pending })}</span>`}</td><td>${r.published ? r.reporters : "–"}</td></tr>`).join("")}</tbody></table>`
-        : `<p>${tr("rep.none", { c: R.flag + " " + T.country(R.cc, R.country) })}</p>`; }
+      /* every item of this country: its typical price, or how close it is to having one (3 people in 2 months) */
+      const by = Object.fromEntries((R.crowd || []).map(r => [r.item, r])), num = v => Math.round(v).toLocaleString(T.loc || undefined);
+      const live = R.items.filter(i => (by[i.code] || {}).published).length;
+      cv.innerHTML = `<p class=cl-sum>${tr("rep.sum", { n: live, m: R.items.length, c: R.flag + " " + T.country(R.cc, R.country) })}</p><ul class=crowdlist>` +
+        R.items.map(i => { const r = by[i.code] || {}, n = r.pending || 0;
+          const meta = r.published ? [tr("rep.people", { n: r.reporters }), r.change_pct != null ? `${apct(r.change_pct)} ${tr("rep.vsprev")}` : "",
+            r.capital != null ? `${R.capital}: ${num(r.capital)}` : "", r.other != null ? `${tr("th.elsewhere")}: ${num(r.other)}` : ""].filter(Boolean).join(" · ") : "";
+          return `<li><button type=button class=cl-item data-pick="${i.code}"><span class=cl-top><b>${T.mat(i.name)}</b><span class=muted>${tr("rep.per", { u: i.unit })}</span></span>` +
+            (r.published ? `<span class=cl-price>${num(r.median)} <small>${R.currency}</small></span><span class=cl-meta>${meta}</span>`
+              : `<span class=cl-prog aria-hidden=true><i style="width:${Math.min(100, n / 3 * 100)}%"></i></span><span class=cl-meta>${tr("rep.needs", { n })}</span>`) +
+            `</button></li>`; }).join("") + `</ul>`;
+      $$("[data-pick]", cv).forEach(b => b.onclick = () => { it.value = b.dataset.pick; it.onchange(); fld("price").focus(); }); }
     cs.onchange = refresh; refresh();
     rf.onsubmit = ev => { ev.preventDefault(); const d = Object.fromEntries(new FormData(rf)); d.price = +d.price;
       sendPrice(d, msg, DATA.report[cs.value].currency, fld("price")); };
@@ -726,9 +747,17 @@ window.I18N = (function () {
     fld("start").innerHTML = ML.slice(0, -1).map(m => `<option value=${m}>${label(m)}</option>`).join("");
     fld("end").innerHTML = ML.slice(1).map(m => `<option value=${m}>${label(m)}</option>`).join(""); fld("end").value = ML[6];
     const C = () => DATA.countries[fld("country").value];
-    const opts = c => Object.keys(c.paths).map(n => `<option value="${esc(n)}">${T.mat(n)}${(c.trend || []).includes(n) ? " · " + tr("trend") : ""}</option>`).join("")
-      + `<option value="">${tr("boq.fixed")}</option>`;
+    /* two styles: countries with official indices per material follow each material's forecast; countries without
+       them use CiO's import-cost estimate for imported materials and the user's own assumption for local ones */
+    const indexed = c => c.official && Object.keys(c.paths).length > 1;
+    const opts = c => indexed(c)
+      ? Object.keys(c.paths).map(n => `<option value="${esc(n)}">${T.mat(n)}</option>`).join("") + `<option value="">${tr("boq.fixed")}</option>`
+      : `<option value="${esc(c.head)}">${tr("boq.imported")}</option><option value="@local">${tr("boq.local")}</option>`
+        + `<option value="@labour">${tr("boq.labour")}</option><option value="">${tr("boq.fixed")}</option>`;
+    const LOCAL = ["sand", "stone", "aggregate", "ballast", "hardcore", "murram", "block", "brick", "timber", "wood", "gravel", "quarry", "mchanga", "sable"];
     const guess = (c, desc) => { const w = words(desc).filter(t => t.length >= 3);
+      if (!indexed(c)) return w.some(t => ["labour", "labor", "kazi", "wages"].some(x => t.startsWith(x))) ? "@labour"
+        : w.some(t => LOCAL.some(x => t.startsWith(x))) ? "@local" : c.head;
       return Object.keys(c.paths).find(n => { const nw = words(n + " " + T.mat(n)); return w.some(t => nw.some(x => x.startsWith(t) || t.startsWith(x) || (SYN[t] || []).some(y => x.startsWith(y)))); }) ?? c.head; };
     const fmt = v => Math.round(v).toLocaleString(T.loc || undefined);
     function addRow(v = {}) {
@@ -738,34 +767,42 @@ window.I18N = (function () {
         <td><input data-k=qty type=number min=0 step=any value="${esc(v.qty)}" aria-label="${esc(tr("boq.qty"))}"></td>
         <td><input data-k=unit value="${esc(v.unit)}" aria-label="${esc(tr("rep.unit"))}"></td>
         <td><input data-k=rate type=number min=0 step=any value="${esc(v.rate)}" aria-label="${esc(tr("boq.rate"))}"></td>
-        <td><select data-k=series aria-label="${esc(tr("boq.series"))}">${opts(c)}</select></td><td data-o=today></td><td data-o=exp></td>
+        <td><select data-k=series aria-label="${esc(tr("boq.series"))}">${opts(c)}</select>
+          <label class=boq-assume hidden><input data-k=assume type=number step=0.5 value="${esc(v.assume ?? 8)}" aria-label="${esc(tr("boq.assume"))}"> ${tr("boq.peryear")}</label></td>
+        <td data-o=today></td><td data-o=exp></td>
         <td><button type=button class=boq-del aria-label="${esc(tr("boq.del"))}">✕</button></td>`;
       body.appendChild(row);
-      const sel = $("[data-k=series]", row); sel.value = v.series != null && (v.series === "" || c.paths[v.series]) ? v.series : guess(c, v.desc || "");
+      const sel = $("[data-k=series]", row); sel.value = v.series != null && (v.series === "" || c.paths[v.series] || (!indexed(c) && v.series.startsWith("@"))) ? v.series : guess(c, v.desc || "");
       if (v.manual) row.dataset.manual = 1;
       $("[data-k=desc]", row).addEventListener("change", () => { if (!row.dataset.manual) sel.value = guess(C(), $("[data-k=desc]", row).value); compute(); });
       sel.addEventListener("change", () => { row.dataset.manual = 1; compute(); });
       $(".boq-del", row).onclick = () => { row.remove(); compute(); };
       compute(); }
     function rows() { return $$("tr", body).map(r => ({ desc: $("[data-k=desc]", r).value, qty: $("[data-k=qty]", r).value, unit: $("[data-k=unit]", r).value,
-      rate: $("[data-k=rate]", r).value, series: $("[data-k=series]", r).value, manual: !!r.dataset.manual, el: r })); }
+      rate: $("[data-k=rate]", r).value, series: $("[data-k=series]", r).value, assume: $("[data-k=assume]", r).value, manual: !!r.dataset.manual, el: r })); }
+    /* the user's own expected change (% a year) for local materials and labour, averaged over the work period */
+    const assumed = (pa, span) => { const now = ML[0], mi = m => (+m.slice(0, 4) - +now.slice(0, 4)) * 12 + (+m.slice(5, 7) - +now.slice(5, 7));
+      const e = span.reduce((a, m) => a + (Math.pow(1 + pa / 100, mi(m) / 12) - 1) * 100, 0) / (span.length || 1); return [e, e * 0.5, e * 1.5]; };
     let last = [];
     function compute() {
       const c = C(), span = ML.filter(m => m >= fld("start").value && m <= fld("end").value);
       $$("[data-boq-ccy]").forEach(x => x.textContent = c.currency);
       let T0 = 0, T1 = 0, TL = 0, TH = 0; last = [];
-      rows().forEach(r => { const amt = (+r.qty || 0) * (+r.rate || 0), [e, l, h] = r.series ? overPeriod(c.paths[r.series], span) : [0, 0, 0];
+      $("[data-boq-kind]").innerHTML = indexed(c) ? tr("boq.kind.idx", { c: cname(c), o: esc(c.office || "") }) : tr("boq.kind.est", { c: cname(c) });
+      rows().forEach(r => { $(".boq-assume", r.el).hidden = !r.series.startsWith("@");
+        const amt = (+r.qty || 0) * (+r.rate || 0), [e, l, h] = r.series.startsWith("@") ? assumed(+r.assume || 0, span) : r.series ? overPeriod(c.paths[r.series], span) : [0, 0, 0];
         const ex = amt * (1 + e / 100); T0 += amt; T1 += ex; TL += amt * (1 + l / 100); TH += amt * (1 + h / 100);
         $("[data-o=today]", r.el).textContent = amt ? fmt(amt) : "–";
         $("[data-o=exp]", r.el).innerHTML = amt ? `${fmt(ex)} <small>${apct(e)}</small>` : "–";
-        last.push([r.desc, r.qty, r.unit, r.rate, r.series || tr("boq.fixed"), Math.round(amt), Math.round(ex), e.toFixed(2)]); });
+        last.push([r.desc, r.qty, r.unit, r.rate, r.series.startsWith("@") ? `${tr(r.series === "@local" ? "boq.local" : "boq.labour")} ${r.assume}%/yr`
+          : r.series || tr("boq.fixed"), Math.round(amt), Math.round(ex), e.toFixed(2)]); });
       $("[data-boq-t0]").textContent = T0 ? fmt(T0) : "–"; $("[data-boq-t1]").textContent = T1 ? fmt(T1) : "–";
       $("[data-boq-sum]").innerHTML = T0 ? tr("boq.sum", { v: `<b>${fmt(T1)} ${c.currency}</b>`, d: pct((T1 / T0 - 1) * 100), lo: fmt(TL), hi: fmt(TH) + " " + c.currency,
         from: label(fld("start").value), to: label(fld("end").value) }) : tr("boq.empty");
       $("[data-boq-add]").disabled = body.children.length >= MAX;
       store.set("cio-boq", { country: fld("country").value, rows: rows().map(({ el, ...r }) => r) }); }
     fld("country").onchange = () => { const c = C(); $$("tr", body).forEach(r => { const sel = $("[data-k=series]", r), was = sel.value; sel.innerHTML = opts(c);
-      sel.value = r.dataset.manual && c.paths[was] ? was : guess(c, $("[data-k=desc]", r).value); }); compute(); };
+      sel.value = r.dataset.manual && [...sel.options].some(o => o.value === was) ? was : guess(c, $("[data-k=desc]", r).value); }); compute(); };
     fld("start").onchange = fld("end").onchange = compute; body.addEventListener("input", compute);
     $("[data-boq-add]").onclick = () => addRow();
     const pb = $("[data-boq-paste]", bf), box = $("[data-boq-pastebox]", bf);
@@ -789,12 +826,21 @@ window.I18N = (function () {
     const want = new URLSearchParams(location.search).get("c") || (location.hash || "").slice(1), k0 = store.get("cio-country", null);
     cis.value = DATA.cindex[want] ? want : (DATA.cindex[k0] ? k0 : cis.value);
     const f = $("#ci-form"), out = $("[data-ci-out]");
+    const WDEF = { cement: 25, steel: 25, rebar: 25, reinforc: 25, sand: 10, aggregate: 10, ballast: 10, stone: 10, diesel: 10, fuel: 10, labour: 20 };
     function ciCalc() { const X = DATA.cindex[cis.value], g = m => X.rows.find(r => r.m === m), b = g(f.elements.base.value), v = g(f.elements.val.value);
       if (!b || !v) return; const a = Math.min(100, Math.max(0, +f.elements.fixed.value || 0)) / 100, amt = +f.elements.amount.value || 0;
-      const factor = a + (1 - a) * v.v / b.v, adj = amt * factor;
+      let factor = a + (1 - a) * v.v / b.v, prov = b.s === "provisional" || v.s === "provisional";
+      const multi = f.querySelector("[name=mode]:checked") && f.querySelector("[name=mode]:checked").value === "multi" && X.mats && Object.keys(X.mats).length;
+      if (multi) { const ws = $$("[data-w]", f).map(i => [i.dataset.w, Math.max(0, +i.value || 0)]).filter(([, w]) => w > 0), tot = ws.reduce((s, [, w]) => s + w, 0) || 1;
+        let sum = 0, miss = [];
+        ws.forEach(([n, w]) => { const S = X.mats[n], r0 = S.find(r => r.m === f.elements.base.value), r1 = S.find(r => r.m === f.elements.val.value);
+          if (!r0 || !r1) { miss.push(T.mat(n)); return; } prov = prov || r0.s === "provisional" || r1.s === "provisional"; sum += (w / tot) * r1.v / r0.v; });
+        if (miss.length) { out.innerHTML = `<p>${tr("ci.nomonth", { m: miss.join(", ") })}</p>`; return; }
+        factor = a + (1 - a) * sum; }
+      const adj = amt * factor;
       out.innerHTML = `<p class=pct>${apct((factor - 1) * 100)}</p><p class=pct-l>${tr("ci.res", { i0: b.v.toFixed(2), i1: v.v.toFixed(2) })}</p>
         <p class=calcmoney>${tr("ci.adj", { v: `<b>${Math.round(adj).toLocaleString(T.loc || undefined)} ${X.currency}</b>`, d: Math.round(adj - amt).toLocaleString(T.loc || undefined) })}</p>
-        ${b.s === "provisional" || v.s === "provisional" ? `<p class=fineprint>${tr("ci.prov")}</p>` : ""}`; }
+        ${prov ? `<p class=fineprint>${tr("ci.prov")}</p>` : ""}${multi ? `<p class=fineprint>${tr("ci.multif")}</p>` : ""}`; }
     function ciShow() { const X = DATA.cindex[cis.value], rows = X.rows;
       $("[data-ci-what]").innerHTML = X.official ? tr("ci.what.off", { o: esc(X.office) }) : tr("ci.what.est");
       $("#ci-rows").innerHTML = rows.slice().reverse().map((r, i, arr) => { const p = arr[i + 1], ch = p ? (r.v / p.v - 1) * 100 : null;
@@ -803,8 +849,14 @@ window.I18N = (function () {
       $("[data-ci-ccy]").textContent = X.currency;
       const o = rows.map(r => `<option value=${r.m}>${qlabel(r.m, X.step)}${r.s === "provisional" ? " *" : ""}</option>`).join("");
       f.elements.base.innerHTML = o; f.elements.val.innerHTML = o;
-      f.elements.base.value = rows[Math.max(0, rows.length - (X.step === "quarter" ? 5 : 13))].m; f.elements.val.value = rows[rows.length - 1].m; ciCalc(); }
-    cis.onchange = ciShow; f.oninput = ciCalc; ciShow();
+      f.elements.base.value = rows[Math.max(0, rows.length - (X.step === "quarter" ? 5 : 13))].m; f.elements.val.value = rows[rows.length - 1].m;
+      const has = X.mats && Object.keys(X.mats).length; $("[data-ci-modebox]", f).hidden = !has;
+      if (!has) { const one = f.querySelector("[name=mode][value=one]"); if (one) one.checked = true; }
+      $("[data-ci-weights]", f).innerHTML = has ? `<p class=fineprint>${tr("ci.wnote")}</p>` + Object.keys(X.mats).map(n => { const k = Object.keys(WDEF).find(w => n.toLowerCase().includes(w));
+        return `<label class=mixrow><span>${T.mat(n)}</span><input type=number min=0 max=100 data-w="${esc(n)}" value=${k ? WDEF[k] : 0}></label>`; }).join("") : "";
+      $("[data-ci-weights]", f).hidden = !(has && f.querySelector("[name=mode]:checked").value === "multi"); ciCalc(); }
+    cis.onchange = ciShow; f.oninput = ev => { if (ev.target.name === "mode") $("[data-ci-weights]", f).hidden = ev.target.value !== "multi"; ciCalc(); };
+    f.onchange = f.oninput; ciShow();
   }
 
   /* ---------- embed widget ---------- */

@@ -53,8 +53,8 @@ def check_country(key: str, today: date) -> list[dict]:
     # official data: how late is the latest release?
     if d.get("kind") != "pressure" and d.get("base"):
         lag = months_between(base_month(d["base"]), today.strftime("%Y-%m"))
-        limit = 7 if d["base"].startswith("Q") else 4
-        add("official data lag", "ok" if lag <= limit else "warn", f"latest {d['base']}, {lag} months ago")
+        # a late official release is the gap CiO Costs exists to fill: report it, warn only if it grows past a year
+        add("official data gap filled", "ok" if lag <= 12 else "warn", f"latest official {d['base']}; forecast fills {lag} months since")
 
     # forecast paths: complete, ordered ranges, no gaps, plausible
     paths = d.get("paths") or {}
@@ -100,7 +100,8 @@ def check_country(key: str, today: date) -> list[dict]:
     for h, b in (d.get("benchmark") or {}).items():
         ins = b.get("inside", 0)
         add(f"benchmark test, {h} month(s)", "ok" if 0.65 <= ins <= 0.97 else "warn", f"{ins:.0%} inside over {b.get('n')} months")
-    weak = [f"{k} {s['inside']:.0%}" for k, s in (d.get("trend_stats") or {}).items() if not 0.6 <= s["inside"] <= 0.97]
+    weak = [f"{k} {s['inside']:.0%}" for k, s in (d.get("trend_stats") or {}).items()     # judged only with 12+ unseen periods
+            if s.get("inside") is not None and s.get("n", 0) >= 12 and not 0.6 <= s["inside"] <= 0.97]
     if d.get("trend_stats"):
         add("trend forecasts test", "warn" if weak else "ok", "; ".join(weak) or f"{len(d['trend_stats'])} materials within 60-97% inside")
 

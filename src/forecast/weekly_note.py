@@ -171,24 +171,44 @@ def check_estimate_method(country: str) -> None:
     f.write_text(json.dumps(cur, indent=1), encoding="utf-8")
 
 
+FXCOL = {"uganda": "ugx_per_usd", "kenya": "kes_per_usd", "south_africa": "zar_per_usd"}
+
+
 def _add_trend_paths() -> None:
-    """Materials in the official table without their own model get a tested trend forecast (see _trend_model).
-    Quarterly series stay quarterly (each month of a quarter shows that quarter's value). Marked 'trend' on the site."""
+    """Materials in the official table without their own structural model get a per-material forecast
+    (src/forecast/material_models.py): a driver model where pooled tests showed real predictability (fuel: oil;
+    labour: exchange rate; sand and stone: oil, rain), otherwise "no change" with a calibrated range. Each one's
+    test on data it never saw is stored in trend_stats and shown on the site. Quarterly series stay quarterly."""
+    import material_models as MM
     paths = _DATA.setdefault("paths", {})
+    country = _DATA.get("key", "")
+    try:
+        drv = MM.country_drivers(FXCOL.get(country, ccy(country)[1]), with_rain=(country == "uganda"))
+    except Exception:
+        drv = None
     trend, stats = [], {}
     for name, (lv, step) in _MAT_LEVELS.items():
         if name in paths or ALIASES.get(name) in paths:
             continue
         if len(lv) < (16 if step == "quarter" else 36):
             continue
-        start = pd.Timestamp(lv.index.max())
-        if step == "quarter":
-            q, st = _trend_model(lv, step, 4)
-            paths[name] = [_entry(start + pd.DateOffset(months=3 * h + k), lo, md, hi)
-                           for h, (md, lo, hi) in enumerate(q, 1) for k in range(3)]
+        start, q = pd.Timestamp(lv.index.max()), step == "quarter"
+        try:
+            sel = MM.discover(lv, step, drv, name) if drv is not None else None
+        except Exception:
+            sel = None
+        if sel is None:                                        # no drivers: the earlier tested trend method
+            qp, st = _trend_model(lv, step, 4 if q else 12)
         else:
-            q, st = _trend_model(lv, step, 12)
-            paths[name] = [_entry(start + pd.DateOffset(months=h), lo, md, hi) for h, (md, lo, hi) in enumerate(q, 1)]
+            qp = MM.path(sel, start, 4 if q else 12, q)
+            t = sel["test"]
+            st = {"n": sel["periods_tested"], "inside": sel["inside"], "mae": t["model"], "mae_nochange": t["nochange"],
+                  "how": MM.describe(sel), "kind": sel["kind"], "drivers": sel["drivers"]}
+        if q:
+            paths[name] = [_entry(start + pd.DateOffset(months=3 * h + k), lo, md, hi)
+                           for h, (md, lo, hi) in enumerate(qp, 1) for k in range(3)]
+        else:
+            paths[name] = [_entry(start + pd.DateOffset(months=h), lo, md, hi) for h, (md, lo, hi) in enumerate(qp, 1)]
         trend.append(name)
         stats[name] = st
     if trend:

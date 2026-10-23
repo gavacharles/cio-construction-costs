@@ -669,6 +669,7 @@ cost over the work period, with a likely range. Paste straight from Excel: descr
  <div class=boq-top><label><span data-i18n=th.country>Country</span><select name=country></select></label>
  <label><span data-i18n=calc.start>Work starts</span><select name=start></select></label>
  <label><span data-i18n=calc.end>Work ends</span><select name=end></select></label></div>
+ <p class=boq-kind data-boq-kind></p>
  <div class=tablewrap><table class="glance boq-table"><thead><tr><th data-i18n=boq.desc>Description</th><th data-i18n=boq.qty>Quantity</th>
  <th data-i18n=rep.unit>Unit</th><th><span data-i18n=boq.rate>Rate today</span> (<span data-boq-ccy></span>)</th><th data-i18n=boq.series>Price follows</th>
  <th data-i18n=boq.today>Amount today</th><th data-i18n=boq.exp>Expected</th><th><span class=sr-only>Remove</span></th></tr></thead><tbody id=boqrows></tbody>
@@ -729,6 +730,34 @@ def contract_series(c: dict) -> list[dict]:
     return rows
 
 
+def material_series(c: dict) -> dict:
+    """Per-material indices for multi-index price adjustment: official changes rebuilt into a level (first period
+    before the history = 100), then provisional values for ended periods from that material's forecast."""
+    out, now = {}, date.today().strftime("%Y-%m")
+    step = 3 if c["step"] == "quarter" else 1
+    for m in c["materials"]:
+        hist = m.get("history") or []
+        if len(hist) < 4:
+            continue
+        lvl, rows = 100.0, []
+        for per, ch in hist:
+            lvl *= 1 + ch / 100
+            rows.append({"m": per, "v": round(lvl, 2), "s": "official"})
+        pth = c["paths"].get(m["name"]) or (c["paths"].get("Rebar") if m["name"] == "Reinforcement steel" else None)
+        last, seen = rows[-1], {r["m"] for r in rows}
+        for q in pth or []:
+            mo = q["month"]
+            if mo in seen or (step == 3 and (int(mo[5:7]) - int(last["m"][5:7])) % 3):
+                continue
+            y, e = int(mo[:4]), int(mo[5:7]) + step - 1
+            if f"{y + (e - 1) // 12}-{(e - 1) % 12 + 1:02d}" >= now:
+                continue
+            rows.append({"m": mo, "v": round(last["v"] * (1 + q["median"] / 100), 2), "s": "provisional"})
+            seen.add(mo)
+        out[m["name"]] = rows
+    return out
+
+
 def page_contract_index(cs: list[dict]) -> str:
     opts = country_options([c for c in cs if not c.get("bench")])
     return f"""
@@ -747,6 +776,10 @@ They need an index both sides can look up. Here is one for each pilot country, m
  <div class=row2><label><span data-i18n=ci.base>Base month (tender)</span><select name=base></select></label>
  <label><span data-i18n=ci.val>Valuation month</span><select name=val></select></label></div>
  <label><span data-i18n=ci.fixed>Fixed part, not adjusted (%)</span><input name=fixed type=number min=0 max=100 value=15></label>
+ <fieldset class=ci-mode data-ci-modebox hidden><legend data-i18n=ci.mode>Index</legend>
+  <label><input type=radio name=mode value=one checked><span data-i18n=ci.one>One overall index</span></label>
+  <label><input type=radio name=mode value=multi><span data-i18n=ci.multi>One index per material</span></label></fieldset>
+ <div class=ci-weights data-ci-weights hidden></div>
  </form>
  <div data-ci-out aria-live=polite></div>
  <p class=fineprint data-i18n=ci.formula>Formula: adjusted amount = amount × (a + b × I₁ / I₀), where a is the fixed part, b = 1 − a, I₀ the index in the
@@ -906,6 +939,7 @@ def build() -> Path:
     quiz = [{"key": c["key"], "country": c["country"], "flag": c["flag"], "cc": slim[c["key"]]["cc"], "material": m["name"], "period": p, "change": v,
              "step": c["step"]} for c in cs for m in c["materials"]
             for p, v in m.get("history", [])[-(8 if c["step"] == "quarter" else 12):] if abs(v) >= 0.2]   # recent periods only
+    mats_series = {c["key"]: material_series(c) for c in cs if c["official"] and not c.get("bench")}
     for c in slim.values():
         for m in c["materials"]:
             m.pop("history", None)
@@ -938,7 +972,7 @@ def build() -> Path:
                                      encoding="utf-8")
     cindex = {c["key"]: {"country": c["country"], "flag": c["flag"], "cc": slim[c["key"]]["cc"], "currency": c["currency"],
                          "official": c["official"], "office": load_country(c["key"])["settlement"].get("statistics_office", ""),
-                         "step": c["step"], "rows": contract_series(c)} for c in cs if not c.get("bench")}
+                         "step": c["step"], "rows": contract_series(c), "mats": mats_series.get(c["key"], {})} for c in cs if not c.get("bench")}
     (OUT / "data").mkdir(exist_ok=True)
     for k, v in cindex.items():                       # free CSV downloads
         (OUT / "data" / f"contract_index_{k}.csv").write_text(
