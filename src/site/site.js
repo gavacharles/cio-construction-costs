@@ -181,6 +181,15 @@
     const b = Date.parse((($("#updated-ago") || {}).dataset || {}).built || ""), h = Math.max(0, Math.round((Date.now() - b) / 36e5));
     set("upd", isNaN(h) ? "–" : (h < 1 ? tr("dv.now") : tr("dv.hago", { h }))); }
 
+  /* ---------- landing headline: "Will [cement] prices rise in [Kampala]?" — the material rotates, the city follows the country ---------- */
+  const lpH = $("[data-lp-h]");
+  function lpCity() { const k = ($("#mycountry") || {}).value, c = DATA.countries[k]; return c ? (c.capital || cname(c)) : "Kampala"; }
+  if (lpH) { const mats = [tr("lp.m1"), tr("lp.m2"), tr("lp.m3"), tr("lp.m4")]; let i = 0;
+    const draw = () => { lpH.innerHTML = tr("lp.h", { m: `<mark class=lp-word>${mats[i % mats.length]}</mark>`, city: `<span data-lp-city>${esc(lpCity())}</span>` }); };
+    draw();
+    if (!window.matchMedia || !matchMedia("(prefers-reduced-motion: reduce)").matches)
+      setInterval(() => { i++; const w = $(".lp-word", lpH); if (w) { w.classList.add("out"); setTimeout(draw, 260); } else draw(); }, 2400); }
+
   /* ---------- country-first home ---------- */
   const my = $("#mycountry"), feat = $(".featured:not(.solo)");
   Object.entries(DATA.countries || {}).forEach(([k, c]) => { c.key = k; });
@@ -191,8 +200,8 @@
       $$("[data-feat-name], [data-feat-link]", feat).forEach(a => a.href = `countries/${k}/index.html`);
       const fb = $("[data-feat-bid]", feat); if (fb) { fb.href = `calculator.html?c=${k}#bid`; fb.hidden = !!c.bench; }
       $("[data-chart]", feat).innerHTML = ""; };
-    const k0 = store.get("cio-country", null); my.value = DATA.countries[k0] ? k0 : feat.dataset.key; show(my.value);
-    my.onchange = () => { track("country", my.value); store.set("cio-country", my.value); show(my.value); render(); };
+    const k0 = store.get("cio-country", null); my.value = DATA.countries[k0] ? k0 : feat.dataset.key; show(my.value); $$("[data-lp-city]").forEach(x => x.textContent = lpCity());
+    my.onchange = () => { track("country", my.value); store.set("cio-country", my.value); $$("[data-lp-city]").forEach(x => x.textContent = lpCity()); show(my.value); render(); };
   }
   const ago = $("#updated-ago");
   if (ago) { const h = Math.max(0, Math.round((Date.now() - Date.parse(ago.dataset.built)) / 36e5));

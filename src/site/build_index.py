@@ -142,6 +142,22 @@ def crowd_series(key: str) -> dict:
         return {}
 
 
+def reports_this_month() -> tuple[int, int]:
+    """Prices reported this calendar month across live countries, and by how many different people (shown only when > 0)."""
+    db = ROOT / "data" / "live" / "exchange.sqlite"
+    if not db.exists():
+        return 0, 0
+    try:
+        import sqlite3
+        con = sqlite3.connect(db)
+        r = con.execute("SELECT COUNT(*), COUNT(DISTINCT handle) FROM price_reports WHERE substr(ts,1,7) = ?",
+                        (date.today().strftime("%Y-%m"),)).fetchone()
+        con.close()
+        return int(r[0] or 0), int(r[1] or 0)
+    except Exception:
+        return 0, 0
+
+
 def weeks_ahead(n: int = 8) -> list[str]:
     """Mondays of the next n weeks, as YYYY-MM-DD."""
     from datetime import timedelta
@@ -273,6 +289,10 @@ def page_glance(cs: list[dict], months: list[str], default: str) -> str:
 
 
 def _home(cs, months, default, feat, tab_html, cards):
+    UG_BASE = e(next((c["base"] for c in cs if c["key"] == "uganda"), "earlier this year"))
+    n_rep, n_people = reports_this_month()
+    REPORTED = (f"<span><b>{n_rep:,} <span data-i18n=lp.f4>prices reported</span></b> <span data-i18n=lp.f4d>this month, by</span> "
+                f"{n_people:,} <span data-i18n=lp.f4p>people</span></span>") if n_rep else ""
     bcs = [c for c in cs if c.get("bench") and c.get("bstats")]
     rows = "".join(f"<a class=bench-row href='countries/{c['key']}/index.html'><span>{c['flag']} {e(c['country'])}</span>"
                    f"<b>{c['bstats']['1']['inside']:.0%}</b><b>{c['bstats']['3']['inside']:.0%}</b>"
@@ -286,16 +306,42 @@ def _home(cs, months, default, feat, tab_html, cards):
         f"range 8 times in 10.</p></div><div class=bench-table><div class='bench-row head'><span></span><span data-i18n=bench.c1>Inside range, 1 month</span>"
         f"<span data-i18n=bench.c3>3 months</span><span data-i18n=bench.cb>Beats “no change”</span></div>{rows}</div></section>")
     body = f"""
-<section class=hero><div><p class=eyebrow data-i18n=home.eyebrow>Construction cost outlook · 7 African countries</p>
- <h1 data-i18n=home.h1>Will construction costs rise where you work?</h1>
- <p class=lede data-i18n=home.lede>Choose your country and a date. See whether construction costs — the prices of materials, fuel and labour — are likely to go up, by how much, and what that means for the price you pay. Updated every few hours.</p>
+<section class=landing>
+ <p class=eyebrow data-i18n=lp.eyebrow>Construction cost forecasts · 7 African countries</p>
+ <h1 class=lp-h data-lp-h>Will <mark class=lp-word>cement</mark> prices rise in <span data-lp-city>Kampala</span>?</h1>
+ <p class=lp-sub data-i18n=lp.sub>Official figures arrive months late. CiO Costs fills the gap: the expected change in construction costs for the date
+ you choose, with a likely range, updated every few hours from official data, oil and exchange rates.</p>
+ <div class=lp-cta><a class='btn primary big' href=#forecast data-i18n=lp.cta>See the forecast</a>
+ {f"<a class='btn big' href='{CHANNEL}' target=_blank rel=noopener data-i18n=lp.cta2>Get the weekly forecast on WhatsApp</a>" if CHANNEL else ""}</div>
+ <div class=lp-trust>
+  <p class=lp-facts><span><b data-i18n=lp.f1>Tested on 48 months</b> <span data-i18n=lp.f1d>of official data, in 6 benchmark countries</span></span>
+  <span><b data-i18n=lp.f2>Updated every 3 hours</b> <span id=updated-ago data-built="{BUILT}"></span></span>
+  {REPORTED}<span><a href=methodology.html data-i18n=lp.f3>How it works, in full →</a></span></p>
+  <p class=lp-src><span class=muted data-i18n=lp.src>Data from</span> <span class=src-badge>UBOS</span><span class=src-badge>KNBS</span><span class=src-badge>Stats SA</span>
+  <span class=src-badge>ERB Zambia</span><span class=src-badge>RURA</span><span class=src-badge>US BLS</span><span class=src-badge>UK DBT</span><span class=src-badge>Eurostat</span>
+  <span class=src-badge>Hong Kong C&amp;SD</span><span class=src-badge>PSA</span><span class=src-badge>FGV</span></p></div>
+</section>
+<section class=lp-problem><p class=eyebrow data-i18n=lp.pe>The problem</p><h2 data-i18n=lp.ph>Pricing construction shouldn't be guesswork</h2>
+ <div class=lp-cards>
+  <div class=lp-card><span class=lp-dot aria-hidden=true></span><h3 data-i18n=lp.p1>Official figures arrive months late</h3>
+   <p data-i18n=lp.p1d>Statistics offices publish months after prices move — Uganda's latest figures are for {UG_BASE}.</p></div>
+  <div class=lp-card><span class=lp-dot aria-hidden=true></span><h3 data-i18n=lp.p2>Quotes expire before you sign</h3>
+   <p data-i18n=lp.p2d>Cement, steel and diesel move while a tender is open, and the contingency is a guess.</p></div>
+  <div class=lp-card><span class=lp-dot aria-hidden=true></span><h3 data-i18n=lp.p3>Price adjustment is hard to agree</h3>
+   <p data-i18n=lp.p3d>Without an index both sides can check, every payment certificate becomes a negotiation.</p></div></div></section>
+<section class=lp-how><p class=eyebrow data-i18n=lp.he>How it works</p><h2 data-i18n=lp.hh>Three steps, free during the pilot</h2>
+ <div class=lp-cards>
+  <a class=lp-step href=#forecast><span class=lp-n>01</span><h3 data-i18n=lp.s1>Choose your country and date</h3>
+   <p data-i18n=lp.s1d>Next month, in three months, or any date up to a year ahead.</p><span class=lp-go data-i18n=lp.s1g>See the forecast →</span></a>
+  <a class=lp-step href=#forecast><span class=lp-n>02</span><h3 data-i18n=lp.s2>See the expected change</h3>
+   <p data-i18n=lp.s2d>For the whole market and each material, with a likely range and what is driving it.</p><span class=lp-go data-i18n=lp.s2g>Costs by material →</span></a>
+  <a class=lp-step href=calculator.html><span class=lp-n>03</span><h3 data-i18n=lp.s3>Use it in your bid or IPC</h3>
+   <p data-i18n=lp.s3d>Price a bill of quantities, or work out a FIDIC price adjustment for a payment certificate.</p><span class=lp-go data-i18n=lp.s3g>Bids &amp; contracts →</span></a></div></section>
+<section class=fc-head id=forecast><div><p class=eyebrow data-i18n=fc.eyebrow>Your forecast</p><h2 data-i18n=fc.h>Will construction costs rise where you work?</h2>
  <p class=whatis data-i18n=whatis>CiO Costs is a forecasting tool. It estimates how construction costs (materials, fuel and labour) are likely to move, with a range. It is not an official statistic, a price list or financial advice.</p></div>
  <div class=hero-side><label class="when-box country-pick"><span data-i18n=pick.country>Your country</span><select id=mycountry aria-label="Your country">
  {country_options(cs)}</select></label>
  {picker(months, default)}</div></section>
-<p class=trust><span data-i18n=trust.sources>Official data from UBOS, KNBS and Stats SA</span>
- · <span id=updated-ago data-built="{BUILT}"></span> · <a href="method.html#track" data-i18n=trust.track>Track record</a>
- {f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.weekly>Free weekly update on WhatsApp</a>" if CHANNEL else ""}</p>
 <section class=featured data-key={feat['key']} aria-labelledby=fq>
  <div class=feat-main><div class=card-top><span class=flag aria-hidden=true>{feat['flag']}</span>
  <a class=country data-feat-name data-cc={ISO2.get(load_country(feat['key'])['iso3'], '')} href="countries/{feat['key']}/index.html">{e(feat['country'])}</a><span class=chip data-i18n=chip.yours>Your country</span></div>
