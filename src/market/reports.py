@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS price_reports (
     country TEXT NOT NULL, item TEXT NOT NULL, price REAL NOT NULL, location TEXT NOT NULL,
     supplier TEXT, note TEXT);
 CREATE INDEX IF NOT EXISTS price_reports_item ON price_reports (country, item, week);
+CREATE TABLE IF NOT EXISTS pro_waitlist (
+    id INTEGER PRIMARY KEY, created TEXT NOT NULL, email TEXT NOT NULL, org TEXT, role TEXT, country TEXT, feature TEXT);
 CREATE TABLE IF NOT EXISTS alerts (
     id INTEGER PRIMARY KEY, created TEXT NOT NULL, country TEXT NOT NULL, series TEXT NOT NULL,
     threshold REAL NOT NULL, channel TEXT NOT NULL, contact TEXT NOT NULL, last_sent TEXT, active INTEGER DEFAULT 1);
@@ -147,6 +149,22 @@ class Participants:
                                   (datetime.now(timezone.utc).isoformat(timespec="seconds"), country, series,
                                    float(threshold), channel, contact))
         return cur.lastrowid
+
+    def join_waitlist(self, email: str, org: str = "", role: str = "", country: str = "", feature: str = "") -> int:
+        """Interest in CiO Costs Pro (who would pay, for what). One row per email and feature."""
+        email = email.strip().lower()
+        if "@" not in email or "." not in email.split("@")[-1] or len(email) > 120:
+            raise ReportError("enter a valid email address")
+        with self.db:
+            if self.db.execute("SELECT 1 FROM pro_waitlist WHERE email=? AND feature=?", (email, feature)).fetchone():
+                return 0
+            cur = self.db.execute("INSERT INTO pro_waitlist (created, email, org, role, country, feature) VALUES (?,?,?,?,?,?)",
+                                  (datetime.now(timezone.utc).isoformat(timespec="seconds"), email, org.strip()[:80],
+                                   role.strip()[:40], country, feature[:40]))
+        return cur.lastrowid
+
+    def waitlist(self) -> list[dict]:
+        return [dict(r) for r in self.db.execute("SELECT * FROM pro_waitlist ORDER BY created DESC")]
 
     def active_alerts(self) -> list[dict]:
         return [dict(r) for r in self.db.execute("SELECT * FROM alerts WHERE active = 1")]

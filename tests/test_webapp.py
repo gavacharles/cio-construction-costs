@@ -370,3 +370,23 @@ def test_reported_price_index():
     assert rows[0]["v"] == 100.0 and rows[-1]["v"] > rows[0]["v"] and all(r["people"] >= 3 for r in rows)
     assert [r["m"] for r in rows] == sorted(r["m"] for r in rows)
     assert db.crowd_index("rwanda", "cement_50kg", min_reporters=4) == []          # never from fewer people
+
+
+
+def test_pro_waitlist(tmp_path, monkeypatch):
+    monkeypatch.setenv("CIO_DB", str(tmp_path / "w.sqlite"))
+    monkeypatch.setenv("CIO_ADMIN_KEY", "k")
+    monkeypatch.setenv("CIO_SECURE_COOKIES", "0")
+    import importlib
+    import app as webapp
+    importlib.reload(webapp)
+    from fastapi.testclient import TestClient
+    c = TestClient(webapp.app)
+    body = {"email": "QS@Example.com", "org": "Okello QS", "role": "Consultant / quantity surveyor", "country": "uganda", "consent": True}
+    assert c.post("/api/public/waitlist", json=dict(body, consent=False)).status_code == 400       # consent required
+    assert c.post("/api/public/waitlist", json=dict(body, email="nope")).status_code == 400
+    assert c.post("/api/public/waitlist", json=body).json()["ok"] and c.post("/api/public/waitlist", json=body).json()["id"] == 0   # no duplicates
+    c.post("/admin/login", data={"key": "k"})
+    page = c.get("/admin").text
+    assert "qs@example.com" in page and "1 sign-ups" in page
+    assert "qs@example.com" not in (ROOT / "public" / "calculator.html").read_text()

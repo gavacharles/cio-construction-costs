@@ -164,6 +164,16 @@ def _is_admin(request: Request) -> bool:
     return bool(expected) and hmac.compare_digest(request.cookies.get(ADMIN_COOKIE, ""), expected)
 
 
+def waitlist_html() -> str:
+    rows = people().waitlist()
+    if not rows:
+        return "<p class=mut>No sign-ups yet.</p>"
+    body = "".join(f"<tr><td>{e(r['created'][:10])}</td><td>{e(r['email'])}</td><td>{e(r['org'] or '')}</td><td>{e(r['role'] or '')}</td>"
+                   f"<td>{e(r['country'] or '')}</td><td>{e(r['feature'] or '')}</td></tr>" for r in rows)
+    return (f"<p class=mut>{len(rows)} sign-ups (private: never shown on the public site).</p><div class=tw><table><tr><th>Date</th><th>Email</th>"
+            f"<th>Organisation</th><th>Role</th><th>Country</th><th>For</th></tr>{body}</table></div>")
+
+
 @app.get("/admin", response_class=HTMLResponse)
 def admin(request: Request, err: str = ""):
     if not _admin_token():
@@ -185,6 +195,7 @@ def admin(request: Request, err: str = ""):
     ok = sum(r["status"] == "ok" for r in checks["checks"])
     return page("Organiser", f"""<div class=card><h1>Pilot</h1><p>Live countries: {live}.
 Anyone can view the site and report prices; there are no accounts.</p><h2>Monthly pilot reports</h2><ul>{links}</ul></div>
+<div class=card><h2>CiO Costs Pro waitlist</h2>{waitlist_html()}</div>
 <div class=card><h2>Data checks</h2><p class=mut>Last run {e(checks['run'])}: {ok} ok, {len(probs)} to look at.</p>
 <div class=tw><table><tr><th>Status</th><th>Country</th><th>Check</th><th>Detail</th></tr>{rows}</table></div></div>""")
 
@@ -303,6 +314,24 @@ async def public_alert(request: Request):
         aid = people().add_alert(country, str(d.get("series", ""))[:80], float(d.get("threshold", 0)),
                                  str(d.get("channel", "")), str(d.get("contact", ""))[:120])
         return {"ok": True, "id": aid}
+    except (ReportError, ValueError, TypeError) as err:
+        return JSONResponse({"ok": False, "error": str(err)}, status_code=400)
+
+
+@app.post("/api/public/waitlist")
+async def public_waitlist(request: Request):
+    """Interest in CiO Costs Pro: email (+ optional organisation and role); consent required."""
+    if PUBLIC_LIMIT.blocked(_ip(request)):
+        return JSONResponse({"ok": False, "error": "Too many requests; try later."}, status_code=429)
+    PUBLIC_LIMIT.fail(_ip(request))
+    try:
+        d = await request.json()
+        if not d.get("consent"):
+            raise ReportError("please tick the box so we may email you about Pro")
+        country = str(d.get("country", ""))
+        wid = people().join_waitlist(str(d.get("email", "")), str(d.get("org", "")), str(d.get("role", "")),
+                                     country if country in LIVE else "", str(d.get("feature", "ipc"))[:40])
+        return {"ok": True, "id": wid}
     except (ReportError, ValueError, TypeError) as err:
         return JSONResponse({"ok": False, "error": str(err)}, status_code=400)
 

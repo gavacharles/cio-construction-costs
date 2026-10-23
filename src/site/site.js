@@ -546,6 +546,8 @@
       const ipc = [3, 6, 9].map((k, i) => { const d = new Date(b); d.setMonth(d.getMonth() + k); return { no: i + 1, end: ymd(new Date(d.getFullYear(), d.getMonth() + 1, 0)), value: 250000000 }; });
       return { country: cis.value, base: ymd(b), sched: defaults(x), ipcs: ipc }; }
     if (!st || st.country !== cis.value) st = fresh();
+    const FREE_IPCS = 3;                                  /* free tier: 3 IPCs per contract; more in CiO Costs Pro */
+    st.ipcs = st.ipcs.slice(0, FREE_IPCS);
     const sched = $("#fd-sched"), ipcs = $("#fd-ipcs"), out = $("[data-fd-detail]");
     function drawSched() { const x = X(), so = sources(x);
       sched.innerHTML = st.sched.map((r, i) => `<tr data-i=${i}><td>${r.src === "fixed" ? `<b>a</b> · ${esc(r.el)}` : `<input data-f=el value="${esc(r.el)}">`}</td>
@@ -590,7 +592,12 @@
       $("#ci-rows").innerHTML = rows.slice().reverse().map((r, i, arr) => { const p = arr[i + 1], ch = p ? (r.v / p.v - 1) * 100 : null;
         return `<tr><td>${qlabel(r.m, x.step)}</td><td>${r.v.toFixed(2)}</td><td>${ch == null ? "–" : apct(ch)}</td><td><span class="cist ${r.s}">${tr("ci.st." + r.s)}</span></td></tr>`; }).join("");
       $("[data-ci-csv]").href = rel + `data/contract_index_${cis.value}.csv`; $("[data-ci-csv]").setAttribute("download", `contract_index_${cis.value}.csv`); }
-    function all() { fd.elements.base.value = st.base; drawSched(); drawIpcs(); showIndex(); compute(); }
+    function all() { fd.elements.base.value = st.base; drawSched(); drawIpcs(); showIndex(); compute(); capNote(); }
+    const pf = $(".pro-form");
+    if (pf) pf.onsubmit = async ev => { ev.preventDefault(); const m = $(".formmsg", pf), g = n => pf.querySelector(`[name=${n}]`);
+      const j = await post(rel + "api/public/waitlist", { email: g("email").value, org: g("org").value, role: g("role").value, consent: g("consent").checked,
+        country: cis.value, feature: "ipc" }, m);
+      if (j) { m.textContent = tr("pro.thanks"); pf.reset(); track("alert", cis.value); } };
     cis.onchange = () => { st = fresh(); all(); };
     fd.elements.base.onchange = () => { st.base = fd.elements.base.value; compute(); };
     sched.addEventListener("input", ev => { const tr_ = ev.target.closest("tr"), r = st.sched[+tr_.dataset.i], f = ev.target.dataset.f; if (!f) return;
@@ -598,10 +605,12 @@
     sched.addEventListener("change", ev => { if (ev.target.dataset.f === "src") { const r = st.sched[+ev.target.closest("tr").dataset.i]; r.src = ev.target.value; drawSched(); compute(); } });
     sched.addEventListener("click", ev => { if (ev.target.matches("[data-del]")) { st.sched.splice(+ev.target.closest("tr").dataset.i, 1); drawSched(); compute(); } });
     ipcs.addEventListener("input", ev => { const r = st.ipcs[+ev.target.closest("tr").dataset.i], f = ev.target.dataset.f; if (!f) return; r[f] = f === "value" ? +ev.target.value : ev.target.value; compute(); });
-    ipcs.addEventListener("click", ev => { if (ev.target.matches("[data-del]")) { st.ipcs.splice(+ev.target.closest("tr").dataset.i, 1); st.ipcs.forEach((p, i) => p.no = i + 1); drawIpcs(); compute(); } });
+    ipcs.addEventListener("click", ev => { if (ev.target.matches("[data-del]")) { st.ipcs.splice(+ev.target.closest("tr").dataset.i, 1); st.ipcs.forEach((p, i) => p.no = i + 1); drawIpcs(); compute(); capNote(); } });
     $("[data-fd-addel]").onclick = () => { st.sched.push({ el: tr("fd.newel"), coef: 0, src: "overall" }); drawSched(); compute(); };
-    $("[data-fd-addipc]").onclick = () => { if (st.ipcs.length >= 12) return; const last = st.ipcs[st.ipcs.length - 1], d = last ? new Date(last.end) : new Date();
-      const e = new Date(d.getFullYear(), d.getMonth() + 2, 0); st.ipcs.push({ no: st.ipcs.length + 1, end: ymd(e), value: last ? last.value : 0 }); drawIpcs(); compute(); };
+    const capNote = () => { const full = st.ipcs.length >= FREE_IPCS; $("[data-fd-addipc]").disabled = full;
+      $("[data-fd-cap]").innerHTML = full ? tr("pro.cap", { n: FREE_IPCS }) + ` <a href="#pro">${tr("pro.more")}</a>` : tr("pro.free", { n: FREE_IPCS }); };
+    $("[data-fd-addipc]").onclick = () => { if (st.ipcs.length >= FREE_IPCS) { capNote(); return; } const last = st.ipcs[st.ipcs.length - 1], d = last ? new Date(last.end) : new Date();
+      const e = new Date(d.getFullYear(), d.getMonth() + 2, 0); st.ipcs.push({ no: st.ipcs.length + 1, end: ymd(e), value: last ? last.value : 0 }); drawIpcs(); compute(); capNote(); };
     all();
   }
 

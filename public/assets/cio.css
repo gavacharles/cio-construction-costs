@@ -493,3 +493,9 @@ footer{border-top:1px solid var(--rule)}.footlinks{font-size:12px}
 @media (max-width:760px){.fd-row{grid-template-columns:1fr}}
 @media print{.fd-step:not(:last-child) .actions,.fd-index,.bctabs,[data-bc-pane=bid],.prose,.boq-del,.fd-step{display:none!important}.fd-statement{display:block!important;border:0}}
 .cspark{width:60px;height:20px;vertical-align:middle}.cspark polyline{fill:none;stroke:var(--teal);stroke-width:1.6}
+
+.pro{border:1px solid var(--rule);border-left:6px solid var(--accent-fill)}.pro h3{margin:2px 0 8px;font-size:1.5rem}.pro .plain{margin:0 0 12px}
+.pro-form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end}.pro-form label{display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:14px;margin:0}
+.pro-form input:not([type=checkbox]),.pro-form select{height:42px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 10px;font:15px var(--text)}
+.pro-form .consent,.pro-form .formmsg{grid-column:1/-1}.pro-form button{justify-self:start}
+@media (max-width:760px){.pro-form{grid-template-columns:1fr}}@media print{.pro{display:none!important}}

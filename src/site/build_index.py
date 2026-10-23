@@ -808,7 +808,19 @@ Contract Data, the Base Date and the value of work in each IPC. CiO Costs looks 
   <tfoot><tr><th colspan=5 data-i18n=fd.total>Total price adjustment</th><th data-fd-total></th><th></th></tr></tfoot></table></div>
   <p class=actions><button type=button class=btn data-fd-addipc data-i18n=fd.addipc>Add an IPC</button>
   <button type=button class="btn primary" onclick="window.print()" data-i18n=fd.print>Print price adjustment statement</button>
-  <a class=btn data-ci-csv download data-i18n=fd.csv>Download the index (CSV)</a></p></div>
+  <a class=btn data-ci-csv download data-i18n=fd.csv>Download the index (CSV)</a></p>
+  <p class=fineprint data-fd-cap></p></div>
+ <div class="panel pro" id=pro><p class=eyebrow data-i18n=pro.eyebrow>CiO Costs Pro · coming soon</p>
+  <h3 data-i18n=pro.h>For contracts with many payment certificates</h3>
+  <ul class=plain><li data-i18n=pro.f1>Unlimited IPCs, for the whole life of the contract</li><li data-i18n=pro.f2>Saved contracts, shared with your client or consultant</li>
+  <li data-i18n=pro.f3>Statements with your letterhead, ready to attach to each IPC</li><li data-i18n=pro.f4>Automatic revision when a provisional index is replaced by the official one</li>
+  <li data-i18n=pro.f5>Indices by material and city, with full history and a data feed</li></ul>
+  <form class=pro-form><label><span data-i18n=pro.email>Email</span><input name=email type=email required placeholder="you@company.com"></label>
+  <label><span data-i18n=pro.org>Organisation (optional)</span><input name=org></label>
+  <label><span data-i18n=pro.role>You are</span><select name=role><option data-i18n=pro.r1>Contractor</option><option data-i18n=pro.r2>Consultant / quantity surveyor</option>
+  <option data-i18n=pro.r3>Client / employer</option><option data-i18n=pro.r4>Lender or insurer</option><option data-i18n=pro.r5>Other</option></select></label>
+  <label class=consent><input type=checkbox name=consent required> <span data-i18n=pro.consent>Email me when Pro is ready. No spam; one click to stop.</span></label>
+  <button class='btn primary' type=submit data-i18n=pro.join>Join the waitlist</button><p class='formmsg muted' role=status></p></form></div>
  <div class="panel fd-statement" data-fd-detail aria-live=polite></div>
 </form>
 <details class=fd-index><summary data-i18n=fd.seeidx>See the headline index month by month</summary>
