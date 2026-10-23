@@ -213,6 +213,8 @@
       $(".flag", feat).textContent = c.flag; const nm = $("[data-feat-name]", feat); nm.textContent = cname(c); nm.dataset.cc = c.cc;
       $$("[data-feat-name], [data-feat-link]", feat).forEach(a => a.href = `countries/${k}/index.html`);
       const fb = $("[data-feat-bid]", feat); if (fb) { fb.href = `calculator.html?c=${k}#bid`; fb.hidden = !!c.bench; }
+      const nl = $("[data-feat-noteline]", feat); if (nl) { nl.hidden = !c.note; if (c.note) { $("[data-feat-note]", nl).href = `countries/${k}/${c.note}`;
+        $("[data-feat-notename]", nl).textContent = cname(c); } }
       $("[data-chart]", feat).innerHTML = ""; };
     const k0 = store.get("cio-country", null); my.value = DATA.countries[k0] ? k0 : feat.dataset.key; show(my.value); lpTo(lpCity());
     my.onchange = () => { track("country", my.value); store.set("cio-country", my.value); lpTo(lpCity()); show(my.value); render(); };

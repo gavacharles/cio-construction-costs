@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import html
 import json
+import re
 import os
 import math
 import sys
@@ -84,6 +85,25 @@ def month_label(m: str) -> str:
 
 
 # ------------------------------------------------------------------ data --
+def weekly_notes(key: str, weeks: int = 12) -> list[dict]:
+    """The plain-language notes for a country: the latest one of each week, newest first, with its date and its
+    "In one line" sentence (measured from today, as the note says)."""
+    by_week = {}
+    for f in sorted((ROOT / "countries" / key / "notes").glob(f"weekly_{key}_*.html")):
+        try:
+            d = date.fromisoformat(f.stem.rsplit("_", 1)[1])
+        except ValueError:
+            continue
+        by_week[d.isocalendar()[:2]] = (d, f)
+    out = []
+    for d, f in sorted(by_week.values(), reverse=True)[:weeks]:
+        t = f.read_text(encoding="utf-8")
+        m = re.search(r"<h2>In one line</h2>\s*<p>(.*?)</p>", t, re.S) or re.search(r"<p>(.*?)</p>", t, re.S)
+        line = html.unescape(re.sub(r"<[^>]+>", "", m.group(1))).strip() if m else ""
+        out.append({"path": f"notes/{f.name}", "date": d.isoformat(), "label": f"{d.day} {d:%b %Y}", "line": line})
+    return out
+
+
 def country_data(key: str) -> dict | None:
     cfg = load_country(key)
     f = ROOT / "countries" / key / "outputs" / "forecast_latest.json"
@@ -94,7 +114,7 @@ def country_data(key: str) -> dict | None:
     if not paths:
         return None
     head = next(iter(paths))
-    notes = sorted((ROOT / "countries" / key / "notes").glob(f"weekly_{key}_*.html"))
+    notes = weekly_notes(key)
     off = cfg.get("official_reading")
     return {
         "key": key, "country": cfg["country"], "flag": flag(cfg["iso3"]), "currency": cfg["currency"],
@@ -105,7 +125,8 @@ def country_data(key: str) -> dict | None:
         "source": SOURCE.get(key) or (off["series"].split(",")[0] if off else None),
         "reading": ({"series": off["series"].split(",")[0], "period": str(off["period"]),
                      "year": off.get("change_year_pct"), "period_change": off.get("change_period_pct")} if off else None),
-        "note": f"notes/{notes[-1].name}" if notes else None,
+        "note": notes[0]["path"] if notes else None,
+        "notes": notes,
         "items": [i["name"] for i in cfg.get("price_items", [])],
     }
 
@@ -192,12 +213,12 @@ def _strict(o):
 
 def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc: str = "", head: str = "") -> str:
     nav = [("index.html#countries", "Prices", "home", "nav.prices"), ("calculator.html", "Bids & contracts", "calc", "nav.plan"),
-           ("report.html", "Report a price", "report", "nav.reportshort"), ("play.html", "Play", "play", "nav.playshort")]
+           ("notes.html", "Weekly notes", "notes", "nav.notes"), ("report.html", "Report a price", "report", "nav.reportshort"), ("play.html", "Play", "play", "nav.playshort")]
     minor: set[str] = set()
     links = "".join(f"<a href='{rel}{h}' data-i18n='{k}'{' class=minor' if p in minor else ''}{' aria-current=page' if p == page else ''}>{t}</a>"
                     for h, t, p, k in nav)
     icons = {"home": "M3 11l9-7 9 7v9h-6v-6H9v6H3z", "calc": "M6 3h12v18H6zM9 7h6M9 11h2M13 11h2M9 15h2M13 15h2",
-             "report": "M4 20h4L19 9l-4-4L4 16zM14 6l4 4", "play": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8v8M8 12h8"}
+             "report": "M4 20h4L19 9l-4-4L4 16zM14 6l4 4", "notes": "M6 3h9l3 3v15H6zM9 9h6M9 13h6M9 17h4", "play": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8v8M8 12h8"}
     bottom = "".join(f"<a href='{rel}{h}'{' aria-current=page' if p == page else ''}><svg viewBox='0 0 24 24' aria-hidden=true><path d='{icons[p]}'/></svg>"
                      f"<span data-i18n='{k}'>{t}</span></a>" for h, t, p, k in nav)
     payload = json.dumps(_strict(data), separators=(",", ":"), allow_nan=False).replace("</", "<\\/")
@@ -215,7 +236,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
 </div></header>
 <main class=wrap>{body}</main>
 <nav class=bottombar aria-label=Main>{bottom}</nav>
-<footer class=wrap><p class=footlinks><a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}methodology.html" data-i18n=ft.methodology>Methodology</a> · <a href="{rel}terms.html" data-i18n=ft.terms>Terms</a> · <a href="{rel}privacy.html" data-i18n=ft.privacy>Privacy</a> · <a href="{rel}glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="{rel}calculator.html#adjust" data-i18n=ci.short>Contract index</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
+<footer class=wrap><p class=footlinks><a href="{rel}notes.html" data-i18n=nav.notes>Weekly notes</a> · <a href="{rel}method.html" data-i18n=nav.method>How it works</a> · <a href="{rel}methodology.html" data-i18n=ft.methodology>Methodology</a> · <a href="{rel}terms.html" data-i18n=ft.terms>Terms</a> · <a href="{rel}privacy.html" data-i18n=ft.privacy>Privacy</a> · <a href="{rel}glance.html" data-i18n=glance.h>Costs at a glance</a> · <a href="{rel}calculator.html#adjust" data-i18n=ci.short>Contract index</a> · <a href="{rel}method.html#track" data-i18n=trust.track>Track record</a>
 {f" · <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else ""}</p><span data-i18n=footer.short>CiO Lab · Forecasts are estimates with ranges, not advice. The Cost Call is a game: points have no cash
 value. Official data: UBOS, KNBS, Stats SA; benchmarks: US BLS, Statistics Austria (Eurostat), PSA Philippines, FGV Brazil; oil and exchange rates from public
 market sources. Updated {e(data.get('updated', ''))}.</span></footer>
@@ -257,6 +278,41 @@ def page_index(cs: list[dict], months: list[str], default: str) -> str:
     return _home(cs, months, default, feat, tab_html, cards)
 
 
+def note_box(c: dict, rel: str = "") -> str:
+    """This week's plain-language note: its one line, a link, and earlier weeks."""
+    ns = c.get("notes") or []
+    if not ns:
+        return ""
+    n, older = ns[0], ns[1:5]
+    more = (" · <span data-i18n=note.earlier>Earlier:</span> " + " · ".join(f"<a href='{rel}{e(o['path'])}'>{e(o['label'])}</a>" for o in older)) if older else ""
+    return (f"<div class=notebox><p class=eyebrow><span data-i18n=note.week>This week's note</span> · {e(n['label'])}</p>"
+            f"<p class=notebox-line>{e(n['line'])}</p><p class=notebox-links><a class=btn href='{rel}{e(n['path'])}' data-i18n=btn.note>Read the weekly note</a>"
+            f"<span class=muted>{more}</span></p></div>")
+
+
+def page_notes(cs: list[dict]) -> str:
+    """Every country's weekly note in one place."""
+    def card(c):
+        ns = c.get("notes") or []
+        if not ns:
+            return ""
+        n = ns[0]
+        older = " · ".join(f"<a href='countries/{c['key']}/{e(o['path'])}'>{e(o['label'])}</a>" for o in ns[1:4])
+        return (f"<article class=ncard><h3><a href='countries/{c['key']}/{e(n['path'])}'><span aria-hidden=true>{c['flag']}</span> {e(c['country'])}</a></h3>"
+                f"<p class=muted>{e(n['label'])}</p><p>{e(n['line'])}</p><p><a href='countries/{c['key']}/{e(n['path'])}' data-i18n=note.read>Read the note →</a></p>"
+                + (f"<p class=fineprint><span data-i18n=note.earlier>Earlier:</span> {older}</p>" if older else "") + "</article>")
+    pilot = "".join(card(c) for c in cs if not c.get("bench"))
+    bench = "".join(card(c) for c in cs if c.get("bench"))
+    follow = (f" <a href='{CHANNEL}' target=_blank rel=noopener data-i18n=wa.follow>Follow on WhatsApp (free)</a>" if CHANNEL else "")
+    return f"""
+<section class=prose><p class=eyebrow data-i18n=notes.eyebrow>Free · every week</p><h1 data-i18n=notes.h>Weekly notes</h1>
+<p class=lede data-i18n=notes.lede>A short note for each country, in plain words: what is likely to happen to construction costs in the next three months,
+what it means for your money, and the prices to watch. Changes in the notes are measured from today.</p><p>{follow}</p></section>
+<div class=ngrid>{pilot}</div>
+<h2 class=nsub data-i18n=notes.bench>Benchmark countries</h2><p class=muted data-i18n=notes.benchd>Countries with good official data, used to show how the method performs.</p>
+<div class=ngrid>{bench}</div>"""
+
+
 def page_glance(cs: list[dict], months: list[str], default: str) -> str:
     order = sorted(cs, key=lambda c: (c["key"] not in FEATURED, FEATURED.index(c["key"]) if c["key"] in FEATURED else 0, c["country"]))
     glance = "".join(f"""<tr data-key={c['key']}><th scope=row><a href="countries/{c['key']}/index.html">{c['flag']} {e(c['country'])}</a></th>
@@ -294,6 +350,7 @@ def _home(cs, months, default, feat, tab_html, cards):
  <div class=lp-cta><a class='btn primary big' href=#forecast data-i18n=lp.cta>See the forecast</a>
  {f"<a class='btn big' href='{CHANNEL}' target=_blank rel=noopener data-i18n=lp.cta2>Get the weekly forecast on WhatsApp</a>" if CHANNEL else ""}</div>
  <p class=lp-facts><span data-i18n=lp.t1>Tested on 48 months of official data</span> · <span id=updated-ago data-built="{BUILT}"></span> ·
+ <a href=notes.html data-i18n=lp.t3>A plain-language note every week</a> ·
  <a href=methodology.html#sources data-i18n=lp.t2>Sources: UBOS, KNBS, Stats SA and 8 more</a></p>
 </section>
 <section class=lp-how aria-labelledby=lph><h2 id=lph class=sr-only data-i18n=lp.he>How it works</h2><ol class=lp-steps>
@@ -319,7 +376,9 @@ def _home(cs, months, default, feat, tab_html, cards):
  {MONEY}
  <div class=actions><a class='btn primary' data-feat-link href="countries/{feat['key']}/index.html" data-i18n=btn.bymaterial>See costs by material</a>
  <a class=btn data-feat-bid href="calculator.html?c={feat['key']}#bid" data-i18n=bc.pricebid>Price a bid</a>
- <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div></div>
+ <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div>
+ <p class=noteline data-feat-noteline{'' if feat.get('note') else ' hidden'}>📄 <span data-i18n=note.line>This week's note, in plain words:</span>
+ <a data-feat-note href="countries/{feat['key']}/{feat.get('note') or ''}"><span data-feat-notename>{e(feat['country'])}</span> →</a></p></div>
  <aside class=feat-side><h3><span data-i18n=feat.bymaterial>By material, to</span> <span data-when-label></span></h3><ul class=breakdown data-breakdown></ul></aside>
 </section>
 
@@ -515,7 +574,6 @@ Prices reported by participants (below) fill the gap, material by material.</p><
     dr = c["drivers"]
     fx = (f"{e(c['currency'])} per US dollar: <b>{dr['fx']:,.1f}</b> ({'weaker' if (dr.get('fx_13w_pct') or 0) > 0 else 'stronger'} "
           f"{abs(dr.get('fx_13w_pct') or 0):.1f}% in 13 weeks)") if dr.get("fx") else ""
-    note = f"<a class=btn href='{e(c['note'])}' data-i18n=btn.note>Read the weekly note</a>" if c["note"] else ""
     src = f"<p class=muted><span data-i18n=lbl.officialdata>Official data:</span> {e(c['source'])}.</p>" if c["source"] else ""
     return f"""
 <p class=crumbs><a href="../../index.html" data-i18n=crumbs.all>All countries</a> › <span data-i18n=tab.{c['region']}>{e(REGION_NAME.get(c['region'], ''))}</span></p>
@@ -528,10 +586,11 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <div><span class='pct small' data-rng>–</span><span class=pct-l data-i18n=lbl.range>likely range (8 in 10)</span></div></div>
  <p class=fineprint data-i18n=fc.note>Forecast, not a guarantee: 8 times in 10 the real change falls inside the range.</p>
  <div class=chart>{chart_svg(c)}</div><p class='advice big' data-advice></p>
+ {note_box(c)}
  {track_country(c, crowd_rows)}
  {MONEY}
  <div class=actions><a class='btn primary' href="../../calculator.html?c={c['key']}#bid" data-i18n=bc.pricebid>Price a bid</a>
- <a class=btn href="../../calculator.html?c={c['key']}#adjust" data-i18n=bc.useindex>Use as contract index</a>{note}
+ <a class=btn href="../../calculator.html?c={c['key']}#adjust" data-i18n=bc.useindex>Use as contract index</a>
  <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div>{src}</div>
 </section>
 {mat_html}
@@ -1220,7 +1279,7 @@ def build() -> Path:
     default = f"M:{months[2]}"
     updated = max((c["generated"] for c in cs), default=date.today().isoformat())
     slim = {c["key"]: dict({k: c[k] for k in ("country", "flag", "currency", "region", "kind", "official", "base", "head",
-                                              "paths", "spark", "drivers", "materials", "step", "items", "bench", "trend", "trend_stats", "single")},
+                                              "paths", "spark", "drivers", "materials", "step", "items", "bench", "trend", "trend_stats", "single", "note")},
                            aliases=load_country(c["key"]).get("aliases") or [],
                            office=load_country(c["key"])["settlement"].get("statistics_office", ""),
                            cc=ISO2.get(load_country(c["key"])["iso3"], ""),
@@ -1249,6 +1308,7 @@ def build() -> Path:
 
     (OUT / "index.html").write_text(shell("CiO Costs — will construction costs rise?", page_index(cs, months, default), base,
                                            page="home"), encoding="utf-8")
+    (OUT / "notes.html").write_text(shell("Weekly notes — CiO Costs", page_notes(cs), base, page="notes"), encoding="utf-8")
     (OUT / "glance.html").write_text(shell("Costs at a glance — CiO Costs", page_glance(cs, months, default), base, page="glance"),
                                       encoding="utf-8")
     for fname, title, body, desc in (("methodology.html", "Methodology", page_methodology(), "How CiO Costs builds and tests its numbers."),
@@ -1298,9 +1358,8 @@ def build() -> Path:
     for c in cs:
         d = OUT / "countries" / c["key"]
         (d / "notes").mkdir(parents=True, exist_ok=True)
-        if c["note"]:                                  # publish only the latest note's HTML
-            src_note = ROOT / "countries" / c["key"] / c["note"]
-            (d / c["note"]).write_text(src_note.read_text(encoding="utf-8"), encoding="utf-8")
+        for n in c["notes"]:                           # the latest note of each of the last 12 weeks
+            (d / n["path"]).write_text((ROOT / "countries" / c["key"] / n["path"]).read_text(encoding="utf-8"), encoding="utf-8")
         data = dict(base, countries={c["key"]: slim[c["key"]]}, focus=c["key"])
         (d / "index.html").write_text(shell(f"{c['country']} construction costs — CiO Costs",
                                             page_benchmark(c, BENCH.index(c["key"]) + 1) if c.get("bench") else
