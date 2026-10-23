@@ -1,8 +1,8 @@
-# Zimbabwe building costs — week of 23 October 2026
+# Zimbabwe construction material prices — week of 23 October 2026
 
 ## In one line
 
-Import costs for building in Zimbabwe look steady for the next 3 months.
+Import costs for construction materials in Zimbabwe look steady for the next 3 months.
 
 ## What it means for your money
 
@@ -31,7 +31,7 @@ Not enough reports yet (3 people in the last 2 months are needed). Tell us what 
 Zimbabwe has no official construction price index, so **CiO Costs builds an estimate** every few hours:
 
 - **What goes in:** world oil prices in the local currency and the exchange rate against the US dollar, weighted like the official construction baskets of Uganda and South Africa.
-- **What it covers:** the imported part of building costs — steel, cement inputs, paint, pipes, fuel and transport.
+- **What it covers:** the imported part of construction material prices — steel, cement inputs, paint, pipes, fuel and transport.
 - **What it misses:** local materials (sand, stone, blocks, timber) and labour. Your price reports fill this gap.
 
 **The CiO estimate index** (100 = two years ago): May 102.2 · Jun 99.9 · Jul 99.8 · Aug 100.6 · Sep 102.9 · Oct 103.8.

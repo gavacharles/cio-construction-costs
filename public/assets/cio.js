@@ -32,7 +32,7 @@ window.I18N = (function () {
       "nav.play": "The Cost Call", "nav.method": "Jinsi inavyofanya kazi", "cta.join": "Jiunge na majaribio",
       "footer.short": "CiO Lab · Utabiri ni makadirio yenye viwango, si ushauri. The Cost Call ni mchezo: alama hazina thamani ya pesa.",
       "when.label": "Utabiri hadi", "when.note": "Takwimu za kila wiki zinakadiriwa kutoka utabiri wa kila mwezi, unaosasishwa kila baada ya saa chache. Mabadiliko yanapimwa kutoka takwimu rasmi za karibuni za kila nchi (au kutoka leo kwa viashiria vya gharama za uagizaji).",
-      "home.eyebrow": "Mtazamo wa gharama za ujenzi · nchi 7 za Afrika", "home.h1": "Je, gharama za ujenzi zitapanda unapofanya kazi?",
+      "home.eyebrow": "Mtazamo wa gharama za ujenzi · nchi 7 za Afrika", "home.h1": "Je, bei za vifaa vya ujenzi zitapanda unapofanya kazi?",
       "home.lede": "Chagua nchi yako na tarehe. Ona kama bei za vifaa vya ujenzi huenda zikapanda, kwa kiasi gani, na maana yake kwa bei unayolipa — inasasishwa kila baada ya saa chache.",
       "tool.calc.t": "Kikokotoo cha ongezeko la bei kwenye zabuni", "tool.calc.d": "Bei zinaweza kubadilika kiasi gani katika kipindi cha mkataba wako? Pata ongezeko linalotarajiwa kwa sarafu yako, pamoja na kiwango.",
       "tool.report.t": "Ripoti bei", "tool.report.d": "Tuambie ulilipa kiasi gani kwa saruji, chuma, dizeli au mchanga wiki hii. Inachukua dakika moja na inaboresha takwimu za kila mtu.",
@@ -73,7 +73,7 @@ window.I18N = (function () {
       "m.in": "Kinachoingia", "m.how": "Jinsi inavyotabiriwa", "m.check": "Jinsi inavyokaguliwa", "m.often": "Inasasishwa mara ngapi",
       /* dynamic */
       "q.official": "Je, bei za vifaa vya ujenzi nchini {c} zitapanda kufikia {when}?",
-      "q.indicator": "Je, gharama za uagizaji zitapandisha bei za ujenzi nchini {c} kufikia {when}?",
+      "q.indicator": "Je, gharama za uagizaji zitapandisha bei za vifaa vya ujenzi nchini {c} kufikia {when}?",
       "adv.up": "Ongeza takriban {x} kwenye bei za kazi zinazopangwa hadi {when}, ukilinganisha na bei za {base}.",
       "adv.down": "Bei zinaweza kushuka takriban {x} kufikia {when} — fikiria kuchelewesha manunuzi makubwa.",
       "adv.flat": "Mabadiliko madogo yanatarajiwa hadi {when} — bei za {base} ni mwongozo mzuri.",
@@ -128,7 +128,7 @@ window.I18N = (function () {
       "nav.play": "The Cost Call", "nav.method": "Comment ça marche", "cta.join": "Rejoindre le pilote",
       "footer.short": "CiO Lab · Les prévisions sont des estimations avec des fourchettes, pas des conseils. The Cost Call est un jeu : les points n'ont aucune valeur monétaire.",
       "when.label": "Prévision jusqu'à", "when.note": "Les valeurs hebdomadaires sont interpolées à partir de la prévision mensuelle, mise à jour toutes les quelques heures. Les variations sont mesurées depuis la dernière donnée officielle de chaque pays (ou depuis aujourd'hui pour les indicateurs de coûts d'importation).",
-      "home.eyebrow": "Perspectives des coûts de construction · 7 pays africains", "home.h1": "Les coûts de construction vont-ils augmenter là où vous travaillez ?",
+      "home.eyebrow": "Perspectives des coûts de construction · 7 pays africains", "home.h1": "Les prix des matériaux de construction vont-ils augmenter là où vous travaillez ?",
       "home.lede": "Choisissez votre pays et une date. Voyez si les prix des matériaux de construction vont probablement augmenter, de combien, et ce que cela signifie pour le prix que vous payez — mis à jour toutes les quelques heures.",
       "tool.calc.t": "Calculateur d'actualisation des offres", "tool.calc.d": "De combien les prix pourraient-ils évoluer pendant votre contrat ? Obtenez l'actualisation attendue dans votre monnaie, avec une fourchette.",
       "tool.report.t": "Signaler un prix", "tool.report.d": "Dites-nous combien vous avez payé le ciment, l'acier, le gazole ou le sable cette semaine. Une minute suffit, et tout le monde y gagne.",
@@ -168,8 +168,8 @@ window.I18N = (function () {
       "m.h1": "Des statistiques officielles à une prévision utile", "m.read": "Lire les chiffres", "m.limits": "Limites",
       "m.in": "Les données", "m.how": "La prévision", "m.check": "Les contrôles", "m.often": "La fréquence de mise à jour",
       /* dynamic */
-      "q.official": "{c} : les prix des intrants de construction vont-ils augmenter d'ici {when} ?",
-      "q.indicator": "{c} : les coûts d'importation vont-ils faire monter les prix de la construction d'ici {when} ?",
+      "q.official": "{c} : les prix des matériaux de construction vont-ils augmenter d'ici {when} ?",
+      "q.indicator": "{c} : les coûts d'importation vont-ils faire monter les prix des matériaux de construction d'ici {when} ?",
       "adv.up": "Prévoyez environ {x} sur les devis des travaux chiffrés jusqu'à {when}, par rapport aux prix de {base}.",
       "adv.down": "Les prix pourraient baisser d'environ {x} d'ici {when} — envisagez de reporter les gros achats.",
       "adv.flat": "Peu de changement attendu jusqu'à {when} — les prix de {base} restent un bon repère.",
@@ -198,6 +198,7 @@ window.I18N = (function () {
       "lbl.offlatestquarter": "Chiffres officiels, dernier trimestre :",
     },
     en: {
+      "home.h1": "Will construction material prices rise where you work?",
       "rep.sum": "{c}: {n} of {m} items have a typical price so far. Tap an item to report it.", "rep.people": "{n} people", "rep.vsprev": "vs previous 2 months", "rep.per": "per {u}",
       "boq.imported": "Imported materials (CiO estimate)", "boq.local": "Local material — my assumption", "boq.labour": "Labour — my assumption", "boq.assume": "Expected change, % a year", "boq.peryear": "% a year", "boq.kind.idx": "{c} publishes official price indices for each material ({o}). Each line follows the forecast for its own material.", "boq.kind.est": "{c} has no official price index per material. Imported materials follow CiO's import-cost estimate (oil and the exchange rate). For local materials and labour, enter the change you expect per year — reported prices will replace this as they come in.", "ci.mode": "Index", "ci.one": "One overall index", "ci.multi": "One index per material", "ci.wnote": "Weights: the share of the adjustable part tied to each material (they are scaled to add up).", "ci.nomonth": "No index for {m} in the chosen months: pick other months or set its weight to 0.", "ci.multif": "Multi-index formula: amount × (a + Σ wᵢ × Iᵢ₁ / Iᵢ₀), each material's own official index (rebased to 100).",
       "mm.model": "driver model", "mm.nochange": "no change", "mm.tipmodel": "Forecast from what drives this material: {how}.", "mm.tipnc": "No driver beat “no change” for this material in testing, so the forecast is no change, with a tested range.", "mm.test": "Tested on {n} periods it never saw: inside the range {p}% of the time; misses {r}% smaller than “no change” (negative = larger).",
@@ -223,7 +224,7 @@ window.I18N = (function () {
       "match.by": "expected by {when}", "match.last": "official, latest ({p})", "match.ind": "import costs {x} by {when}",
       "share": "Share", "wa.weekly": "Free weekly update on WhatsApp",
       "nav.prices": "Prices", "nav.plan": "Bids & contracts", "nav.reportshort": "Report a price", "nav.playshort": "Play", "pick.country": "Your country", "chip.yours": "Your country", "chip.officialdata": "Official data", "chip.estimate": "Estimate", "tip.official": "Built from the country's official construction price statistics, updated with this week's oil and currency moves.", "tip.estimate": "No usable official construction price index yet: an estimate of the pressure on imported materials from oil prices and the exchange rate. Local materials and labour are not included.", "trust.sources": "Official data from UBOS, KNBS and Stats SA", "trust.track": "Track record", "trust.ago": "updated {h} h ago", "trust.justnow": "updated just now", "wa.follow": "Follow on WhatsApp (free)", "money.h": "Your price", "money.ph": "Your latest price", "money.need": "Type what you paid last to see the expected price.", "money.out": "Expect about {p} by {when} (most likely {lo} – {hi}).", "alert.email": "Email", "tab.official": "Official data", "tab.indicator": "Estimates",
-      "q.official": "Will construction input prices in {c} rise by {when}?", "q.indicator": "Will import costs push {c}'s building prices up by {when}?",
+      "q.official": "Will construction material prices in {c} rise by {when}?", "q.indicator": "Will import costs push construction material prices in {c} up by {when}?",
       "adv.up": "Allow about {x} on quotes for work priced to {when}, compared with {base} prices.",
       "adv.down": "Prices may ease about {x} by {when} — consider delaying bulk buying.",
       "adv.flat": "Little change expected to {when} — {base} prices are a fair guide.",
@@ -816,6 +817,8 @@ window.I18N = (function () {
     const saved = store.get("cio-boq", null);
     if (saved && DATA.countries[saved.country] && saved.rows && saved.rows.length) { fld("country").value = saved.country; saved.rows.slice(0, MAX).forEach(r => addRow(r)); }
     else if (saved && saved.rows && !saved.rows.length && saved.country) { fld("country").value = DATA.countries[saved.country] ? saved.country : fld("country").value; }
+    const asked = new URLSearchParams(location.search).get("c");
+    if (asked && DATA.countries[asked] && fld("country").value !== asked) { fld("country").value = asked; fld("country").onchange(); }
     else [{ desc: tr("boq.ex1"), unit: tr("boq.ex1u"), qty: 400 }, { desc: tr("boq.ex2"), unit: "t", qty: 3 }, { desc: tr("boq.ex3"), unit: tr("boq.ex3u"), qty: 10 }].forEach(r => addRow(r));
     compute();
   }

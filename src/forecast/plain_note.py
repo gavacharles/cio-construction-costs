@@ -96,13 +96,13 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
 
     # In one line
     if official:
-        line = (f"Building material prices in {country} are {_likely(p)} to rise — about {med:.1f}% by {when}." if med >= 0.5 else
-                f"Building material prices in {country} are expected to stay about the same until {when}." if med > -0.5 else
-                f"Building material prices in {country} may ease — about {abs(med):.1f}% lower by {when}.")
+        line = (f"Construction material prices in {country} are {_likely(p)} to rise — about {med:.1f}% by {when}." if med >= 0.5 else
+                f"Construction material prices in {country} are expected to stay about the same until {when}." if med > -0.5 else
+                f"Construction material prices in {country} may ease — about {abs(med):.1f}% lower by {when}.")
     else:
-        line = (f"Import costs are pushing building prices in {country} up — about {med:.1f}% over the next 3 months ({_likely(p)})."
-                if med >= 0.5 else f"Import costs for building in {country} look steady for the next 3 months."
-                if med > -0.5 else f"Import costs for building in {country} are easing — about {abs(med):.1f}% over 3 months.")
+        line = (f"Import costs are pushing construction material prices in {country} up — about {med:.1f}% over the next 3 months ({_likely(p)})."
+                if med >= 0.5 else f"Import costs for construction materials in {country} look steady for the next 3 months."
+                if med > -0.5 else f"Import costs for construction materials in {country} are easing — about {abs(med):.1f}% over 3 months.")
 
     # Money
     k = 1_000_000
@@ -163,7 +163,7 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
             f"{country} has no official construction price index, so **CiO Costs builds an estimate** every few hours:", "",
             "- **What goes in:** world oil prices in the local currency and the exchange rate against the US dollar, weighted "
             "like the official construction baskets of Uganda and South Africa.",
-            "- **What it covers:** the imported part of building costs — steel, cement inputs, paint, pipes, fuel and transport.",
+            "- **What it covers:** the imported part of construction material prices — steel, cement inputs, paint, pipes, fuel and transport.",
             "- **What it misses:** local materials (sand, stone, blocks, timber) and labour. Your price reports fill this gap.", ""]
         if last6:
             est_lines += ["**The CiO estimate index** (100 = two years ago): " + " · ".join(
@@ -208,7 +208,7 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
     else:
         offl = f"{country} has no official construction price index yet. This is an estimate from oil and currency moves."
 
-    title = f"{country} building costs — week of {today.day} {MONTHS[today.month - 1]} {today.year}"
+    title = f"{country} construction material prices — week of {today.day} {MONTHS[today.month - 1]} {today.year}"
     md = "\n".join([
         f"# {title}", "",
         "## In one line", "", line, "",
@@ -229,7 +229,7 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         "_CiO Costs · free weekly note · CiO Lab_", ""])
 
     txt = "\n".join([
-        f"🏗️ *{country} building costs* — week of {today.day} {MONTHS[today.month - 1][:3]}",
+        f"🏗️ *{country} construction material prices* — week of {today.day} {MONTHS[today.month - 1][:3]}",
         "", line, "",
         f"💰 {k:,} {ccy} of materials today ≈ {r1000(med)} {ccy} in {when}.",
         "", *[w.replace("**", "*") for w in watch[:3]], "",

@@ -513,6 +513,8 @@
     const saved = store.get("cio-boq", null);
     if (saved && DATA.countries[saved.country] && saved.rows && saved.rows.length) { fld("country").value = saved.country; saved.rows.slice(0, MAX).forEach(r => addRow(r)); }
     else if (saved && saved.rows && !saved.rows.length && saved.country) { fld("country").value = DATA.countries[saved.country] ? saved.country : fld("country").value; }
+    const asked = new URLSearchParams(location.search).get("c");
+    if (asked && DATA.countries[asked] && fld("country").value !== asked) { fld("country").value = asked; fld("country").onchange(); }
     else [{ desc: tr("boq.ex1"), unit: tr("boq.ex1u"), qty: 400 }, { desc: tr("boq.ex2"), unit: "t", qty: 3 }, { desc: tr("boq.ex3"), unit: tr("boq.ex3u"), qty: 10 }].forEach(r => addRow(r));
     compute();
   }

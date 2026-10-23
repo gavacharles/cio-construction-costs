@@ -1,8 +1,8 @@
-# Ghana building costs — week of 23 October 2026
+# Ghana construction material prices — week of 23 October 2026
 
 ## In one line
 
-Import costs are pushing building prices in Ghana up — about 2.5% over the next 3 months (a little more likely than not).
+Import costs are pushing construction material prices in Ghana up — about 2.5% over the next 3 months (a little more likely than not).
 
 ## What it means for your money
 
@@ -33,7 +33,7 @@ Not enough reports yet (3 people in the last 2 months are needed). Tell us what 
 Ghana has no official construction price index, so **CiO Costs builds an estimate** every few hours:
 
 - **What goes in:** world oil prices in the local currency and the exchange rate against the US dollar, weighted like the official construction baskets of Uganda and South Africa.
-- **What it covers:** the imported part of building costs — steel, cement inputs, paint, pipes, fuel and transport.
+- **What it covers:** the imported part of construction material prices — steel, cement inputs, paint, pipes, fuel and transport.
 - **What it misses:** local materials (sand, stone, blocks, timber) and labour. Your price reports fill this gap.
 
 **The CiO estimate index** (100 = two years ago): May 86.3 · Jun 84.1 · Jul 84.6 · Aug 84.3 · Sep 87.1 · Oct 88.7.

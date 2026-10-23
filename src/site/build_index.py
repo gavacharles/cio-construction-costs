@@ -180,7 +180,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
     return f"""<!doctype html>
 <html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>{e(title)}</title><meta name=description content="{e(desc or 'Construction cost forecasts and prices people pay, in seven African countries.')}">
-<link rel=stylesheet href="{rel}assets/cio.css">{FONTS}{head}</head><body data-page="{page}" data-rel="{rel}">
+<link rel=stylesheet href="{rel}assets/cio.css?v={BUILT_TAG}">{FONTS}{head}</head><body data-page="{page}" data-rel="{rel}">
 <header class=topbar><div class=wrap>
  <a class=mark href="{rel}index.html">{LOGO}CiO <span>Costs</span></a>
  <nav class=nav aria-label=Main>{links}</nav>
@@ -196,7 +196,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
 value. Official data: UBOS, KNBS, Stats SA; benchmarks: US BLS, Statistics Austria (Eurostat), PSA Philippines, FGV Brazil; oil and exchange rates from public
 market sources. Updated {e(data.get('updated', ''))}.</span></footer>
 <script id=cio-data type="application/json">{payload}</script>
-<script src="{rel}assets/cio.js"></script></body></html>
+<script src="{rel}assets/cio.js?v={BUILT_TAG}"></script></body></html>
 """
 
 
@@ -263,7 +263,7 @@ def _home(cs, months, default, feat, tab_html, cards):
         f"<span data-i18n=bench.c3>3 months</span><span data-i18n=bench.cb>Beats “no change”</span></div>{rows}</div></section>")
     body = f"""
 <section class=hero><div><p class=eyebrow data-i18n=home.eyebrow>Construction cost outlook · 7 African countries</p>
- <h1 data-i18n=home.h1>Will building costs rise where you work?</h1>
+ <h1 data-i18n=home.h1>Will construction material prices rise where you work?</h1>
  <p class=lede data-i18n=home.lede>Choose your country and a date. See whether building material prices are likely to go up, by how much,
  and what that means for the price you pay — updated every few hours.</p>
  <p class=whatis data-i18n=whatis>CiO Costs is a forecasting tool. It estimates how building material prices are likely to move, with a range.
@@ -910,12 +910,14 @@ def page_benchmark(c: dict, number: int) -> str:
 
 # ------------------------------------------------------------------ build --
 BUILT = ""
+BUILT_TAG = ""                                     # cache-busting tag on assets, new on every build
 
 
 def build() -> Path:
-    global BUILT
+    global BUILT, BUILT_TAG
     from datetime import datetime, timezone
     BUILT = datetime.now(timezone.utc).isoformat(timespec="minutes")
+    BUILT_TAG = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
     cs = [c for c in (country_data(k) for k in list_countries() if not LIVE or k in LIVE) if c]
     gone = OUT / "countries"                          # countries not live yet: no public page
     if gone.exists():
@@ -955,7 +957,7 @@ def build() -> Path:
     (OUT / "assets" / "cio.js").write_text((SITE / "i18n.js").read_text(encoding="utf-8") + "\n"
                                            + (SITE / "site.js").read_text(encoding="utf-8"), encoding="utf-8")
 
-    (OUT / "index.html").write_text(shell("CiO Costs — will building costs rise?", page_index(cs, months, default), base,
+    (OUT / "index.html").write_text(shell("CiO Costs — will construction material prices rise?", page_index(cs, months, default), base,
                                            page="home"), encoding="utf-8")
     (OUT / "glance.html").write_text(shell("Costs at a glance — CiO Costs", page_glance(cs, months, default), base, page="glance"),
                                       encoding="utf-8")
@@ -984,9 +986,9 @@ def build() -> Path:
                                              "<title>Contract index — CiO Costs</title><a href='calculator.html#adjust'>Contract index</a>", encoding="utf-8")
     (OUT / "embed.html").write_text(
         "<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
-        "<title>CiO Costs</title><base target=_blank><link rel=stylesheet href='assets/cio.css'></head><body class=embed-body>" + page_embed()
+        "<title>CiO Costs</title><base target=_blank><link rel=stylesheet href='assets/cio.css?v=" + BUILT_TAG + "'></head><body class=embed-body>" + page_embed()
         + "<script id=cio-data type='application/json'>" + json.dumps(base, separators=(",", ":")).replace("</", "<\\/")
-        + "</script><script src='assets/cio.js'></script></body></html>", encoding="utf-8")
+        + "</script><script src='assets/cio.js?v=" + BUILT_TAG + "'></script></body></html>", encoding="utf-8")
     for c in cs:
         d = OUT / "countries" / c["key"]
         (d / "notes").mkdir(parents=True, exist_ok=True)

@@ -1,8 +1,8 @@
-# Uganda building costs — week of 23 October 2026
+# Uganda construction material prices — week of 23 October 2026
 
 ## In one line
 
-Building material prices in Uganda are likely to rise — about 2.6% by January 2027.
+Construction material prices in Uganda are likely to rise — about 2.6% by January 2027.
 
 ## What it means for your money
 

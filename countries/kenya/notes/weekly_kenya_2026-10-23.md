@@ -1,8 +1,8 @@
-# Kenya building costs — week of 23 October 2026
+# Kenya construction material prices — week of 23 October 2026
 
 ## In one line
 
-Building material prices in Kenya are a little more likely than not to rise — about 1.0% by January 2027.
+Construction material prices in Kenya are a little more likely than not to rise — about 1.0% by January 2027.
 
 ## What it means for your money
 

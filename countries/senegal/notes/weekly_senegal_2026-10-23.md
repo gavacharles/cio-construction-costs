@@ -1,8 +1,8 @@
-# Senegal building costs — week of 23 October 2026
+# Senegal construction material prices — week of 23 October 2026
 
 ## In one line
 
-Import costs for building in Senegal look steady for the next 3 months.
+Import costs for construction materials in Senegal look steady for the next 3 months.
 
 ## What it means for your money
 
@@ -32,7 +32,7 @@ Not enough reports yet (3 people in the last 2 months are needed). Tell us what 
 Senegal has no official construction price index, so **CiO Costs builds an estimate** every few hours:
 
 - **What goes in:** world oil prices in the local currency and the exchange rate against the US dollar, weighted like the official construction baskets of Uganda and South Africa.
-- **What it covers:** the imported part of building costs — steel, cement inputs, paint, pipes, fuel and transport.
+- **What it covers:** the imported part of construction material prices — steel, cement inputs, paint, pipes, fuel and transport.
 - **What it misses:** local materials (sand, stone, blocks, timber) and labour. Your price reports fill this gap.
 
 **The CiO estimate index** (100 = two years ago): May 98.8 · Jun 97.2 · Jul 97.5 · Aug 97.6 · Sep 100.1 · Oct 102.2.

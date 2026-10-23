@@ -1,8 +1,8 @@
-# Austria building costs — week of 23 October 2026
+# Austria construction material prices — week of 23 October 2026
 
 ## In one line
 
-Building material prices in Austria are a little more likely than not to rise — about 0.7% by January 2027.
+Construction material prices in Austria are a little more likely than not to rise — about 0.7% by January 2027.
 
 ## What it means for your money
 

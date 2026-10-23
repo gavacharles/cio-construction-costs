@@ -1,8 +1,8 @@
-# South Africa building costs — week of 23 October 2026
+# South Africa construction material prices — week of 23 October 2026
 
 ## In one line
 
-Building material prices in South Africa are likely to rise — about 1.6% by January 2027.
+Construction material prices in South Africa are likely to rise — about 1.6% by January 2027.
 
 ## What it means for your money
 

@@ -1,8 +1,8 @@
-# Brazil building costs — week of 23 October 2026
+# Brazil construction material prices — week of 23 October 2026
 
 ## In one line
 
-Building material prices in Brazil are likely to rise — about 1.2% by January 2027.
+Construction material prices in Brazil are likely to rise — about 1.2% by January 2027.
 
 ## What it means for your money
 
