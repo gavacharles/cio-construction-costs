@@ -1,4 +1,4 @@
-# the United States construction material prices — week of 23 October 2026
+# the United States construction costs — week of 23 October 2026
 
 ## In one line
 

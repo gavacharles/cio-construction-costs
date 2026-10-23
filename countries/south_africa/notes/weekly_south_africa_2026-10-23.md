@@ -1,4 +1,4 @@
-# South Africa construction material prices — week of 23 October 2026
+# South Africa construction costs — week of 23 October 2026
 
 ## In one line
 

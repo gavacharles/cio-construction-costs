@@ -544,11 +544,54 @@ def pressure_section(country: str) -> list[str]:
     return lines
 
 
+def _items_for_estimate_country(country: str) -> None:
+    """Countries without official material indices: official prices of single items (e.g. Zambia's ERB pump prices,
+    data/shared/official_item_prices.csv) and tested proxies (fuel from oil; steel, roughly, from world steel prices).
+    Each gets a monthly series (for contracts) and a forecast path (for bills of quantities)."""
+    import material_models as MM
+    try:
+        drv = MM.country_drivers(ccy(country)[1])
+    except Exception:
+        return
+    items, paths, stats = {}, _DATA.setdefault("paths", {}), _DATA.setdefault("trend_stats", {})
+    f = ROOT / "data" / "shared" / "official_item_prices.csv"
+    off = pd.read_csv(f) if f.exists() else pd.DataFrame(columns=["country"])
+    have_fuel = False
+    for item, g in off[off.country == country].groupby("item"):
+        g = g.sort_values("month")
+        lv = pd.Series(g.price.values, index=pd.to_datetime(g.month))
+        label = f"{item.capitalize()} (official pump price)" if item in ("diesel", "petrol") else f"{item.capitalize()} (official price)"
+        items[label] = {"kind": "official", "unit": g.unit.iloc[-1], "source": g.source.iloc[-1], "verified": g.verified.iloc[-1],
+                        "rows": [{"m": m[:7], "v": round(float(v), 2), "s": "official"} for m, v in zip(g.month, g.price)]}
+        if len(lv) >= 12:
+            sel = MM.discover(lv, "month", drv, item)
+            q = MM.path(sel, lv.index.max(), 12, False)
+            paths[label] = [_entry(lv.index.max() + pd.DateOffset(months=h), lo, md, hi) for h, (md, lo, hi) in enumerate(q, 1)]
+            stats[label] = {"n": sel["periods_tested"], "inside": sel["inside"], "mae": sel["test"]["model"], "mae_nochange": sel["test"]["nochange"],
+                            "how": MM.describe(sel), "kind": sel["kind"], "drivers": sel["drivers"]}
+        have_fuel = have_fuel or item == "diesel"
+    for kind, spec in MM.PROXIES.items():
+        if kind == "fuel" and have_fuel:
+            continue                                    # an official price beats an estimate
+        idx = MM.proxy_index(drv, kind)
+        items[spec["label"]] = {"kind": "estimate", "quality": spec["quality"],
+                                "rows": [{"m": d.strftime("%Y-%m"), "v": round(float(v), 2), "s": "estimate"} for d, v in idx.items()]}
+        # forecast: the months since the last driver reading are known; afterwards no change, range from past moves
+        ch = (100 * np.log(idx).diff()).dropna()
+        lo, hi = np.percentile(ch.tail(36), [10, 90])
+        start = idx.index.max()
+        paths[spec["label"]] = [_entry(start + pd.DateOffset(months=h), lo * np.sqrt(h), 0.0, hi * np.sqrt(h)) for h in range(1, 13)]
+    if items:
+        _DATA["items"] = items
+
+
 def generic_body(weekly, country: str) -> list[str]:
     from country import load_country
     cfg = load_country(country)
-    return (["## Official index", "", f"Status: {cfg['settlement']['publication']}.", ""]
-            + official_reading(country) + ["## Cost pressure outlook", ""] + pressure_section(country))
+    lines = (["## Official index", "", f"Status: {cfg['settlement']['publication']}.", ""]
+             + official_reading(country) + ["## Cost pressure outlook", ""] + pressure_section(country))
+    _items_for_estimate_country(country)
+    return lines
 
 
 def _fred(country: str, sid: str) -> pd.Series:
@@ -714,7 +757,17 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
     check_estimate_method(country)
     out = ROOT / "countries" / country / "outputs"
     out.mkdir(parents=True, exist_ok=True)
-    clean = json.loads(json.dumps(_DATA, default=lambda x: None if x is None else float(x)).replace("NaN", "null"))
+    def _finite(o):                                   # JSON has no NaN/Infinity: an unknown number is saved as null
+        if isinstance(o, dict):
+            return {k: _finite(v) for k, v in o.items()}
+        if isinstance(o, (list, tuple)):
+            return [_finite(v) for v in o]
+        if isinstance(o, (float, np.floating)):
+            return float(o) if np.isfinite(o) else None
+        if isinstance(o, np.integer):
+            return int(o)
+        return o
+    clean = _finite(json.loads(json.dumps(_DATA, default=lambda x: None if x is None else float(x))))
     (out / "forecast_latest.json").write_text(json.dumps(clean, indent=1), encoding="utf-8")
     _log_forecast(country, clean)
     if not write_note:

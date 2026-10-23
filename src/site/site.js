@@ -449,10 +449,15 @@
     const indexed = c => c.official && Object.keys(c.paths).length > 1;
     const opts = c => indexed(c)
       ? Object.keys(c.paths).map(n => `<option value="${esc(n)}">${T.mat(n)}</option>`).join("") + `<option value="">${tr("boq.fixed")}</option>`
-      : `<option value="${esc(c.head)}">${tr("boq.imported")}</option><option value="">${tr("boq.fixed")}</option>`;
+      : `<option value="${esc(c.head)}">${tr("boq.imported")}</option>` + Object.keys(c.single || {}).filter(n => c.paths[n]).map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join("")
+        + `<option value="">${tr("boq.fixed")}</option>`;
     const LOCAL = ["sand", "stone", "aggregate", "ballast", "hardcore", "murram", "block", "brick", "timber", "wood", "gravel", "quarry", "mchanga", "sable"];
     const guess = (c, desc) => { const w = words(desc).filter(t => t.length >= 3);
-      if (!indexed(c)) return c.head;                       /* one estimate for every line; the user can mark a line fixed */
+      if (!indexed(c)) {                                    /* fuel and steel lines follow their own item where one exists */
+        const single = Object.keys(c.single || {}).filter(n => c.paths[n]);
+        const fuel = w.some(t => ["diesel", "fuel", "petrol", "dizeli", "gazole"].some(x => t.startsWith(x))) && single.find(n => /diesel|fuel/i.test(n));
+        const steel = w.some(t => ["steel", "rebar", "iron", "nondo", "chuma", "acier", "roofing", "mabati"].some(x => t.startsWith(x))) && single.find(n => /steel/i.test(n));
+        return fuel || steel || c.head; }
       return Object.keys(c.paths).find(n => { const nw = words(n + " " + T.mat(n)); return w.some(t => nw.some(x => x.startsWith(t) || t.startsWith(x) || (SYN[t] || []).some(y => x.startsWith(y)))); }) ?? c.head; };
     const fmt = v => Math.round(v).toLocaleString(T.loc || undefined);
     function addRow(v = {}) {
@@ -525,9 +530,10 @@
     const X = () => DATA.cindex[cis.value], ymd = d => d.toISOString().slice(0, 10), num = v => Math.round(v).toLocaleString(T.loc || undefined);
     /* index sources for this country: the headline index, each material's official index, or values typed in */
     const sources = x => [["overall", x.official ? tr("fd.overall") : tr("fd.estimate")], ...Object.keys(x.mats || {}).map(n => ["mat:" + n, T.mat(n)]),
+      ...Object.keys(x.single || {}).map(n => ["single:" + n, n]),
       ...Object.keys(x.crowd || {}).map(n => ["crowd:" + n, tr("fd.crowd", { i: T.mat(n) })]), ["manual", tr("fd.manual")]];
     const series = (x, src) => src === "overall" ? x.rows : src.startsWith("mat:") ? (x.mats || {})[src.slice(4)]
-      : src.startsWith("crowd:") ? (x.crowd || {})[src.slice(6)] : null;
+      : src.startsWith("crowd:") ? (x.crowd || {})[src.slice(6)] : src.startsWith("single:") ? (x.single || {})[src.slice(7)] : null;
     const periodOf = (x, date) => { const y = date.slice(0, 4), m = +date.slice(5, 7);
       return x.step === "quarter" ? `${y}-${String(3 * Math.floor((m - 1) / 3) + 1).padStart(2, "0")}` : `${y}-${String(m).padStart(2, "0")}`; };
     /* index value for a date: that month (quarter); later than the latest published -> the latest, flagged */

@@ -499,3 +499,4 @@ footer{border-top:1px solid var(--rule)}.footlinks{font-size:12px}
 .pro-form input:not([type=checkbox]),.pro-form select{height:42px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 10px;font:15px var(--text)}
 .pro-form .consent,.pro-form .formmsg{grid-column:1/-1}.pro-form button{justify-self:start}
 @media (max-width:760px){.pro-form{grid-template-columns:1fr}}@media print{.pro{display:none!important}}
+.si-src{font-size:13px;color:var(--ink-2);max-width:280px}

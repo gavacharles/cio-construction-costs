@@ -99,7 +99,7 @@ def country_data(key: str) -> dict | None:
     return {
         "key": key, "country": cfg["country"], "flag": flag(cfg["iso3"]), "currency": cfg["currency"],
         "region": "bench" if key in BENCH else REGION.get(key, ""), "bench": key in BENCH, "bstats": d.get("benchmark"), "kind": d.get("kind"), "official": d.get("kind") != "pressure",
-        "base": d.get("base", ""), "head": head, "paths": paths, "trend": d.get("trend") or [], "trend_stats": d.get("trend_stats") or {}, "spark": d.get("spark"),
+        "base": d.get("base", ""), "head": head, "paths": paths, "single": d.get("items") or {}, "trend": d.get("trend") or [], "trend_stats": d.get("trend_stats") or {}, "spark": d.get("spark"),
         "materials": (d.get("materials") or {}).get("items", []), "step": (d.get("materials") or {}).get("step", "month"),
         "drivers": d.get("drivers", {}), "generated": d.get("generated", ""),
         "source": SOURCE.get(key) or (off["series"].split(",")[0] if off else None),
@@ -179,6 +179,17 @@ FONTS = ("<link rel=preconnect href=https://fonts.googleapis.com><link rel=preco
                "<link rel=stylesheet href='https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap'>")
 
 
+def _strict(o):
+    """Page data must be valid JSON for the browser: NaN or Infinity (an unknown number) becomes null."""
+    if isinstance(o, dict):
+        return {k: _strict(v) for k, v in o.items()}
+    if isinstance(o, list):
+        return [_strict(v) for v in o]
+    if isinstance(o, float) and not math.isfinite(o):
+        return None
+    return o
+
+
 def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc: str = "", head: str = "") -> str:
     nav = [("index.html#countries", "Prices", "home", "nav.prices"), ("calculator.html", "Bids & contracts", "calc", "nav.plan"),
            ("report.html", "Report a price", "report", "nav.reportshort"), ("play.html", "Play", "play", "nav.playshort")]
@@ -189,7 +200,7 @@ def shell(title: str, body: str, data: dict, rel: str = "", page: str = "", desc
              "report": "M4 20h4L19 9l-4-4L4 16zM14 6l4 4", "play": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8v8M8 12h8"}
     bottom = "".join(f"<a href='{rel}{h}'{' aria-current=page' if p == page else ''}><svg viewBox='0 0 24 24' aria-hidden=true><path d='{icons[p]}'/></svg>"
                      f"<span data-i18n='{k}'>{t}</span></a>" for h, t, p, k in nav)
-    payload = json.dumps(data, separators=(",", ":")).replace("</", "<\\/")
+    payload = json.dumps(_strict(data), separators=(",", ":"), allow_nan=False).replace("</", "<\\/")
     return f"""<!doctype html>
 <html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>{e(title)}</title><meta name=description content="{e(desc or 'Construction cost forecasts and prices people pay, in seven African countries.')}">
@@ -410,6 +421,36 @@ def why(name: str) -> str:
     return next((t for keys, t in WHY if any(k in n for k in keys)), "Local and imported costs")
 
 
+def single_items(c: dict) -> str:
+    """Countries without official material indices: official prices of single items and tested CiO estimates."""
+    items = c.get("single") or {}
+    if not items:
+        return ""
+    rows = []
+    for name, it in items.items():
+        r = it["rows"]
+        last, prev = r[-1], (r[-2] if len(r) > 1 else None)
+        ch = (last["v"] / prev["v"] - 1) * 100 if prev else None
+        v = [x["v"] for x in r[-12:]]
+        lo, hi = min(v), max(v)
+        pts = " ".join(f"{i * 60 / max(1, len(v) - 1):.1f},{18 - (x - lo) * 16 / ((hi - lo) or 1):.1f}" for i, x in enumerate(v))
+        if it["kind"] == "official":
+            val = f"{last['v']:,.2f} <small>{e(it['unit'])}</small>"
+            src = f"<a href='{e(it['source'])}' target=_blank rel=noopener data-i18n=si.notice>official notice</a> · {e(it['verified'])}"
+        else:
+            val = f"{last['v']:.1f} <small data-i18n=si.idx>index</small>"
+            src = f"<span data-i18n=si.{'good' if it.get('quality') == 'good' else 'rough'}>{'CiO estimate, tested' if it.get('quality') == 'good' else 'CiO estimate, rough'}</span>"
+        rows.append(f"<tr><th scope=row>{e(name)}</th><td>{val}</td><td>{month_label(last['m'])}</td>"
+                    f"<td>{'–' if ch is None else f'{arrow(ch)} {ch:+.1f}%'}</td><td><svg class=cspark viewBox='0 0 60 20' aria-hidden=true><polyline points='{pts}'/></svg></td>"
+                    f"<td class=si-src>{src}</td></tr>")
+    return (f"<section><div class=section-h><h2 data-i18n=si.h>Prices of single items</h2></div>"
+            f"<p class=muted data-i18n=si.d>{e(c['country'])} has no official price index per material. Official prices of single items are shown "
+            f"where they exist; otherwise tested CiO estimates (fuel tracks oil well; steel only roughly). There is no estimate for cement, sand or "
+            f"blocks: nothing we tested tracks them, so they come from the prices people report.</p>"
+            f"<div class=tablewrap><table class=glance><thead><tr><th data-i18n=th.item>Item</th><th data-i18n=si.latest>Latest</th><th data-i18n=ci.month>Month</th>"
+            f"<th data-i18n=si.chg>Change on month</th><th data-i18n=si.trend>12 months</th><th data-i18n=si.src>Source</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div></section>")
+
+
 def page_country(c: dict, months: list[str], default: str, crowd_rows: list[dict]) -> str:
     def yr(m):
         return "–" if m["change_year"] is None else arrow(m["change_year"]) + " " + format(m["change_year"], "+.1f") + "%"
@@ -492,6 +533,7 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <div class=tile><b>Official data</b><p>{e(c['base'])} is the latest period in the forecast's base. New official releases are
  added within a day of publication.</p></div></div></section>
 <div data-key={c['key']}>{QUICK}</div>
+{single_items(c)}
 <section><div class=section-h><h2 data-i18n=sec.crowd>Prices reported by people who buy them</h2>
 <p class=fineprint data-i18n=crowd.note>Typical prices reported by buyers — not official or supplier prices.</p>
 <a class='btn primary' href="../../report.html#{c['key']}" data-i18n=tool.report.t>Report a price</a></div>{crowd_sec}</section>
@@ -975,7 +1017,7 @@ def build() -> Path:
     default = f"M:{months[2]}"
     updated = max((c["generated"] for c in cs), default=date.today().isoformat())
     slim = {c["key"]: dict({k: c[k] for k in ("country", "flag", "currency", "region", "kind", "official", "base", "head",
-                                              "paths", "spark", "drivers", "materials", "step", "items", "bench", "trend", "trend_stats")},
+                                              "paths", "spark", "drivers", "materials", "step", "items", "bench", "trend", "trend_stats", "single")},
                            aliases=load_country(c["key"]).get("aliases") or [],
                            office=load_country(c["key"])["settlement"].get("statistics_office", ""),
                            cc=ISO2.get(load_country(c["key"])["iso3"], ""),
@@ -1020,7 +1062,8 @@ def build() -> Path:
     cindex = {c["key"]: {"country": c["country"], "flag": c["flag"], "cc": slim[c["key"]]["cc"], "currency": c["currency"],
                          "official": c["official"], "office": load_country(c["key"])["settlement"].get("statistics_office", ""),
                          "step": c["step"], "rows": contract_series(c), "mats": mats_series.get(c["key"], {}),
-                         "crowd": {n: r for n, r in crowd_series(c["key"]).items() if len(r) >= 6}} for c in cs if not c.get("bench")}
+                         "crowd": {n: r for n, r in crowd_series(c["key"]).items() if len(r) >= 6},
+                         "single": {n: v["rows"] for n, v in (c.get("single") or {}).items()}} for c in cs if not c.get("bench")}
     (OUT / "data").mkdir(exist_ok=True)
     import csv as _csv
     for old in (OUT / "data").glob("crowd_index_*.csv"):     # never leave a file from an earlier build behind
@@ -1043,7 +1086,7 @@ def build() -> Path:
     (OUT / "embed.html").write_text(
         "<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
         "<title>CiO Costs</title><base target=_blank><link rel=stylesheet href='assets/cio.css?v=" + BUILT_TAG + "'></head><body class=embed-body>" + page_embed()
-        + "<script id=cio-data type='application/json'>" + json.dumps(base, separators=(",", ":")).replace("</", "<\\/")
+        + "<script id=cio-data type='application/json'>" + json.dumps(_strict(base), separators=(",", ":"), allow_nan=False).replace("</", "<\\/")
         + "</script><script src='assets/cio.js?v=" + BUILT_TAG + "'></script></body></html>", encoding="utf-8")
     for c in cs:
         d = OUT / "countries" / c["key"]

@@ -1,11 +1,12 @@
-🏗️ *Botswana construction material prices* — week of 23 Oct
+🏗️ *Botswana construction costs* — week of 23 Oct
 
 Import costs for construction materials in Botswana look steady for the next 3 months.
 
 💰 1,000,000 BWP of materials today ≈ 1,000,000 BWP in January 2027.
 
 ➡ *Imported materials (steel, cement inputs, paint, pipes, fuel)* — about the same by January 2027
-➡ *Local materials and labour* — not covered by this estimate; check local quotes.
+➡ *Steel (CiO estimate from world steel prices, rough)* — about the same by January 2027
+➡ *Fuel (CiO estimate from oil)* — about the same by January 2027
 
 • World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
 • The BWP is 3% weaker against the US dollar than 3 months ago — imported steel, cement inputs, paint and fittings cost more.

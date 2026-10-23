@@ -1,4 +1,4 @@
-# Zambia construction material prices — week of 23 October 2026
+# Zambia construction costs — week of 23 October 2026
 
 ## In one line
 
@@ -11,6 +11,9 @@ For every **1,000,000 ZMW** you spend on materials today, budget about **1,001,0
 ## Prices to watch
 
 - ➡ **Imported materials (steel, cement inputs, paint, pipes, fuel)** — about the same by January 2027
+- ➡ **Steel (CiO estimate from world steel prices, rough)** — about the same by January 2027
+- ➡ **Petrol (official pump price)** — about the same by January 2027
+- ➡ **Diesel (official pump price)** — about the same by January 2027
 - ➡ **Local materials and labour** — not covered by this estimate; check local quotes.
 
 ## Why

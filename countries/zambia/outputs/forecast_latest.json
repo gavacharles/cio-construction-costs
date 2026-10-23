@@ -138,6 +138,228 @@
     "lo": -10.612,
     "hi": 14.256
    }
+  ],
+  "Diesel (official pump price)": [
+   {
+    "month": "2026-11",
+    "median": 0.0,
+    "lo": -8.737,
+    "hi": 13.101
+   },
+   {
+    "month": "2026-12",
+    "median": 0.0,
+    "lo": -12.355,
+    "hi": 18.528
+   },
+   {
+    "month": "2027-01",
+    "median": 0.0,
+    "lo": -15.132,
+    "hi": 22.692
+   },
+   {
+    "month": "2027-02",
+    "median": 0.0,
+    "lo": -17.473,
+    "hi": 26.202
+   },
+   {
+    "month": "2027-03",
+    "median": 0.0,
+    "lo": -19.536,
+    "hi": 29.295
+   },
+   {
+    "month": "2027-04",
+    "median": 0.0,
+    "lo": -21.4,
+    "hi": 32.091
+   },
+   {
+    "month": "2027-05",
+    "median": 0.0,
+    "lo": -23.115,
+    "hi": 34.662
+   },
+   {
+    "month": "2027-06",
+    "median": 0.0,
+    "lo": -24.711,
+    "hi": 37.056
+   },
+   {
+    "month": "2027-07",
+    "median": 0.0,
+    "lo": -26.21,
+    "hi": 39.303
+   },
+   {
+    "month": "2027-08",
+    "median": 0.0,
+    "lo": -27.628,
+    "hi": 41.43
+   },
+   {
+    "month": "2027-09",
+    "median": 0.0,
+    "lo": -28.976,
+    "hi": 43.452
+   },
+   {
+    "month": "2027-10",
+    "median": 0.0,
+    "lo": -30.265,
+    "hi": 45.384
+   }
+  ],
+  "Petrol (official pump price)": [
+   {
+    "month": "2026-11",
+    "median": 0.0,
+    "lo": -8.005,
+    "hi": 3.689
+   },
+   {
+    "month": "2026-12",
+    "median": 0.0,
+    "lo": -11.321,
+    "hi": 5.217
+   },
+   {
+    "month": "2027-01",
+    "median": 0.0,
+    "lo": -13.865,
+    "hi": 6.39
+   },
+   {
+    "month": "2027-02",
+    "median": 0.0,
+    "lo": -16.01,
+    "hi": 7.379
+   },
+   {
+    "month": "2027-03",
+    "median": 0.0,
+    "lo": -17.899,
+    "hi": 8.25
+   },
+   {
+    "month": "2027-04",
+    "median": 0.0,
+    "lo": -19.608,
+    "hi": 9.037
+   },
+   {
+    "month": "2027-05",
+    "median": 0.0,
+    "lo": -21.179,
+    "hi": 9.761
+   },
+   {
+    "month": "2027-06",
+    "median": 0.0,
+    "lo": -22.641,
+    "hi": 10.435
+   },
+   {
+    "month": "2027-07",
+    "median": 0.0,
+    "lo": -24.015,
+    "hi": 11.068
+   },
+   {
+    "month": "2027-08",
+    "median": 0.0,
+    "lo": -25.314,
+    "hi": 11.667
+   },
+   {
+    "month": "2027-09",
+    "median": 0.0,
+    "lo": -26.549,
+    "hi": 12.236
+   },
+   {
+    "month": "2027-10",
+    "median": 0.0,
+    "lo": -27.73,
+    "hi": 12.78
+   }
+  ],
+  "Steel (CiO estimate from world steel prices, rough)": [
+   {
+    "month": "2026-10",
+    "median": 0.0,
+    "lo": -5.436,
+    "hi": 5.774
+   },
+   {
+    "month": "2026-11",
+    "median": 0.0,
+    "lo": -7.687,
+    "hi": 8.165
+   },
+   {
+    "month": "2026-12",
+    "median": 0.0,
+    "lo": -9.415,
+    "hi": 10.0
+   },
+   {
+    "month": "2027-01",
+    "median": 0.0,
+    "lo": -10.871,
+    "hi": 11.547
+   },
+   {
+    "month": "2027-02",
+    "median": 0.0,
+    "lo": -12.155,
+    "hi": 12.91
+   },
+   {
+    "month": "2027-03",
+    "median": 0.0,
+    "lo": -13.315,
+    "hi": 14.142
+   },
+   {
+    "month": "2027-04",
+    "median": 0.0,
+    "lo": -14.382,
+    "hi": 15.275
+   },
+   {
+    "month": "2027-05",
+    "median": 0.0,
+    "lo": -15.374,
+    "hi": 16.33
+   },
+   {
+    "month": "2027-06",
+    "median": 0.0,
+    "lo": -16.307,
+    "hi": 17.321
+   },
+   {
+    "month": "2027-07",
+    "median": 0.0,
+    "lo": -17.189,
+    "hi": 18.258
+   },
+   {
+    "month": "2027-08",
+    "median": 0.0,
+    "lo": -18.028,
+    "hi": 19.149
+   },
+   {
+    "month": "2027-09",
+    "median": 0.0,
+    "lo": -18.83,
+    "hi": 20.0
+   }
   ]
  },
  "base": "Oct 2026",
@@ -159,5 +381,449 @@
    "lo": -8.037699100800113,
    "hi": 9.485092610722337
   }
- ]
+ ],
+ "trend_stats": {
+  "Diesel (official pump price)": {
+   "n": 0,
+   "inside": null,
+   "mae": null,
+   "mae_nochange": null,
+   "how": "no change (nothing beat it in the test)",
+   "kind": "nochange",
+   "drivers": []
+  },
+  "Petrol (official pump price)": {
+   "n": 0,
+   "inside": null,
+   "mae": null,
+   "mae_nochange": null,
+   "how": "no change (nothing beat it in the test)",
+   "kind": "nochange",
+   "drivers": []
+  }
+ },
+ "items": {
+  "Diesel (official pump price)": {
+   "kind": "official",
+   "unit": "ZMW per litre",
+   "source": "https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesOctober2026.pdf",
+   "verified": "latest notice",
+   "rows": [
+    {
+     "m": "2025-01",
+     "v": 32.43,
+     "s": "official"
+    },
+    {
+     "m": "2025-02",
+     "v": 32.54,
+     "s": "official"
+    },
+    {
+     "m": "2025-03",
+     "v": 32.54,
+     "s": "official"
+    },
+    {
+     "m": "2025-04",
+     "v": 30.23,
+     "s": "official"
+    },
+    {
+     "m": "2025-05",
+     "v": 27.38,
+     "s": "official"
+    },
+    {
+     "m": "2025-06",
+     "v": 25.12,
+     "s": "official"
+    },
+    {
+     "m": "2025-07",
+     "v": 23.13,
+     "s": "official"
+    },
+    {
+     "m": "2025-08",
+     "v": 23.13,
+     "s": "official"
+    },
+    {
+     "m": "2025-09",
+     "v": 25.02,
+     "s": "official"
+    },
+    {
+     "m": "2025-10",
+     "v": 26.2,
+     "s": "official"
+    },
+    {
+     "m": "2025-11",
+     "v": 25.35,
+     "s": "official"
+    },
+    {
+     "m": "2025-12",
+     "v": 26.98,
+     "s": "official"
+    },
+    {
+     "m": "2026-01",
+     "v": 25.11,
+     "s": "official"
+    },
+    {
+     "m": "2026-02",
+     "v": 24.5,
+     "s": "official"
+    },
+    {
+     "m": "2026-03",
+     "v": 23.25,
+     "s": "official"
+    },
+    {
+     "m": "2026-04",
+     "v": 29.78,
+     "s": "official"
+    },
+    {
+     "m": "2026-05",
+     "v": 33.99,
+     "s": "official"
+    },
+    {
+     "m": "2026-06",
+     "v": 32.11,
+     "s": "official"
+    },
+    {
+     "m": "2026-07",
+     "v": 28.11,
+     "s": "official"
+    },
+    {
+     "m": "2026-08",
+     "v": 26.86,
+     "s": "official"
+    },
+    {
+     "m": "2026-09",
+     "v": 26.86,
+     "s": "official"
+    },
+    {
+     "m": "2026-10",
+     "v": 33.27,
+     "s": "official"
+    }
+   ]
+  },
+  "Petrol (official pump price)": {
+   "kind": "official",
+   "unit": "ZMW per litre",
+   "source": "https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesOctober2026.pdf",
+   "verified": "latest notice",
+   "rows": [
+    {
+     "m": "2025-01",
+     "v": 34.67,
+     "s": "official"
+    },
+    {
+     "m": "2025-02",
+     "v": 34.98,
+     "s": "official"
+    },
+    {
+     "m": "2025-03",
+     "v": 34.98,
+     "s": "official"
+    },
+    {
+     "m": "2025-04",
+     "v": 34.98,
+     "s": "official"
+    },
+    {
+     "m": "2025-05",
+     "v": 32.14,
+     "s": "official"
+    },
+    {
+     "m": "2025-06",
+     "v": 31.36,
+     "s": "official"
+    },
+    {
+     "m": "2025-07",
+     "v": 28.0,
+     "s": "official"
+    },
+    {
+     "m": "2025-08",
+     "v": 28.0,
+     "s": "official"
+    },
+    {
+     "m": "2025-09",
+     "v": 23.64,
+     "s": "official"
+    },
+    {
+     "m": "2025-10",
+     "v": 30.58,
+     "s": "official"
+    },
+    {
+     "m": "2025-11",
+     "v": 28.97,
+     "s": "official"
+    },
+    {
+     "m": "2025-12",
+     "v": 29.92,
+     "s": "official"
+    },
+    {
+     "m": "2026-01",
+     "v": 29.92,
+     "s": "official"
+    },
+    {
+     "m": "2026-02",
+     "v": 27.88,
+     "s": "official"
+    },
+    {
+     "m": "2026-03",
+     "v": 26.61,
+     "s": "official"
+    },
+    {
+     "m": "2026-04",
+     "v": 27.15,
+     "s": "official"
+    },
+    {
+     "m": "2026-05",
+     "v": 27.15,
+     "s": "official"
+    },
+    {
+     "m": "2026-06",
+     "v": 27.15,
+     "s": "official"
+    },
+    {
+     "m": "2026-07",
+     "v": 26.15,
+     "s": "official"
+    },
+    {
+     "m": "2026-08",
+     "v": 25.29,
+     "s": "official"
+    },
+    {
+     "m": "2026-09",
+     "v": 25.29,
+     "s": "official"
+    },
+    {
+     "m": "2026-10",
+     "v": 31.46,
+     "s": "official"
+    }
+   ]
+  },
+  "Steel (CiO estimate from world steel prices, rough)": {
+   "kind": "estimate",
+   "quality": "rough",
+   "rows": [
+    {
+     "m": "2023-10",
+     "v": 100.0,
+     "s": "estimate"
+    },
+    {
+     "m": "2023-11",
+     "v": 106.05,
+     "s": "estimate"
+    },
+    {
+     "m": "2023-12",
+     "v": 117.99,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-01",
+     "v": 130.52,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-02",
+     "v": 127.35,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-03",
+     "v": 117.61,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-04",
+     "v": 116.6,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-05",
+     "v": 121.89,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-06",
+     "v": 117.41,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-07",
+     "v": 113.0,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-08",
+     "v": 112.89,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-09",
+     "v": 112.71,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-10",
+     "v": 114.45,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-11",
+     "v": 119.26,
+     "s": "estimate"
+    },
+    {
+     "m": "2024-12",
+     "v": 116.41,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-01",
+     "v": 117.23,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-02",
+     "v": 122.51,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-03",
+     "v": 131.5,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-04",
+     "v": 132.2,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-05",
+     "v": 131.69,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-06",
+     "v": 115.26,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-07",
+     "v": 108.97,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-08",
+     "v": 109.18,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-09",
+     "v": 110.58,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-10",
+     "v": 105.0,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-11",
+     "v": 102.43,
+     "s": "estimate"
+    },
+    {
+     "m": "2025-12",
+     "v": 108.35,
+     "s": "estimate"
+    },
+    {
+     "m": "2026-01",
+     "v": 97.01,
+     "s": "estimate"
+    },
+    {
+     "m": "2026-02",
+     "v": 94.21,
+     "s": "estimate"
+    },
+    {
+     "m": "2026-03",
+     "v": 97.79,
+     "s": "estimate"
+    },
+    {
+     "m": "2026-04",
+     "v": 98.63,
+     "s": "estimate"
+    },
+    {
+     "m": "2026-05",
+     "v": 98.77,
+     "s": "estimate"
+    },
+    {
+     "m": "2026-06",
+     "v": 95.26,
+     "s": "estimate"
+    },
+    {
+     "m": "2026-07",
+     "v": 100.63,
+     "s": "estimate"
+    },
+    {
+     "m": "2026-08",
+     "v": 104.56,
+     "s": "estimate"
+    },
+    {
+     "m": "2026-09",
+     "v": 109.0,
+     "s": "estimate"
+    }
+   ]
+  }
+ }
 }

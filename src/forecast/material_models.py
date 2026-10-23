@@ -141,13 +141,18 @@ def discover(levels: pd.Series, step: str, drivers: pd.DataFrame, name: str, H: 
         kind, cols, X, rows, lam = "nochange", [], None, nc_rows, 0.0
     e = np.array(rows)
     scale = float(np.clip(np.percentile(np.abs(e[:, 0]), 80) / max(1e-6, e[:, 1].mean()), 0.85, 2.5)) if len(e) else 1.0
+    if not np.isfinite(sc) and kind != "nochange":
+        kind, cols, X, lam = "nochange", [], None, 0.0
     ev, ev_rows = _evaluate(y, X, H, eval_idx, win, lam, nochange=(kind == "nochange"))
     ev_drift, _ = _evaluate(y, None, H, eval_idx, win, 0)
     ev_nc, _ = _evaluate(y, None, H, eval_idx, win, 0, nochange=True)
     inside = float(np.mean([abs(err) <= hw * scale for err, hw in ev_rows])) if ev_rows else None
+    fin = lambda v: round(v, 3) if np.isfinite(v) else None           # too little history to judge: say so, never "Infinity"
+    if not ev_rows:
+        ev = ev_drift = ev_nc = np.nan
     return {"kind": kind, "drivers": cols or [], "k": k, "lag": s_, "lam": lam, "horizon": H, "scale": scale,
             "periods_tested": len(ev_rows), "inside": inside,
-            "test": {"model": round(ev, 3), "drift": round(ev_drift, 3), "nochange": round(ev_nc, 3)},
+            "test": {"model": fin(ev), "drift": fin(ev_drift), "nochange": fin(ev_nc)},
             "_y": y, "_X": X, "_win": win}
 
 
@@ -213,3 +218,17 @@ def country_drivers(fx_col: str, with_rain: bool = False) -> pd.DataFrame:
         r.index = r.index.to_period("M").to_timestamp()
         out["rain"] = r.reindex(out.index)
     return out
+
+
+
+# Proxies for countries without official material indices. Tested Oct 2026 against official material indices in Uganda,
+# Kenya and South Africa (12-month changes): oil tracks fuel and asphalt (correlation 0.5-0.8, same direction ~7 in 10);
+# world steel tracks steel only roughly (0.33 on average); coal/energy does NOT track cement (about 0), so no cement proxy.
+PROXIES = {"fuel": {"driver": "oil", "label": "Fuel (CiO estimate from oil)", "quality": "good"},
+           "steel": {"driver": "steel", "label": "Steel (CiO estimate from world steel prices, rough)", "quality": "rough"}}
+
+
+def proxy_index(drivers: pd.DataFrame, kind: str, months: int = 36) -> pd.Series:
+    """Index (first month = 100) of the proxy driver in local currency, for the last `months` months."""
+    s = drivers[PROXIES[kind]["driver"]].dropna().tail(months)
+    return 100 * s / s.iloc[0]

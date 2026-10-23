@@ -1,0 +1,45 @@
+country,item,month,price,unit,source,verified
+zambia,diesel,2025-01,32.43,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJanuary2025.pdf,next notice agrees
+zambia,diesel,2025-02,32.54,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesFebruary2025.pdf,next notice agrees
+zambia,diesel,2025-03,32.54,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesMarch2025.pdf,next notice agrees
+zambia,diesel,2025-04,30.23,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesApril2025.pdf,next notice agrees
+zambia,diesel,2025-05,27.38,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesMay2025.pdf,next notice agrees
+zambia,diesel,2025-06,25.12,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJune2025.pdf,next notice agrees
+zambia,diesel,2025-07,23.13,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJuly2025.pdf,next notice agrees
+zambia,diesel,2025-08,23.13,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesAugust2025.pdf,next notice agrees
+zambia,diesel,2025-09,25.02,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesSeptember2025.pdf,next notice agrees
+zambia,diesel,2025-10,26.2,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesOctober2025.pdf,next notice agrees
+zambia,diesel,2025-11,25.35,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesNovember2025.pdf,next notice gives no previous price
+zambia,diesel,2025-12,26.98,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesDecember2025.pdf,next notice gives no previous price
+zambia,diesel,2026-01,25.11,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJanuary2026.pdf,next notice agrees
+zambia,diesel,2026-02,24.5,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesFebruary2026.pdf,next notice agrees
+zambia,diesel,2026-03,23.25,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesMarch2026.pdf,next notice gives no previous price
+zambia,diesel,2026-04,29.78,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesMay2026.pdf,from the next notice's previous price
+zambia,diesel,2026-05,33.99,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesMay2026.pdf,next notice agrees
+zambia,diesel,2026-06,32.11,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJune2026.pdf,next notice agrees (read by OCR)
+zambia,diesel,2026-07,28.11,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJuly2026.pdf,next notice agrees
+zambia,diesel,2026-08,26.86,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesAugust2026.pdf,next notice agrees (read by OCR)
+zambia,diesel,2026-09,26.86,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesSeptember2026.pdf,next notice agrees (read by OCR)
+zambia,diesel,2026-10,33.27,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesOctober2026.pdf,latest notice
+zambia,petrol,2025-01,34.67,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJanuary2025.pdf,next notice agrees
+zambia,petrol,2025-02,34.98,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesFebruary2025.pdf,next notice agrees
+zambia,petrol,2025-03,34.98,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesMarch2025.pdf,next notice agrees
+zambia,petrol,2025-04,34.98,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesApril2025.pdf,next notice agrees
+zambia,petrol,2025-05,32.14,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesMay2025.pdf,next notice agrees
+zambia,petrol,2025-06,31.36,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJune2025.pdf,next notice agrees
+zambia,petrol,2025-07,28.0,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJuly2025.pdf,next notice agrees
+zambia,petrol,2025-08,28.0,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesAugust2025.pdf,revised to 25.05 before the next notice
+zambia,petrol,2025-09,23.64,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesSeptember2025.pdf,revised to 29.18 before the next notice
+zambia,petrol,2025-10,30.58,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesOctober2025.pdf,next notice agrees
+zambia,petrol,2025-11,28.97,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesNovember2025.pdf,next notice gives no previous price
+zambia,petrol,2025-12,29.92,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesDecember2025.pdf,next notice gives no previous price
+zambia,petrol,2026-01,29.92,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJanuary2026.pdf,next notice agrees
+zambia,petrol,2026-02,27.88,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesFebruary2026.pdf,next notice agrees
+zambia,petrol,2026-03,26.61,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesMarch2026.pdf,next notice gives no previous price
+zambia,petrol,2026-04,27.15,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesMay2026.pdf,from the next notice's previous price
+zambia,petrol,2026-05,27.15,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesMay2026.pdf,next notice gives no previous price
+zambia,petrol,2026-06,27.15,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJuly2026.pdf,from the next notice's previous price
+zambia,petrol,2026-07,26.15,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesJuly2026.pdf,next notice agrees
+zambia,petrol,2026-08,25.29,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesAugust2026.pdf,next notice agrees (read by OCR)
+zambia,petrol,2026-09,25.29,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesSeptember2026.pdf,next notice agrees (read by OCR)
+zambia,petrol,2026-10,31.46,ZMW per litre,https://www.erb.org.zm/wp-content/uploads/PressStatements/CurrentFuelPumpPricesOctober2026.pdf,latest notice

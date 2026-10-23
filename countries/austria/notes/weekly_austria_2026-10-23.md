@@ -1,4 +1,4 @@
-# Austria construction material prices — week of 23 October 2026
+# Austria construction costs — week of 23 October 2026
 
 ## In one line
 

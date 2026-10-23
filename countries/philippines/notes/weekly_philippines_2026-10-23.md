@@ -1,4 +1,4 @@
-# Philippines construction material prices — week of 23 October 2026
+# Philippines construction costs — week of 23 October 2026
 
 ## In one line
 

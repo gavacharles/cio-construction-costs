@@ -1,4 +1,4 @@
-# Ethiopia construction material prices — week of 23 October 2026
+# Ethiopia construction costs — week of 23 October 2026
 
 ## In one line
 
@@ -11,6 +11,8 @@ For every **1,000,000 ETB** you spend on materials today, budget about **1,018,0
 ## Prices to watch
 
 - ⬆ **Imported materials (steel, cement inputs, paint, pipes, fuel)** — up about 1.8% by January 2027
+- ➡ **Steel (CiO estimate from world steel prices, rough)** — about the same by January 2027
+- ➡ **Fuel (CiO estimate from oil)** — about the same by January 2027
 - ➡ **Local materials and labour** — not covered by this estimate; check local quotes.
 
 ## Why

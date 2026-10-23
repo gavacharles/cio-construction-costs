@@ -1,11 +1,12 @@
-🏗️ *Nigeria construction material prices* — week of 23 Oct
+🏗️ *Nigeria construction costs* — week of 23 Oct
 
 Import costs are pushing construction material prices in Nigeria up — about 1.1% over the next 3 months (a little more likely than not).
 
 💰 1,000,000 NGN of materials today ≈ 1,011,000 NGN in January 2027.
 
 ⬆ *Imported materials (steel, cement inputs, paint, pipes, fuel)* — up about 1.1% by January 2027
-➡ *Local materials and labour* — not covered by this estimate; check local quotes.
+➡ *Steel (CiO estimate from world steel prices, rough)* — about the same by January 2027
+➡ *Fuel (CiO estimate from oil)* — about the same by January 2027
 
 • World oil prices are up 15% in the last 3 months — this feeds diesel, transport, asphalt and plastics.
 • The NGN is 3% stronger against the US dollar than 3 months ago — imported steel, cement inputs, paint and fittings cost a little less.

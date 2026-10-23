@@ -390,3 +390,16 @@ def test_pro_waitlist(tmp_path, monkeypatch):
     page = c.get("/admin").text
     assert "qs@example.com" in page and "1 sign-ups" in page
     assert "qs@example.com" not in (ROOT / "public" / "calculator.html").read_text()
+
+
+
+def test_every_page_has_valid_data():
+    """Every public page's data block must be strict JSON (no NaN or Infinity), or the page script stops."""
+    import json
+    import re
+    pages = [f for f in (ROOT / "public").rglob("*.html") if not f.name.startswith("_")]
+    assert pages
+    for f in pages:
+        m = re.search(r'id=cio-data type=["\']application/json["\']>(.*?)</script>', f.read_text(), re.S)
+        if m:
+            json.loads(m.group(1).replace("<\\/", "</"), parse_constant=lambda c: (_ for _ in ()).throw(ValueError(f"{f.name}: {c}")))

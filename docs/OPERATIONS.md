@@ -144,6 +144,20 @@ How the forecasts are tested:
   its 3-month direction matched the official index about 6 times in 10 (`data/shared/estimate_validation.json`);
   the estimate-country notes say so.
 
+## Countries without official material indices (Rwanda, Nigeria, Tanzania, Zambia)
+
+Three kinds of per-item series, labelled on the site:
+1. Official prices of single items — `src/ingest/official_prices.py`: Zambia's ERB monthly pump price notices (diesel,
+   petrol; each month checked against the next notice's previous price, image tables read by OCR, gaps filled from the
+   next notice). Notices that cannot be fetched (RURA Rwanda, EWURA Tanzania, NBS Nigeria Price Watch, Tanzania CPI items
+   such as cement and iron sheets) go in `data/shared/official_item_prices_curated.csv`, typed from the official
+   document with its URL — never from news reports.
+2. Tested CiO estimates (`material_models.PROXIES`): fuel from oil (tracks official fuel and asphalt indices in Uganda,
+   Kenya and South Africa: correlation 0.5-0.8); steel from world steel prices, labelled rough (0.33). No cement,
+   sand or block estimate: energy prices do not track cement (correlation ~0).
+3. Reported prices — the index built from what people pay (`Participants.crowd_index`), the main path for cement,
+   sand and blocks.
+
 ## Before going live
 
 - Legal: play money only (`regulation.mode` is enforced). Get a one-page opinion per country

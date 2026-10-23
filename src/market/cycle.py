@@ -74,6 +74,7 @@ def daily(db: str | None) -> None:
     run("harvest Stats SA", "src/ingest/statssa_p01511.py", "pull")
     run("harvest benchmarks", "src/ingest/pull_benchmarks.py")
     run("world commodity prices", "src/ingest/build_commodities.py")
+    run("official item prices (ERB pump prices, curated notices)", "src/ingest/official_prices.py")
     for c in COUNTRIES:
         after = latest_release_month(c)
         if after != before[c]:
