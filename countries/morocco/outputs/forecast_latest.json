@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 9.7872,
-  "fx_13w_pct": 4.340039018773778
+  "fx": 9.8134,
+  "fx_13w_pct": 4.619353738233056
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -61,7 +61,7 @@
    97.252,
    97.654,
    100.865,
-   103.621
+   103.656
   ]
  },
  "paths": {
@@ -112,7 +112,7 @@
     "month": "2027-06",
     "median": 0.455,
     "lo": -5.065,
-    "hi": 6.25
+    "hi": 6.269
    },
    {
     "month": "2027-07",
@@ -124,7 +124,7 @@
     "month": "2027-08",
     "median": 0.679,
     "lo": -5.54,
-    "hi": 7.056
+    "hi": 7.068
    },
    {
     "month": "2027-09",
@@ -135,8 +135,8 @@
    {
     "month": "2027-10",
     "median": 0.738,
-    "lo": -6.156,
-    "hi": 7.873
+    "lo": -6.152,
+    "hi": 7.878
    }
   ],
   "Fuel (CiO estimate from oil)": [
@@ -291,7 +291,7 @@
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in MAD and the exchange rate; an indicator, not a price index",
- "observed_3m": 6.343813707680663,
+ "observed_3m": 6.3771744608849,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -491,7 +491,7 @@
     },
     {
      "m": "2026-10",
-     "v": 128.56,
+     "v": 128.65,
      "s": "estimate"
     }
    ]

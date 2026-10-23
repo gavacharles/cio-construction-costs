@@ -24,7 +24,7 @@ CREATE INDEX IF NOT EXISTS hits_day ON hits (day, kind);
 """
 # page views plus the actions that show whether the site is useful
 KINDS = {"view", "embed", "report", "quick_report", "alert", "calc", "game", "draw", "share", "widget_copy",
-         "money", "chip", "country", "note"}
+         "money", "chip", "country", "note", "contract", "price"}      # price: a report saved by the server
 
 
 def visitor_id(secret: str, ip: str, agent: str, day: str | None = None) -> str:
@@ -39,6 +39,8 @@ class Usage:
         self.db = sqlite3.connect(str(path), timeout=10, check_same_thread=False)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
+        if "ret" not in [r[1] for r in self.db.execute("PRAGMA table_info(hits)")]:
+            self.db.execute("ALTER TABLE hits ADD COLUMN ret INTEGER")      # 1 = this browser has visited before (no id)
 
     def close(self) -> None:
         self.db.close()
@@ -49,15 +51,16 @@ class Usage:
     def __exit__(self, *exc):
         self.close()
 
-    def record(self, path: str, kind: str, visitor: str, lang: str = "", ref: str = "", country: str = "") -> None:
+    def record(self, path: str, kind: str, visitor: str, lang: str = "", ref: str = "", country: str = "",
+               ret: int | None = None) -> None:
         """`day` is the server's local date, the same calendar the visitor id and the monthly report use."""
         if kind not in KINDS:
             raise ValueError("unknown kind")
         now = datetime.now(timezone.utc)
         with self.db:
-            self.db.execute("INSERT INTO hits (ts, day, path, kind, visitor, lang, ref, country) VALUES (?,?,?,?,?,?,?,?)",
+            self.db.execute("INSERT INTO hits (ts, day, path, kind, visitor, lang, ref, country, ret) VALUES (?,?,?,?,?,?,?,?,?)",
                             (now.isoformat(timespec="seconds"), date.today().isoformat(), path[:120], kind, visitor,
-                             lang[:5], ref[:80], country[:30]))
+                             lang[:5], ref[:80], country[:30], ret if ret in (0, 1) else None))
 
     def summary(self, start: str, end: str) -> dict:
         """Counts between two days (inclusive): views, daily visitors, top pages, actions, languages, referrers."""
@@ -74,3 +77,23 @@ class Usage:
             "refs": q(f"SELECT ref, COUNT(*) n FROM hits WHERE {w} AND kind='view' AND ref!='' GROUP BY ref ORDER BY n DESC LIMIT 8"),
             "countries": q(f"SELECT country, COUNT(*) n FROM hits WHERE {w} AND country!='' GROUP BY country ORDER BY n DESC"),
         }
+
+    # Steps a visit can reach, in order; each is counted once per visitor and day (visitor ids change every day).
+    FUNNEL = [
+        ("Visited the site", "kind='view'"),
+        ("Looked at a forecast", "kind='view' AND (path IN ('/', '/index.html') OR path LIKE '/countries/%/' OR path LIKE '/countries/%/index.html')"),
+        ("Used a tool", "kind IN ('calc','money','chip','country','alert','share','note','game','draw') "
+                        "OR (kind='view' AND (path LIKE '%calculator.html' OR path LIKE '%notes.html' OR path LIKE '%/notes/%'))"),
+        ("Opened Report a price", "(kind='view' AND path LIKE '%report.html') OR kind='quick_report'"),
+        ("Reported a price", "kind='price'"),
+    ]
+
+    def usage_report(self, start: str, end: str) -> dict:
+        """The organiser's usage page: summary, returning share, and how far visits get (funnel)."""
+        out = self.summary(start, end)
+        r = self.db.execute("SELECT SUM(ret=1), SUM(ret IS NOT NULL) FROM hits WHERE day BETWEEN ? AND ? AND kind='view'",
+                            (start, end)).fetchone()
+        out["returning"] = (r[0] or 0) / r[1] if r[1] else None
+        out["funnel"] = [(name, self.db.execute(f"SELECT COUNT(DISTINCT visitor||day) FROM hits WHERE day BETWEEN ? AND ? AND ({cond})",
+                                               (start, end)).fetchone()[0]) for name, cond in self.FUNNEL]
+        return out

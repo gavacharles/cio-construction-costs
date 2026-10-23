@@ -223,7 +223,7 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         "CiO Costs is a forecasting tool: these are estimates with a range, not official statistics, a price list or advice.", "",
         f"[See all the figures for {country}]({page})", "",
         *([f"Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: "
-           f"[Bids & contracts]({(site_url.rstrip('/') + '/calculator.html?c=' + cfg['key']) if site_url else '../../calculator.html?c=' + cfg['key']})", ""]
+           f"[Bids & contracts]({(site_url.rstrip('/') + '/calculator.html?c=' + cfg['key']) if site_url else '../../../calculator.html?c=' + cfg['key']})", ""]
           if not bench else []),
         *([f"Get this note free every week: [follow CiO Costs on WhatsApp]({channel})", ""] if channel else []),
         "_CiO Costs · free weekly note · CiO Lab_", ""])

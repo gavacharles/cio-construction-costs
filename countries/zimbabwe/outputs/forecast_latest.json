@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 26.6151,
-  "fx_13w_pct": -0.23764454523304002
+  "fx": 26.6581,
+  "fx_13w_pct": -0.07646606818223489
  },
  "official": {
   "series": "ZimStat weighted Building Materials Price Index (BMPI), June 2024 = 100, quarterly",

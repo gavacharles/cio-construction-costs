@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 63.8313,
-  "fx_13w_pct": 0.36920270769618124
+  "fx": 63.8665,
+  "fx_13w_pct": 0.4245516655790871
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -61,7 +61,7 @@
    99.685,
    100.558,
    102.89,
-   103.812
+   103.819
   ]
  },
  "paths": {
@@ -100,7 +100,7 @@
     "month": "2027-04",
     "median": -0.15,
     "lo": -2.409,
-    "hi": 3.785
+    "hi": 3.792
    },
    {
     "month": "2027-05",
@@ -291,7 +291,7 @@
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in MZN and the exchange rate; an indicator, not a price index",
- "observed_3m": 4.0561035560471925,
+ "observed_3m": 4.062995454670455,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -305,7 +305,7 @@
    "period": "Next 6 months",
    "median": -0.150294168863363,
    "lo": -2.40853281614684,
-   "hi": 3.7848113257184353
+   "hi": 3.7917032243416977
   }
  ],
  "trend_stats": {},
@@ -491,7 +491,7 @@
     },
     {
      "m": "2026-10",
-     "v": 133.27,
+     "v": 133.29,
      "s": "estimate"
     }
    ]

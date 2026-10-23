@@ -154,24 +154,31 @@ Data moves left to right in six stages (the colours). Boxes are processes, cylin
   people. Until 3 people report an item, it has no effect at all — so recruitment density in one
   city matters more than spread across many.
 
-### Why the site and the notes can show different numbers
+### Measured from today
 
-The site measures change **from the last official figure** (Uganda: April 2026); the notes
-measure it **from today**. Both are correct, but they answer different questions. The gap equals
-the change the model thinks has already happened since the last official month, so it is largest
-where official data is oldest. To January 2027, as of 23 October 2026:
+Every change people see — the headline, "Allow about…", your-price calculator, materials, bills of
+quantities, alerts and the weekly notes — is measured **from today**: the forecast for the current
+month stands for today's prices, and the range keeps the uncertainty about months not yet published.
+Only the contract index (FIDIC) and the chart use the latest official figure as their base. (Until
+23 October 2026 the site measured from the latest official figure, which for Uganda — 6 months behind —
+made "allow +5.6%" where the change from today was +2.6%.)
 
-| Country | Last official | From last official | From today | Gap |
-|---|---|---|---|---|
-| Uganda | Apr 2026 | +5.6% | +2.6% | 3.0 points |
-| Kenya | Q2 2026 | +2.5% | +1.0% | 1.6 |
-| South Africa | Aug 2026 | +2.5% | +1.6% | 0.9 |
-| Benchmarks | 1–3 months | — | — | 0.1–1.4 |
-| Rwanda, Tanzania, Zambia, Nigeria | estimate up to today | — | — | none |
+### Self-checks
 
-Recommended: measure from today wherever people price work (headline, "Allow about…", your-price
-calculator, material list), and keep "since the last official figure" only for the contract
-index, where FIDIC needs it.
+| Check | When | If it fails |
+|---|---|---|
+| Data checks (gaps, jumps, stale data, coverage) | Every refresh and weekly run | **The site is not rebuilt**: the last good version stays up ("held") |
+| Failed job steps | Every run | Listed in /admin → Health; emailed to `CIO_ORGANISER_EMAIL` at most once a day per problem |
+| Robot visitor (`src/ops/site_check.py`): every page in English, Kiswahili and French in a real browser; broken links; missing translations | Daily | Listed in /admin → Health and reported like a failed step |
+| 56 automated tests (`pytest -q`) | Before every change | Change not shipped |
+
+### How people use the site
+
+/admin → Usage: visitors per day, page views, the share of views from returning browsers, how far
+visits get (visited → looked at a forecast → used a tool → opened Report a price → reported a price),
+pages, countries chosen, languages and referrers. No cookies or IP addresses are kept; a visitor id
+lasts one day; "returning" is a yes/no flag in the browser, never an id. Robots, including our own
+robot visitor, are not counted.
 
 ## 3. What gets hosted
 
@@ -214,8 +221,8 @@ Server: one VM, 2 vCPU, 2 GB RAM, 40 GB SSD, Ubuntu 24.04, region nearest East A
 
 | When | Command | What it does |
 |---|---|---|
-| Daily 06:30 | `cycle.py daily` | Harvest UBOS, KNBS (with OCR), Stats SA, benchmarks, world commodities, official item prices; re-test and re-fit when a new release arrives |
-| Every 3 hours | `cycle.py refresh` | Drivers → all forecasts → data checks → site → alerts |
+| Daily 06:30 | `cycle.py daily` | Harvest UBOS, KNBS (with OCR), Stats SA, benchmarks, world commodities, official item prices; re-test and re-fit when a new release arrives; robot visitor |
+| Every 3 hours | `cycle.py refresh` | Drivers → all forecasts → data checks → site (only if checks pass) → alerts |
 | Monday 05:00 | `cycle.py weekly` | Rainfall, exchange-rate history, weekly notes |
 | 1st of month | `cycle.py monthly` | Pilot report |
 | Nightly 02:00 | `deploy/backup.sh` | Database backup, 30 days kept |
@@ -231,6 +238,8 @@ Every step is logged to `data/live/cycle_log.csv`.
 | `CIO_SECURE_COOKIES` | `1` in production |
 | `ANTHROPIC_API_KEY`, `CIO_AI_MONTHLY_USD` | Only when the assistant is switched on |
 | SMTP / WhatsApp settings | Only when alerts are sent automatically |
+| `CIO_ORGANISER_EMAIL` | Where problems in the automatic runs are emailed (uses the SMTP settings) |
+| `CIO_SITE_URL`, `CIO_CHROME` | The robot visitor's site and browser (`apt install chromium` on the server) |
 
 ## 7. Security and data protection
 
@@ -262,8 +271,8 @@ The main cost is not infrastructure: it is time for outreach, checking data and 
 1. **Production server and domain** for the pilot (replaces the quick tunnel).
 2. **Uganda first, in depth:** Kampala contributors to reach 3 reports for the core items;
    compare the forecasts for the months UBOS has not published with the figures when they arrive.
-3. **Self-checking:** alerts to the organiser when a job or check fails; a daily headless
-   "visitor" that opens every page in every language; publish only when checks pass.
+3. **Self-checking (done 23 Oct 2026):** organiser alerts, a daily robot visitor, publishing only when
+   checks pass. Next: an alarm when ranges start missing more than 2 in 10.
 4. **Pooled models** across countries and materials, adopted only where they beat the current
    models in the same walk-forward test.
 5. **CiO Costs Pro** once the waitlist shows demand.
@@ -283,4 +292,5 @@ The main cost is not infrastructure: it is time for outreach, checking data and 
 | `config/` | `site.yaml` (countries, operator, switches), `scout.yaml` |
 | `deploy/` | systemd unit, Caddyfile, env template, crontab, backup script |
 | `docs/` | Operations, deployment, forecast model, countries |
-| `tests/` | 50 automated tests (`pytest -q`) |
+| `src/ops/` | Robot visitor (site check) |
+| `tests/` | 56 automated tests (`pytest -q`) |

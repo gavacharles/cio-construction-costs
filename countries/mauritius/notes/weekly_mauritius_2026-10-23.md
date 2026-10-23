@@ -49,7 +49,7 @@ Using it in a contract: the monthly series is on the CiO Costs contract index pa
 
 [See all the figures for Mauritius](../index.html)
 
-Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: [Bids & contracts](../../calculator.html?c=mauritius)
+Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: [Bids & contracts](../../../calculator.html?c=mauritius)
 
 Get this note free every week: [follow CiO Costs on WhatsApp](https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L)
 

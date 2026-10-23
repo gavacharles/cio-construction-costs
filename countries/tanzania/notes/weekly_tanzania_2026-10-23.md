@@ -49,7 +49,7 @@ Using it in a contract: the monthly series is on the CiO Costs contract index pa
 
 [See all the figures for Tanzania](../index.html)
 
-Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: [Bids & contracts](../../calculator.html?c=tanzania)
+Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: [Bids & contracts](../../../calculator.html?c=tanzania)
 
 Get this note free every week: [follow CiO Costs on WhatsApp](https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L)
 

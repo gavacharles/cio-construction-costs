@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 0.7464,
-  "fx_13w_pct": -0.6389776357827559
+  "fx": 0.7466,
+  "fx_13w_pct": -0.6123535676251235
  },
  "spark": {
   "label": "Construction materials (all work) (Department for Business and Trade (DBT), from ONS and BCIS)",

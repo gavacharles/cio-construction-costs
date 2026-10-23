@@ -40,7 +40,7 @@ The latest official figures are for **August 2026**, from the Statistics South A
 
 [See all the figures for South Africa](../index.html)
 
-Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: [Bids & contracts](../../calculator.html?c=south_africa)
+Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: [Bids & contracts](../../../calculator.html?c=south_africa)
 
 Get this note free every week: [follow CiO Costs on WhatsApp](https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L)
 

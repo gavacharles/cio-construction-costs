@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 54.378,
-  "fx_13w_pct": 6.002892866471998
+  "fx": 55.3011,
+  "fx_13w_pct": 7.802357179338215
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -61,7 +61,7 @@
    101.477,
    102.292,
    105.983,
-   108.562
+   108.797
   ]
  },
  "paths": {
@@ -98,45 +98,45 @@
    },
    {
     "month": "2027-04",
-    "median": 4.181,
+    "median": 4.261,
     "lo": -2.443,
     "hi": 19.792
    },
    {
     "month": "2027-05",
-    "median": 5.48,
+    "median": 5.52,
     "lo": -2.425,
     "hi": 20.739
    },
    {
     "month": "2027-06",
-    "median": 6.875,
+    "median": 6.88,
     "lo": -2.466,
-    "hi": 21.897
+    "hi": 21.904
    },
    {
     "month": "2027-07",
-    "median": 8.227,
+    "median": 8.238,
     "lo": -2.496,
     "hi": 23.684
    },
    {
     "month": "2027-08",
-    "median": 8.769,
+    "median": 8.77,
     "lo": -2.22,
-    "hi": 25.441
+    "hi": 25.476
    },
    {
     "month": "2027-09",
-    "median": 9.49,
+    "median": 9.516,
     "lo": -2.063,
-    "hi": 27.313
+    "hi": 27.388
    },
    {
     "month": "2027-10",
-    "median": 10.707,
+    "median": 10.724,
     "lo": -2.005,
-    "hi": 29.195
+    "hi": 29.223
    }
   ],
   "Fuel (CiO estimate from oil)": [
@@ -144,73 +144,73 @@
     "month": "2026-11",
     "median": 0.0,
     "lo": -7.76,
-    "hi": 11.198
+    "hi": 11.458
    },
    {
     "month": "2026-12",
     "median": 0.0,
     "lo": -10.974,
-    "hi": 15.837
+    "hi": 16.205
    },
    {
     "month": "2027-01",
     "median": 0.0,
     "lo": -13.441,
-    "hi": 19.396
+    "hi": 19.847
    },
    {
     "month": "2027-02",
     "median": 0.0,
     "lo": -15.52,
-    "hi": 22.397
+    "hi": 22.917
    },
    {
     "month": "2027-03",
     "median": 0.0,
     "lo": -17.352,
-    "hi": 25.04
+    "hi": 25.622
    },
    {
     "month": "2027-04",
     "median": 0.0,
     "lo": -19.008,
-    "hi": 27.43
+    "hi": 28.067
    },
    {
     "month": "2027-05",
     "median": 0.0,
     "lo": -20.531,
-    "hi": 29.628
+    "hi": 30.316
    },
    {
     "month": "2027-06",
     "median": 0.0,
     "lo": -21.948,
-    "hi": 31.674
+    "hi": 32.409
    },
    {
     "month": "2027-07",
     "median": 0.0,
     "lo": -23.28,
-    "hi": 33.595
+    "hi": 34.375
    },
    {
     "month": "2027-08",
     "median": 0.0,
     "lo": -24.539,
-    "hi": 35.412
+    "hi": 36.235
    },
    {
     "month": "2027-09",
     "median": 0.0,
     "lo": -25.737,
-    "hi": 37.141
+    "hi": 38.003
    },
    {
     "month": "2027-10",
     "median": 0.0,
     "lo": -26.881,
-    "hi": 38.792
+    "hi": 39.693
    }
   ],
   "Steel (CiO estimate from world steel prices, rough)": [
@@ -291,7 +291,7 @@
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in EGP and the exchange rate; an indicator, not a price index",
- "observed_3m": 6.748154671235147,
+ "observed_3m": 6.964882544541058,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -303,7 +303,7 @@
   {
    "series": "Imported-input cost pressure",
    "period": "Next 6 months",
-   "median": 4.181413405264345,
+   "median": 4.260853660547161,
    "lo": -2.4429812385966314,
    "hi": 19.791969260875725
   }
@@ -491,7 +491,7 @@
     },
     {
      "m": "2026-10",
-     "v": 229.43,
+     "v": 230.43,
      "s": "estimate"
     }
    ]

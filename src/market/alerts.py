@@ -37,9 +37,11 @@ def expected_3m(country: str, series: str) -> tuple[float, str] | None:
     pth = paths.get(series) or next(iter(paths.values()), None)
     if not pth:
         return None
+    now = date.today().strftime("%Y-%m")
     target = (date.today().replace(day=1) + timedelta(days=95)).strftime("%Y-%m")
     q = [x for x in pth if x["month"] <= target] or pth[:1]
-    return q[-1]["median"], q[-1]["month"]
+    n = ([x["median"] for x in pth if x["month"] <= now] or [0.0])[-1]      # from today, as on the site and in the notes
+    return ((1 + q[-1]["median"] / 100) / (1 + n / 100) - 1) * 100, q[-1]["month"]
 
 
 def run(db: Path) -> int:

@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 11.6263,
-  "fx_13w_pct": 0.0679955931970122
+  "fx": 11.605,
+  "fx_13w_pct": -0.11533429732147882
  },
  "official": {
   "series": "GSS Prime Building Cost Index (PBCI), 2023 = 100, monthly",
@@ -70,7 +70,7 @@
    84.559,
    84.302,
    87.083,
-   88.683
+   88.663
   ]
  },
  "paths": {
@@ -133,7 +133,7 @@
     "month": "2027-08",
     "median": 7.345,
     "lo": -10.491,
-    "hi": 21.044
+    "hi": 21.042
    },
    {
     "month": "2027-09",
@@ -143,9 +143,9 @@
    },
    {
     "month": "2027-10",
-    "median": 8.477,
+    "median": 8.475,
     "lo": -11.029,
-    "hi": 24.62
+    "hi": 24.619
    }
   ],
   "Fuel (CiO estimate from oil)": [
@@ -153,73 +153,73 @@
     "month": "2026-11",
     "median": 0.0,
     "lo": -8.66,
-    "hi": 9.72
+    "hi": 9.693
    },
    {
     "month": "2026-12",
     "median": 0.0,
     "lo": -12.247,
-    "hi": 13.747
+    "hi": 13.708
    },
    {
     "month": "2027-01",
     "median": 0.0,
     "lo": -15.0,
-    "hi": 16.836
+    "hi": 16.789
    },
    {
     "month": "2027-02",
     "median": 0.0,
     "lo": -17.32,
-    "hi": 19.441
+    "hi": 19.386
    },
    {
     "month": "2027-03",
     "median": 0.0,
     "lo": -19.365,
-    "hi": 21.735
+    "hi": 21.674
    },
    {
     "month": "2027-04",
     "median": 0.0,
     "lo": -21.213,
-    "hi": 23.81
+    "hi": 23.743
    },
    {
     "month": "2027-05",
     "median": 0.0,
     "lo": -22.913,
-    "hi": 25.718
+    "hi": 25.645
    },
    {
     "month": "2027-06",
     "median": 0.0,
     "lo": -24.495,
-    "hi": 27.493
+    "hi": 27.416
    },
    {
     "month": "2027-07",
     "median": 0.0,
     "lo": -25.981,
-    "hi": 29.161
+    "hi": 29.079
    },
    {
     "month": "2027-08",
     "median": 0.0,
     "lo": -27.386,
-    "hi": 30.739
+    "hi": 30.652
    },
    {
     "month": "2027-09",
     "median": 0.0,
     "lo": -28.723,
-    "hi": 32.239
+    "hi": 32.148
    },
    {
     "month": "2027-10",
     "median": 0.0,
     "lo": -30.0,
-    "hi": 33.672
+    "hi": 33.578
    }
   ],
   "Steel (CiO estimate from world steel prices, rough)": [
@@ -300,7 +300,7 @@
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in GHS and the exchange rate; an indicator, not a price index",
- "observed_3m": 4.7615792554048975,
+ "observed_3m": 4.738804522774616,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -500,7 +500,7 @@
     },
     {
      "m": "2026-10",
-     "v": 134.62,
+     "v": 134.56,
      "s": "estimate"
     }
    ]

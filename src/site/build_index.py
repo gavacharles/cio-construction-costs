@@ -767,8 +767,7 @@ out every Monday.</p></div></div>
 {live_track_record()}
 <h2 data-i18n=m.read>Reading the numbers</h2><ul class=plain>
 <li><b>Chance of a rise</b>: how likely prices are to be higher by the month you pick.</li>
-<li><b>Expected change</b>: the most likely move, measured from the latest official reading (or from today for
-import-cost indicators).</li><li><b>Likely range</b>: where the change should land 8 times in 10.</li></ul>
+<li><b>Expected change</b>: the most likely move from today's prices to the date you choose. Where official figures are months old, today's level is itself a forecast, so the range also covers the months not yet published (the chart shows the path from the latest official figure).</li><li><b>Likely range</b>: where the change should land 8 times in 10.</li></ul>
 <h2 data-i18n=m.limits>Limits</h2><ul class=plain><li>Forecasts are estimates, not certainties. Always use the range.</li>
 <li>Import-cost indicators see oil and currency effects only, not local materials or labour.</li>
 <li>Where official statistics are published late, the forecast bridges the gap with the latest market data.</li>

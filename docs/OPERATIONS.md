@@ -194,3 +194,15 @@ Spending is shown in /admin.
   the FIDIC price adjustment data from an uploaded PDF; code checks every quote against the document and that the
   coefficients add up to 1. The file is never stored. Limits: 1 reading per person per day free; 20 a day with a Pro
   code (give one from the Pro waitlist in /admin); 60 a day in total.
+
+## Self-checks and usage
+
+- **Publishing is held when a data check fails.** The refresh rebuilds the site only when
+  `data/live/data_checks.json` has no `fail`; otherwise the last good site stays up and /admin → Health says
+  "site held". Fix the source (or the check), then run `python src/market/cycle.py refresh`.
+- **Problems are reported**: /admin → Health lists the last 3 days; set `CIO_ORGANISER_EMAIL` (plus `CIO_SMTP_*`)
+  to get an email, at most once a day for the same problem.
+- **Robot visitor**: `python src/ops/site_check.py` (daily in the cycle; `--quick` for English only). Needs Chrome or
+  Chromium (`apt install chromium`; set `CIO_CHROME` if it is not found). Result: `data/live/site_check.json` and
+  /admin → Health.
+- **Usage**: /admin → Usage (7, 30 or 90 days). Robots and Do-Not-Track browsers are not counted.

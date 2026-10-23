@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 63.4279,
-  "fx_13w_pct": 2.576878603368682
+  "fx": 63.4286,
+  "fx_13w_pct": 2.578010657480867
  },
  "spark": {
   "label": "Construction materials (all) (Philippine Statistics Authority (PSA))",

@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 47.2895,
-  "fx_13w_pct": 0.28225224995970244
+  "fx": 47.0658,
+  "fx_13w_pct": -0.192126625442135
  },
  "official": {
   "series": "Statistics Mauritius Construction Price Index (single-family house), quarterly",
@@ -70,7 +70,7 @@
    100.908,
    101.475,
    104.068,
-   105.403
+   105.341
   ]
  },
  "paths": {
@@ -103,7 +103,7 @@
     "month": "2027-03",
     "median": 0.438,
     "lo": -2.62,
-    "hi": 4.198
+    "hi": 4.167
    },
    {
     "month": "2027-04",
@@ -113,15 +113,15 @@
    },
    {
     "month": "2027-05",
-    "median": 0.591,
+    "median": 0.581,
     "lo": -2.97,
-    "hi": 5.018
+    "hi": 5.0
    },
    {
     "month": "2027-06",
     "median": 0.765,
     "lo": -3.182,
-    "hi": 5.423
+    "hi": 5.417
    },
    {
     "month": "2027-07",
@@ -133,19 +133,19 @@
     "month": "2027-08",
     "median": 0.971,
     "lo": -3.444,
-    "hi": 6.074
+    "hi": 6.05
    },
    {
     "month": "2027-09",
     "median": 1.142,
     "lo": -3.662,
-    "hi": 6.31
+    "hi": 6.305
    },
    {
     "month": "2027-10",
     "median": 1.293,
     "lo": -3.82,
-    "hi": 6.808
+    "hi": 6.792
    }
   ],
   "Fuel (CiO estimate from oil)": [
@@ -300,7 +300,7 @@
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in MUR and the exchange rate; an indicator, not a price index",
- "observed_3m": 4.359086160652477,
+ "observed_3m": 4.300246332059716,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -500,7 +500,7 @@
     },
     {
      "m": "2026-10",
-     "v": 143.56,
+     "v": 143.39,
      "s": "estimate"
     }
    ]

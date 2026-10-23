@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 1475.387,
-  "fx_13w_pct": 0.507432806094954
+  "fx": 1476.9525,
+  "fx_13w_pct": 0.6140789850689998
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -61,7 +61,7 @@
    103.842,
    104.792,
    107.313,
-   108.405
+   108.419
   ]
  },
  "paths": {
@@ -118,19 +118,19 @@
     "month": "2027-07",
     "median": 3.214,
     "lo": -0.344,
-    "hi": 7.119
+    "hi": 7.124
    },
    {
     "month": "2027-08",
     "median": 3.507,
     "lo": -0.224,
-    "hi": 7.615
+    "hi": 7.622
    },
    {
     "month": "2027-09",
     "median": 3.914,
     "lo": -0.017,
-    "hi": 8.132
+    "hi": 8.138
    },
    {
     "month": "2027-10",
@@ -291,7 +291,7 @@
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in RWF and the exchange rate; an indicator, not a price index",
- "observed_3m": 4.3001182754953415,
+ "observed_3m": 4.313359873013685,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -517,7 +517,7 @@
     },
     {
      "m": "2026-10",
-     "v": 159.02,
+     "v": 159.07,
      "s": "estimate"
     }
    ]

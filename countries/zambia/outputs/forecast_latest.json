@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 20.0491,
-  "fx_13w_pct": 7.788542181888558
+  "fx": 20.1803,
+  "fx_13w_pct": 8.493903356917043
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -61,7 +61,7 @@
    82.922,
    84.851,
    87.969,
-   89.918
+   89.992
   ]
  },
  "paths": {
@@ -106,7 +106,7 @@
     "month": "2027-05",
     "median": 1.053,
     "lo": -8.152,
-    "hi": 10.173
+    "hi": 10.183
    },
    {
     "month": "2027-06",
@@ -116,7 +116,7 @@
    },
    {
     "month": "2027-07",
-    "median": 1.531,
+    "median": 1.533,
     "lo": -9.186,
     "hi": 12.106
    },
@@ -124,19 +124,19 @@
     "month": "2027-08",
     "median": 1.693,
     "lo": -9.357,
-    "hi": 12.829
+    "hi": 12.883
    },
    {
     "month": "2027-09",
-    "median": 1.892,
+    "median": 1.902,
     "lo": -10.023,
     "hi": 13.625
    },
    {
     "month": "2027-10",
-    "median": 2.16,
+    "median": 2.186,
     "lo": -10.612,
-    "hi": 14.256
+    "hi": 14.26
    }
   ],
   "Diesel (official pump price)": [
@@ -365,7 +365,7 @@
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in ZMW and the exchange rate; an indicator, not a price index",
- "observed_3m": 8.100532036800496,
+ "observed_3m": 8.182721090086815,
  "rows": [
   {
    "series": "Imported-input cost pressure",

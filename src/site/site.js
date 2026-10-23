@@ -47,8 +47,17 @@
   function tTime(tg) { return tg[0] === "W" ? Date.parse(tg.slice(2) + "T00:00:00Z") + 3 * 864e5 : mid(tg.slice(2)); }
   function tLabel(tg) { return tg[0] === "W" ? tr("weekof", { d: T.dayMonth(tg.slice(2)) }) : label(tg.slice(2)); }
   const tMonth = tg => tg.slice(2, 9);
+  /* Changes people see are measured from TODAY: the path's level for the current month is taken as today's prices,
+     exactly as the weekly notes do (plain_note._from_today). The range keeps the uncertainty about the months not yet
+     published. atBase() is the path itself, measured from the latest official figure. */
+  const NOWM = (d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`)(new Date());
+  function at(path, tg) { const r = atBase(path, tg); if (!r) return r;
+    let n = 0; for (const q of path) if (q.month <= NOWM) n = q.median;
+    if (!n) return r;
+    const f = x => ((1 + x / 100) / (1 + n / 100) - 1) * 100;
+    return Object.assign({}, r, { q: { month: r.q.month, median: f(r.q.median), lo: f(r.q.lo), hi: f(r.q.hi) } }); }
   /* linear interpolation along the forecast path; 0 change at the base month (one month before the first point) */
-  function at(path, tg) {
+  function atBase(path, tg) {
     if (!path || !path.length) return null; const T = tTime(tg);
     const pts = path.map(q => ({ t: mid(q.month), q }));
     const b = pts[0].t - 30.4 * 864e5; pts.unshift({ t: b, q: { month: "", median: 0, lo: 0, hi: 0 } });
@@ -335,7 +344,9 @@
   /* ---------- anonymous visit counting (no cookies; skipped for "Do Not Track" and offline copies) ---------- */
   function track(kind, country) {
     if (!online || navigator.doNotTrack === "1" || window.doNotTrack === "1" || !navigator.sendBeacon) return;
-    try { navigator.sendBeacon(rel + "api/public/hit", JSON.stringify({ path: location.pathname, kind, lang: T.lang, country: country || "",
+    /* returning visitors: a yes/no flag kept in this browser, never an id */
+    let ret; if (kind === "view") { ret = store.get("cio-seen", false) ? 1 : 0; if (!ret) store.set("cio-seen", true); }
+    try { navigator.sendBeacon(rel + "api/public/hit", JSON.stringify({ path: location.pathname, kind, lang: T.lang, country: country || "", ret,
       ref: kind === "view" || kind === "embed" ? document.referrer : "" })); } catch (e) { /* never break the page */ }
   }
   if (!$("#embed")) track("view", document.body.dataset.page === "country" ? Object.keys(DATA.countries || {})[0] : "");

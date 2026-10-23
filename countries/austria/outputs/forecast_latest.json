@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 0.8894,
-  "fx_13w_pct": 1.2061902594446838
+  "fx": 0.8918,
+  "fx_13w_pct": 1.4792899408283988
  },
  "spark": {
   "label": "Construction costs (all) (Statistics Austria (via Eurostat))",

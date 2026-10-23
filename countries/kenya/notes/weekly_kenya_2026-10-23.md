@@ -38,7 +38,7 @@ The latest official figures are for **Q2 2026**, from the Kenya National Bureau 
 
 [See all the figures for Kenya](../index.html)
 
-Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: [Bids & contracts](../../calculator.html?c=kenya)
+Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: [Bids & contracts](../../../calculator.html?c=kenya)
 
 Get this note free every week: [follow CiO Costs on WhatsApp](https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L)
 

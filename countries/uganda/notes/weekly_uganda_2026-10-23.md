@@ -41,7 +41,7 @@ The latest official figures are for **April 2026**, from the Uganda Bureau of St
 
 [See all the figures for Uganda](../index.html)
 
-Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: [Bids & contracts](../../calculator.html?c=uganda)
+Pricing a bid or adjusting a contract payment? Use the free bill of quantities tool and contract index: [Bids & contracts](../../../calculator.html?c=uganda)
 
 Get this note free every week: [follow CiO Costs on WhatsApp](https://whatsapp.com/channel/0029Vb9aFCqHLHQab6WSC43L)
 

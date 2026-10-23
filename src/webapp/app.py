@@ -146,7 +146,7 @@ def page(title: str, body: str) -> HTMLResponse:
     return HTMLResponse(f"<!doctype html><html lang=en><head><meta charset=utf-8>"
                         f"<meta name=viewport content='width=device-width,initial-scale=1'><title>{e(title)}</title>"
                         f"<style>{CSS}</style></head><body><header><div><b>CiO Costs</b> · organiser</div>"
-                        f"<nav><a href='/'>Public site</a><a href='/admin/pilot-report'>Pilot report</a><a href='/admin/logout'>Log out</a></nav>"
+                        f"<nav><a href='/'>Public site</a><a href='/admin'>Admin</a><a href='/admin/usage'>Usage</a><a href='/admin/pilot-report'>Pilot report</a><a href='/admin/logout'>Log out</a></nav>"
                         f"</header><main>{body}</main></body></html>")
 
 
@@ -219,7 +219,8 @@ def admin(request: Request, err: str = ""):
 <form method=post action=/admin/login><label>Admin password</label><input name=key type=password required>
 <p><button>Log in</button></p></form>{msg}</div>""")
     from datetime import date as _date
-    months = [(_date.today().replace(day=1) - __import__("datetime").timedelta(days=31 * i)).strftime("%Y-%m") for i in range(6)]
+    t = _date.today()
+    months = [f"{(t.year * 12 + t.month - 1 - i) // 12}-{(t.month - 1 - i) % 12 + 1:02d}" for i in range(6)]
     links = "".join(f"<li><a href='/admin/pilot-report?month={m}'>{m}</a></li>" for m in dict.fromkeys(months))
     live = ", ".join(e(COUNTRIES[c]["country"]) for c in LIVE)
     chk = ROOT / "data" / "live" / "data_checks.json"
@@ -230,10 +231,79 @@ def admin(request: Request, err: str = ""):
     ok = sum(r["status"] == "ok" for r in checks["checks"])
     return page("Organiser", f"""<div class=card><h1>Pilot</h1><p>Live countries: {live}.
 Anyone can view the site and report prices; there are no accounts.</p><h2>Monthly pilot reports</h2><ul>{links}</ul></div>
+<div class=card><h2>Health</h2>{problems_html()}<p><a href='/admin/usage'>How people use the site →</a></p></div>
 <div class=card id=scout><h2>Data scout: official prices to review</h2>{scout_html()}</div>
 <div class=card><h2>CiO Costs Pro waitlist</h2>{waitlist_html()}</div>
 <div class=card><h2>Data checks</h2><p class=mut>Last run {e(checks['run'])}: {ok} ok, {len(probs)} to look at.</p>
 <div class=tw><table><tr><th>Status</th><th>Country</th><th>Check</th><th>Detail</th></tr>{rows}</table></div></div>""")
+
+
+def _bars(days: list[dict]) -> str:
+    """Visitors per day as a small bar chart (inline SVG)."""
+    if not days:
+        return "<p class=mut>No visits yet.</p>"
+    top, w = max(d["visitors"] for d in days) or 1, 12
+    bars = "".join(f"<rect x={i * (w + 3)} y={100 - 90 * d['visitors'] / top:.1f} width={w} height={90 * d['visitors'] / top:.1f} fill='#0a7f73'>"
+                   f"<title>{e(d['day'])}: {d['visitors']} visitors, {d['views']} views</title></rect>" for i, d in enumerate(days))
+    return (f"<svg viewBox='0 0 {len(days) * (w + 3)} 100' width='100%' height=120 preserveAspectRatio=none role=img "
+            f"aria-label='Visitors per day'>{bars}</svg><p class=mut>{e(days[0]['day'])} → {e(days[-1]['day'])} · highest day: {top} visitors</p>")
+
+
+@app.get("/admin/usage", response_class=HTMLResponse)
+def admin_usage(request: Request, days: int = 30):
+    """How people use the site: visits, returning share, funnel, pages, countries, languages, referrers."""
+    if not _is_admin(request):
+        return RedirectResponse("/admin", status_code=303)
+    from datetime import date as _date, timedelta as _td
+    days = days if days in (7, 30, 90) else 30
+    end = _date.today()
+    start = end - _td(days=days - 1)
+    u = usage().usage_report(start.isoformat(), end.isoformat())
+    pct = lambda a, b: f"{100 * a / b:.0f}%" if b else "–"
+    first = u["funnel"][0][1]
+    funnel = "".join(f"<tr><td>{e(n)}</td><td>{c:,}</td><td>{pct(c, first)}</td>"
+                     f"<td><div style='background:#0a7f73;height:10px;width:{(100 * c / first) if first else 0:.0f}%'></div></td></tr>"
+                     for n, c in u["funnel"])
+    tab = lambda rows, k, h: ("".join(f"<tr><td>{e(str(r[k]))}</td><td>{r['n']:,}</td></tr>" for r in rows)
+                              or "<tr><td colspan=2 class=mut>None yet</td></tr>")
+    names = {c: COUNTRIES[c]["country"] for c in COUNTRIES}
+    ctry = [dict(r, country=names.get(r["country"], r["country"])) for r in u["countries"]]
+    ret = f"{100 * u['returning']:.0f}%" if u["returning"] is not None else "–"
+    pick = " · ".join(f"<a href='/admin/usage?days={d}'>{'<b>' if d == days else ''}{d} days{'</b>' if d == days else ''}</a>" for d in (7, 30, 90))
+    return page("Usage", f"""<div class=card><h1>How people use the site</h1><p>{pick}</p>
+<p class=mut>Counted without cookies or IP addresses; visitors who ask not to be tracked are not counted. A visitor id lasts one day,
+so the same person on two days counts twice; "returning" comes from a yes/no flag the browser keeps, not an id.</p>
+<div class=tw><table><tr><th>Visitors (per day, added up)</th><th>Page views</th><th>Views from returning browsers</th><th>Prices reported</th></tr>
+<tr><td><b>{u['visitor_days']:,}</b></td><td><b>{u['views']:,}</b></td><td><b>{ret}</b></td><td><b>{u['funnel'][-1][1]:,}</b></td></tr></table></div>
+{_bars(u['days'])}</div>
+<div class=card><h2>How far visits get</h2><p class=mut>Each step counts visitors (per day) who reached it. The biggest drop is where to improve.</p>
+<div class=tw><table><tr><th>Step</th><th>Visitors</th><th>of all</th><th></th></tr>{funnel}</table></div></div>
+<div class=card><h2>Pages</h2><div class=tw><table><tr><th>Page</th><th>Views</th></tr>{tab(u['pages'], 'path', 'Page')}</table></div>
+<h2>Countries chosen</h2><div class=tw><table><tr><th>Country</th><th>Times</th></tr>{tab(ctry, 'country', 'Country')}</table></div>
+<h2>Actions</h2><div class=tw><table><tr><th>Action</th><th>Times</th></tr>{tab(u['actions'], 'kind', 'Action')}</table></div>
+<h2>Languages</h2><div class=tw><table><tr><th>Language</th><th>Visitors</th></tr>{tab(u['langs'], 'lang', 'Language')}</table></div>
+<h2>Where visitors come from</h2><div class=tw><table><tr><th>Site</th><th>Views</th></tr>{tab(u['refs'], 'ref', 'Site')}</table></div></div>""")
+
+
+def problems_html() -> str:
+    """Problems from the automatic runs (last 3 days) and the robot visitor's last check."""
+    from datetime import datetime as _dt, timedelta as _td, timezone as _tz
+    out = []
+    f = ROOT / "data" / "live" / "organiser_alerts.json"
+    if f.exists():
+        cut = (_dt.now(_tz.utc) - _td(days=3)).isoformat()
+        recent = [a for a in json.loads(f.read_text()).get("alerts", []) if a["utc"] >= cut]
+        out += [f"<li>{e(a['utc'][:16].replace('T', ' '))} UTC · {e(a['job'])}: {e('; '.join(a['problems']))}</li>" for a in recent[:10]]
+    sc = ROOT / "data" / "live" / "site_check.json"
+    site = ""
+    if sc.exists():
+        r = json.loads(sc.read_text())
+        items = "".join(f"<li>{e(x)}</li>" for x in r["problems"][:20]) + "".join(f"<li class=mut>{e(x)}</li>" for x in r["warnings"])
+        site = (f"<h2>Robot visitor</h2><p class={'err' if r['status'] == 'fail' else 'mut'}>Last run {e(r['run'])}: opened {r['pages_opened']} "
+                f"page views at {e(r['site'])}; {len(r['problems'])} problems, {len(r['warnings'])} warnings.</p>{'<ul>' + items + '</ul>' if items else ''}")
+    head = (f"<p class=err><b>Problems in the last 3 days</b></p><ul>{''.join(out)}</ul>" if out
+            else "<p class=ok>No problems in the automatic runs in the last 3 days.</p>")
+    return head + site
 
 
 @app.post("/admin/login")
@@ -328,6 +398,9 @@ async def public_price(request: Request):
                                   str(d.get("location", ""))[:80], str(d.get("supplier", ""))[:60],
                                   note=("public; contact: " + str(d.get("contact", ""))[:80]) if d.get("contact") else "public",
                                   items=items, area=str(d.get("area", ""))[:10], on=_paid_on(d.get("months_ago", 0)))
+        if request.headers.get("dnt") != "1":                  # last step of the usage funnel (no cookies, no IP kept)
+            usage().record("/report.html", "price", visitor_id(SALT, _ip(request), request.headers.get("user-agent", "")),
+                           country=country)
         return {"ok": True, "id": rid}
     except (ReportError, ValueError, TypeError) as err:
         return JSONResponse({"ok": False, "error": str(err)}, status_code=400)
@@ -343,6 +416,9 @@ async def public_hit(request: Request):
     if HIT_LIMIT.blocked(ip):
         return JSONResponse({"ok": False}, status_code=429)
     HIT_LIMIT.fail(ip)
+    agent = request.headers.get("user-agent", "")
+    if any(w in agent.lower() for w in ("headless", "bot", "crawler", "spider", "lighthouse")):
+        return {"ok": True}                                  # robots (incl. our own site check) are not visitors
     try:
         d = json.loads((await request.body()) or b"{}")
         from urllib.parse import urlparse
@@ -351,7 +427,8 @@ async def public_hit(request: Request):
             ref = ""                                         # internal navigation is not a referrer
         usage().record(str(d.get("path", "/")), str(d.get("kind", "view")),
                        visitor_id(SALT, ip, request.headers.get("user-agent", "")),
-                       lang=str(d.get("lang", "")), ref=ref, country=str(d.get("country", "")))
+                       lang=str(d.get("lang", "")), ref=ref, country=str(d.get("country", "")),
+                       ret=d.get("ret") if d.get("ret") in (0, 1) else None)
         return {"ok": True}
     except (ValueError, TypeError):
         return JSONResponse({"ok": False}, status_code=400)

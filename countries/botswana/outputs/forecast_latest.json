@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 13.7021,
-  "fx_13w_pct": 2.954413963588287
+  "fx": 13.6826,
+  "fx_13w_pct": 2.807895468445931
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -61,7 +61,7 @@
    99.534,
    99.889,
    102.295,
-   104.534
+   104.516
   ]
  },
  "paths": {
@@ -94,7 +94,7 @@
     "month": "2027-03",
     "median": 0.653,
     "lo": -2.936,
-    "hi": 5.012
+    "hi": 5.008
    },
    {
     "month": "2027-04",
@@ -110,21 +110,21 @@
    },
    {
     "month": "2027-06",
-    "median": 1.377,
+    "median": 1.375,
     "lo": -3.666,
-    "hi": 6.72
+    "hi": 6.717
    },
    {
     "month": "2027-07",
     "median": 1.524,
     "lo": -3.817,
-    "hi": 7.01
+    "hi": 6.999
    },
    {
     "month": "2027-08",
     "median": 1.593,
     "lo": -4.073,
-    "hi": 7.553
+    "hi": 7.545
    },
    {
     "month": "2027-09",
@@ -134,7 +134,7 @@
    },
    {
     "month": "2027-10",
-    "median": 2.018,
+    "median": 2.015,
     "lo": -4.155,
     "hi": 8.253
    }
@@ -291,7 +291,7 @@
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in BWP and the exchange rate; an indicator, not a price index",
- "observed_3m": 4.901547644506983,
+ "observed_3m": 4.8839513678779545,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -491,7 +491,7 @@
     },
     {
      "m": "2026-10",
-     "v": 133.11,
+     "v": 133.07,
      "s": "estimate"
     }
    ]

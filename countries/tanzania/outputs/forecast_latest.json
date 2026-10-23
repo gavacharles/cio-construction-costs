@@ -6,8 +6,8 @@
  "drivers": {
   "brent_usd": 115.22,
   "brent_13w_pct": 14.863921842288907,
-  "fx": 2645.0107,
-  "fx_13w_pct": 0.961277250798509
+  "fx": 2644.8326,
+  "fx_13w_pct": 0.9544790917293211
  },
  "spark": {
   "label": "Imported-input cost pressure (index, 100 = 24 months ago)",
@@ -61,7 +61,7 @@
    97.567,
    98.705,
    100.949,
-   101.778
+   101.777
   ]
  },
  "paths": {
@@ -136,7 +136,7 @@
     "month": "2027-10",
     "median": 1.676,
     "lo": -4.298,
-    "hi": 8.309
+    "hi": 8.308
    }
   ],
   "Fuel (CiO estimate from oil)": [
@@ -144,73 +144,73 @@
     "month": "2026-11",
     "median": 0.0,
     "lo": -6.964,
-    "hi": 8.961
+    "hi": 8.96
    },
    {
     "month": "2026-12",
     "median": 0.0,
     "lo": -9.848,
-    "hi": 12.672
+    "hi": 12.671
    },
    {
     "month": "2027-01",
     "median": 0.0,
     "lo": -12.062,
-    "hi": 15.52
+    "hi": 15.519
    },
    {
     "month": "2027-02",
     "median": 0.0,
     "lo": -13.928,
-    "hi": 17.921
+    "hi": 17.92
    },
    {
     "month": "2027-03",
     "median": 0.0,
     "lo": -15.572,
-    "hi": 20.037
+    "hi": 20.035
    },
    {
     "month": "2027-04",
     "median": 0.0,
     "lo": -17.058,
-    "hi": 21.949
+    "hi": 21.947
    },
    {
     "month": "2027-05",
     "median": 0.0,
     "lo": -18.425,
-    "hi": 23.708
+    "hi": 23.706
    },
    {
     "month": "2027-06",
     "median": 0.0,
     "lo": -19.697,
-    "hi": 25.345
+    "hi": 25.343
    },
    {
     "month": "2027-07",
     "median": 0.0,
     "lo": -20.891,
-    "hi": 26.882
+    "hi": 26.88
    },
    {
     "month": "2027-08",
     "median": 0.0,
     "lo": -22.022,
-    "hi": 28.336
+    "hi": 28.334
    },
    {
     "month": "2027-09",
     "median": 0.0,
     "lo": -23.096,
-    "hi": 29.719
+    "hi": 29.717
    },
    {
     "month": "2027-10",
     "median": 0.0,
     "lo": -24.123,
-    "hi": 31.041
+    "hi": 31.038
    }
   ],
   "Steel (CiO estimate from world steel prices, rough)": [
@@ -291,7 +291,7 @@
  "base": "Oct 2026",
  "kind": "pressure",
  "basis": "Imported-input cost pressure from oil in TZS and the exchange rate; an indicator, not a price index",
- "observed_3m": 4.225666113128241,
+ "observed_3m": 4.224823452676869,
  "rows": [
   {
    "series": "Imported-input cost pressure",
@@ -491,7 +491,7 @@
     },
     {
      "m": "2026-10",
-     "v": 139.63,
+     "v": 139.62,
      "s": "estimate"
     }
    ]
