@@ -810,7 +810,10 @@ Contract Data, the Base Date and the value of work in each IPC. CiO Costs looks 
   <button type=button class="btn primary" onclick="window.print()" data-i18n=fd.print>Print price adjustment statement</button>
   <a class=btn data-ci-csv download data-i18n=fd.csv>Download the index (CSV)</a></p>
   <p class=fineprint data-fd-cap></p></div>
- <div class="panel pro" id=pro><p class=eyebrow data-i18n=pro.eyebrow>CiO Costs Pro · coming soon</p>
+
+ <div class="panel fd-statement" data-fd-detail aria-live=polite></div>
+</form>
+<div class="panel pro" id=pro><p class=eyebrow data-i18n=pro.eyebrow>CiO Costs Pro · coming soon</p>
   <h3 data-i18n=pro.h>For contracts with many payment certificates</h3>
   <ul class=plain><li data-i18n=pro.f1>Unlimited IPCs, for the whole life of the contract</li><li data-i18n=pro.f2>Saved contracts, shared with your client or consultant</li>
   <li data-i18n=pro.f3>Statements with your letterhead, ready to attach to each IPC</li><li data-i18n=pro.f4>Automatic revision when a provisional index is replaced by the official one</li>
@@ -821,8 +824,6 @@ Contract Data, the Base Date and the value of work in each IPC. CiO Costs looks 
   <option data-i18n=pro.r3>Client / employer</option><option data-i18n=pro.r4>Lender or insurer</option><option data-i18n=pro.r5>Other</option></select></label>
   <label class=consent><input type=checkbox name=consent required> <span data-i18n=pro.consent>Email me when Pro is ready. No spam; one click to stop.</span></label>
   <button class='btn primary' type=submit data-i18n=pro.join>Join the waitlist</button><p class='formmsg muted' role=status></p></form></div>
- <div class="panel fd-statement" data-fd-detail aria-live=polite></div>
-</form>
 <details class=fd-index><summary data-i18n=fd.seeidx>See the headline index month by month</summary>
  <div class=tablewrap><table class=glance><thead><tr><th data-i18n=ci.month>Month</th><th data-i18n=ci.index>Index</th><th data-i18n=ci.chg>Change</th>
  <th data-i18n=ci.status>Status</th></tr></thead><tbody id=ci-rows></tbody></table></div></details>
