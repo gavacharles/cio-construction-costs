@@ -22,3 +22,5 @@ operator: "CiO Lab"
 contact_email: ""            # e.g. hello@yourdomain — shown on the terms and privacy pages
 jurisdiction: "Uganda"
 legal_version: "Pilot version 0.1, October 2026"
+# The assistant (Claude: data scout, contract reader). Off until there is a budget for it; it also needs ANTHROPIC_API_KEY.
+assistant: false

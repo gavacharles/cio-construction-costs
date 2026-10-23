@@ -142,22 +142,6 @@ def crowd_series(key: str) -> dict:
         return {}
 
 
-def reports_this_month() -> tuple[int, int]:
-    """Prices reported this calendar month across live countries, and by how many different people (shown only when > 0)."""
-    db = ROOT / "data" / "live" / "exchange.sqlite"
-    if not db.exists():
-        return 0, 0
-    try:
-        import sqlite3
-        con = sqlite3.connect(db)
-        r = con.execute("SELECT COUNT(*), COUNT(DISTINCT handle) FROM price_reports WHERE substr(ts,1,7) = ?",
-                        (date.today().strftime("%Y-%m"),)).fetchone()
-        con.close()
-        return int(r[0] or 0), int(r[1] or 0)
-    except Exception:
-        return 0, 0
-
-
 def weeks_ahead(n: int = 8) -> list[str]:
     """Mondays of the next n weeks, as YYYY-MM-DD."""
     from datetime import timedelta
@@ -289,10 +273,7 @@ def page_glance(cs: list[dict], months: list[str], default: str) -> str:
 
 
 def _home(cs, months, default, feat, tab_html, cards):
-    UG_BASE = e(next((c["base"] for c in cs if c["key"] == "uganda"), "earlier this year"))
-    n_rep, n_people = reports_this_month()
-    REPORTED = (f"<span><b>{n_rep:,} <span data-i18n=lp.f4>prices reported</span></b> <span data-i18n=lp.f4d>this month, by</span> "
-                f"{n_people:,} <span data-i18n=lp.f4p>people</span></span>") if n_rep else ""
+
     bcs = [c for c in cs if c.get("bench") and c.get("bstats")]
     rows = "".join(f"<a class=bench-row href='countries/{c['key']}/index.html'><span>{c['flag']} {e(c['country'])}</span>"
                    f"<b>{c['bstats']['1']['inside']:.0%}</b><b>{c['bstats']['3']['inside']:.0%}</b>"
@@ -309,36 +290,18 @@ def _home(cs, months, default, feat, tab_html, cards):
 <section class=landing>
  <p class=eyebrow data-i18n=lp.eyebrow>Construction cost forecasts · 7 African countries</p>
  <h1 class=lp-h data-lp-h>Will <mark class=lp-word>cement</mark> prices rise in <span data-lp-city>Kampala</span>?</h1>
- <p class=lp-sub data-i18n=lp.sub>Official figures arrive months late. CiO Costs fills the gap: the expected change in construction costs for the date
- you choose, with a likely range, updated every few hours from official data, oil and exchange rates.</p>
+ <p class=lp-sub data-i18n=lp.sub2>Official figures arrive months late. See the expected change in construction costs for any date in the next year, with a likely range.</p>
  <div class=lp-cta><a class='btn primary big' href=#forecast data-i18n=lp.cta>See the forecast</a>
  {f"<a class='btn big' href='{CHANNEL}' target=_blank rel=noopener data-i18n=lp.cta2>Get the weekly forecast on WhatsApp</a>" if CHANNEL else ""}</div>
- <div class=lp-trust>
-  <p class=lp-facts><span><b data-i18n=lp.f1>Tested on 48 months</b> <span data-i18n=lp.f1d>of official data, in 6 benchmark countries</span></span>
-  <span><b data-i18n=lp.f2>Updated every 3 hours</b> <span id=updated-ago data-built="{BUILT}"></span></span>
-  {REPORTED}<span><a href=methodology.html data-i18n=lp.f3>How it works, in full →</a></span></p>
-  <p class=lp-src><span class=muted data-i18n=lp.src>Data from</span> <span class=src-badge>UBOS</span><span class=src-badge>KNBS</span><span class=src-badge>Stats SA</span>
-  <span class=src-badge>ERB Zambia</span><span class=src-badge>RURA</span><span class=src-badge>US BLS</span><span class=src-badge>UK DBT</span><span class=src-badge>Eurostat</span>
-  <span class=src-badge>Hong Kong C&amp;SD</span><span class=src-badge>PSA</span><span class=src-badge>FGV</span></p></div>
+ <p class=lp-facts><span data-i18n=lp.t1>Tested on 48 months of official data</span> · <span id=updated-ago data-built="{BUILT}"></span> ·
+ <a href=methodology.html#sources data-i18n=lp.t2>Sources: UBOS, KNBS, Stats SA and 8 more</a></p>
 </section>
-<section class=lp-problem><p class=eyebrow data-i18n=lp.pe>The problem</p><h2 data-i18n=lp.ph>Pricing construction shouldn't be guesswork</h2>
- <div class=lp-cards>
-  <div class=lp-card><span class=lp-dot aria-hidden=true></span><h3 data-i18n=lp.p1>Official figures arrive months late</h3>
-   <p data-i18n=lp.p1d>Statistics offices publish months after prices move — Uganda's latest figures are for {UG_BASE}.</p></div>
-  <div class=lp-card><span class=lp-dot aria-hidden=true></span><h3 data-i18n=lp.p2>Quotes expire before you sign</h3>
-   <p data-i18n=lp.p2d>Cement, steel and diesel move while a tender is open, and the contingency is a guess.</p></div>
-  <div class=lp-card><span class=lp-dot aria-hidden=true></span><h3 data-i18n=lp.p3>Price adjustment is hard to agree</h3>
-   <p data-i18n=lp.p3d>Without an index both sides can check, every payment certificate becomes a negotiation.</p></div></div></section>
-<section class=lp-how><p class=eyebrow data-i18n=lp.he>How it works</p><h2 data-i18n=lp.hh>Three steps, free during the pilot</h2>
- <div class=lp-cards>
-  <a class=lp-step href=#forecast><span class=lp-n>01</span><h3 data-i18n=lp.s1>Choose your country and date</h3>
-   <p data-i18n=lp.s1d>Next month, in three months, or any date up to a year ahead.</p><span class=lp-go data-i18n=lp.s1g>See the forecast →</span></a>
-  <a class=lp-step href=#forecast><span class=lp-n>02</span><h3 data-i18n=lp.s2>See the expected change</h3>
-   <p data-i18n=lp.s2d>For the whole market and each material, with a likely range and what is driving it.</p><span class=lp-go data-i18n=lp.s2g>Costs by material →</span></a>
-  <a class=lp-step href=calculator.html><span class=lp-n>03</span><h3 data-i18n=lp.s3>Use it in your bid or IPC</h3>
-   <p data-i18n=lp.s3d>Price a bill of quantities, or work out a FIDIC price adjustment for a payment certificate.</p><span class=lp-go data-i18n=lp.s3g>Bids &amp; contracts →</span></a></div></section>
-<section class=fc-head id=forecast><div><p class=eyebrow data-i18n=fc.eyebrow>Your forecast</p><h2 data-i18n=fc.h>Will construction costs rise where you work?</h2>
- <p class=whatis data-i18n=whatis>CiO Costs is a forecasting tool. It estimates how construction costs (materials, fuel and labour) are likely to move, with a range. It is not an official statistic, a price list or financial advice.</p></div>
+<section class=lp-how aria-labelledby=lph><h2 id=lph class=sr-only data-i18n=lp.he>How it works</h2><ol class=lp-steps>
+ <li><span class=lp-n>1</span><b data-i18n=lp.s1>Choose your country and date</b></li>
+ <li><span class=lp-n>2</span><b data-i18n=lp.s2>See the expected change and its range</b></li>
+ <li><span class=lp-n>3</span><a href=calculator.html><b data-i18n=lp.s3>Use it in your bid or IPC</b></a></li></ol></section>
+<section class=fc-head id=forecast><div><h2 class=eyebrow data-i18n=fc.eyebrow>Your forecast</h2>
+ <p class="whatis small" data-i18n=whatis>CiO Costs is a forecasting tool. It estimates how construction costs (materials, fuel and labour) are likely to move, with a range. It is not an official statistic, a price list or financial advice.</p></div>
  <div class=hero-side><label class="when-box country-pick"><span data-i18n=pick.country>Your country</span><select id=mycountry aria-label="Your country">
  {country_options(cs)}</select></label>
  {picker(months, default)}</div></section>
@@ -356,7 +319,6 @@ def _home(cs, months, default, feat, tab_html, cards):
  {MONEY}
  <div class=actions><a class='btn primary' data-feat-link href="countries/{feat['key']}/index.html" data-i18n=btn.bymaterial>See costs by material</a>
  <a class=btn data-feat-bid href="calculator.html?c={feat['key']}#bid" data-i18n=bc.pricebid>Price a bid</a>
- <a class=btn href="play.html" data-i18n=btn.play>Play The Cost Call</a>
  <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div></div>
  <aside class=feat-side><h3><span data-i18n=feat.bymaterial>By material, to</span> <span data-when-label></span></h3><ul class=breakdown data-breakdown></ul></aside>
 </section>
@@ -374,7 +336,6 @@ def _home(cs, months, default, feat, tab_html, cards):
 {BENCH_STRIP}
 <p class=center><button class=btn type=button id=grid-open data-i18n=grid.open>Show all countries</button></p>
 <p class=moreline><a href=glance.html data-i18n=glance.link>Compare all countries in one table →</a></p>
-<p class=gameline>🎯 <span data-i18n=game.line>Five quick calls a day on real prices.</span> <a href=play.html data-i18n=game.cta>Play today's calls</a></p>
 """
     return body
 
@@ -905,16 +866,10 @@ def material_series(c: dict) -> dict:
     return out
 
 
-def page_contract_index(cs: list[dict]) -> str:
-    """Price adjustment for an Interim Payment Certificate, the way FIDIC contracts do it (Sub-Clause 13.7 of the
-    2017 books, 13.8 of 1999): Schedule of cost indexation, Base Date indices, current indices 49 days before the end
-    of each IPC period, Pn = a + sum(coefficient x In / Io), adjustment = (Pn - 1) x value of work certified."""
-    opts = country_options([c for c in cs if not c.get("bench")])
-    return f"""
-<section class=prose><h2 data-i18n=fd.h>Price adjustment for an Interim Payment Certificate</h2>
-<p class=lede data-i18n=fd.lede>The FIDIC way (Sub-Clause 13.7 of the 2017 books, 13.8 of 1999): enter the Schedule of cost indexation from your
-Contract Data, the Base Date and the value of work in each IPC. CiO Costs looks up the indices and works out each adjustment.</p></section>
-<div class="panel cr" id=reader><p class=eyebrow data-i18n=cr.eyebrow>CiO Costs Pro · try it free once a day</p>
+READER_PRIVACY = """<p>Contracts uploaded to the contract reader are read in memory and then discarded: we do not store the file or its contents. To read it,
+the text (or, for a scan, the PDF) is sent to Anthropic, the maker of Claude, which processes it to answer and does not use it to train its models.
+We keep only a count of readings, to apply the daily limits.</p>"""
+READER = """<div class="panel cr" id=reader><p class=eyebrow data-i18n=cr.eyebrow>CiO Costs Pro · try it free once a day</p>
  <h3 data-i18n=cr.h>Read the adjustment data from my contract</h3>
  <p data-i18n=cr.d>Upload the Contract Data or Particular Conditions (PDF, up to 80 pages). CiO's assistant finds the Base Date and the
  Schedule of cost indexation, with the page and the words for each value, and checks them against the document. You check the values before they fill the form.</p>
@@ -924,7 +879,19 @@ Contract Data, the Base Date and the value of work in each IPC. CiO Costs looks 
  <p class=fineprint><span data-i18n=cr.priv>Your file is read and then discarded; it is never stored. It is sent to Anthropic (Claude) to be read.</span>
  <a href=privacy.html data-i18n=ft.privacy>Privacy</a></p>
  <div class=cr-out aria-live=polite></div></div>
-<form id=fd-form class=fd autocomplete=off>
+"""
+
+
+def page_contract_index(cs: list[dict]) -> str:
+    """Price adjustment for an Interim Payment Certificate, the way FIDIC contracts do it (Sub-Clause 13.7 of the
+    2017 books, 13.8 of 1999): Schedule of cost indexation, Base Date indices, current indices 49 days before the end
+    of each IPC period, Pn = a + sum(coefficient x In / Io), adjustment = (Pn - 1) x value of work certified."""
+    opts = country_options([c for c in cs if not c.get("bench")])
+    return f"""
+<section class=prose><h2 data-i18n=fd.h>Price adjustment for an Interim Payment Certificate</h2>
+<p class=lede data-i18n=fd.lede>The FIDIC way (Sub-Clause 13.7 of the 2017 books, 13.8 of 1999): enter the Schedule of cost indexation from your
+Contract Data, the Base Date and the value of work in each IPC. CiO Costs looks up the indices and works out each adjustment.</p></section>
+{READER if SITE_CFG.get("assistant") else ""}<form id=fd-form class=fd autocomplete=off>
  <div class="panel fd-step"><h3><span class=fd-n>1</span> <span data-i18n=fd.s1>Contract</span></h3>
   <div class=fd-row><label><span data-i18n=th.country>Country</span><select id=ci-country>{opts}</select></label>
   <label><span data-i18n=fd.base>Base Date</span><input type=date name=base required></label>
@@ -1103,7 +1070,7 @@ def page_methodology() -> str:
 <p class=lede>A plain description of every figure on the site: where it comes from, how forecasts are made, how they are tested,
 and where the limits are. It describes the site as it runs today; it changes when the methods change.</p>
 
-<h2>1. Official data</h2>
+<h2 id=sources>1. Official data</h2>
 <ul class=plain>
 <li><b>Uganda</b> — UBOS Construction Input Price Index (monthly, base 2016/17 = 100): overall index, building and civil works,
 and each material. The index is rebuilt from its own weights to check every release.</li>
@@ -1222,9 +1189,7 @@ to send the alerts and emails you asked for, to check data quality, and to under
 advertising.</p>
 <h2>4. Who can see it</h2><p>Only the {op} team running the site. Data is kept on the site's own server; service providers used to run it
 (hosting, email sending) process it only on our instructions.</p>
-<p>Contracts uploaded to the contract reader are read in memory and then discarded: we do not store the file or its contents. To read it,
-the text (or, for a scan, the PDF) is sent to Anthropic, the maker of Claude, which processes it to answer and does not use it to train its models.
-We keep only a count of readings, to apply the daily limits.</p>
+{READER_PRIVACY if SITE_CFG.get("assistant") else ""}
 <h2>5. How long</h2><p>Price reports are kept to build history (the published figures are aggregates). Contact details given with a report,
 alert sign-ups and waitlist entries are deleted on request, and alert and waitlist entries when the service ends.</p>
 <h2>6. Your rights</h2><p>You can ask to see, correct or delete personal data you gave us, or withdraw consent for emails, at any time
