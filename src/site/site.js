@@ -357,6 +357,11 @@
   once($(".money input"), "input", "money"); once($("#calcform"), "change", "calc");
 
   /* send a reported price; if it is far from the usual price, ask "is that right?" before saving */
+  /* towns a price can be reported from (config/towns.yaml), then "Elsewhere in <country>" */
+  function townOptions(sel, c) { const prev = sel.value;
+    sel.innerHTML = (c.towns || []).map(t => `<option>${esc(t)}</option>`).join("") +
+      `<option value=elsewhere>${esc(tr("rep.elsewherein", { c: T.country(c.cc, c.country) }))}</option>`;
+    if ([...sel.options].some(o => o.value === prev)) sel.value = prev; }
   async function sendPrice(d, msg, ccy, priceField, done) {
     const j = await post(rel + "api/public/price", d, msg); if (!j) return;
     if (j.check) {
@@ -364,29 +369,29 @@
         <span class=actions><button type=button class="btn primary" data-yes>${tr("rep.yes")}</button><button type=button class=btn data-fix>${tr("rep.fix")}</button></span>`;
       $("[data-yes]", msg).onclick = () => sendPrice(Object.assign({}, d, { confirm: true }), msg, ccy, priceField, done);
       $("[data-fix]", msg).onclick = () => { msg.textContent = ""; priceField.focus(); priceField.select(); }; return; }
-    msg.textContent = tr("rep.thanks"); priceField.value = ""; track(priceField.closest(".qr-form") ? "quick_report" : "report", d.country); if (done) done();
+    msg.textContent = tr(j.held ? "rep.held" : "rep.thanks"); priceField.value = ""; track(priceField.closest(".qr-form") ? "quick_report" : "report", d.country);
+    if (done) done(j);
   }
 
   /* ---------- quick "what did you pay?" form (home + country pages) ---------- */
-  $$(".quickrep").forEach(box => { const f = $("form", box), msg = $(".formmsg", f), it = f.querySelector("[name=item]"), town = $(".qr-town", f);
+  $$(".quickrep").forEach(box => { const f = $("form", box), msg = $(".formmsg", f), it = f.querySelector("[name=item]");
     const key = () => { const h = box.closest("[data-key]"); return h ? h.dataset.key : (($("#mycountry") || {}).value || "uganda"); };
     function setup() { const c = DATA.countries[key()]; if (!c) return; const prev = it.value;
       box.hidden = !(c.pitems || []).length; if (box.hidden) return;              /* the benchmark takes no price reports */
       it.innerHTML = (c.pitems || []).map(i => `<option value="${i.code}">${T.mat(i.name)}</option>`).join(""); if (prev) it.value = prev;
       if (!it.value && it.options.length) it.selectedIndex = 0;
       $("[data-qr-ccy]", f).textContent = `(${c.currency}${(c.pitems.find(i => i.code === it.value) || {}).unit ? " / " + c.pitems.find(i => i.code === it.value).unit : ""})`;
-      $$("[data-capital]", f).forEach(x => x.textContent = c.capital || "");
+      townOptions($("[data-towns]", f), c);
       const n = (c.pending || {})[it.value] || 0, nm = T.mat((c.pitems.find(i => i.code === it.value) || {}).name || "");
       $("[data-qr-progress]", box).innerHTML = n >= 3 ? tr("qr.live", { i: nm, c: cname(c) }) : tr("qr.need", { n, i: nm, c: cname(c) }); }
-    it.onchange = setup; $$("[name=area]", f).forEach(r => r.onchange = () => { town.hidden = f.querySelector("[name=area]:checked").value !== "other"; });
+    it.onchange = setup;
     const my = $("#mycountry"); if (my && !box.closest("[data-key]")) my.addEventListener("change", () => { it.value = ""; setup(); });
     setup();
-    f.onsubmit = ev => { ev.preventDefault(); const c = DATA.countries[key()], area = f.querySelector("[name=area]:checked").value;
-      const loc = area === "capital" ? c.capital : f.querySelector("[name=location]").value.trim();
-      if (!loc) { msg.textContent = tr("qr.town"); f.querySelector("[name=location]").focus(); return; }
-      sendPrice({ country: key(), item: it.value, price: +f.querySelector("[name=price]").value, location: loc, area, supplier: "",
-        months_ago: +f.querySelector("[name=months_ago]").value }, msg, c.currency,
-        f.querySelector("[name=price]"), () => { c.pending = c.pending || {}; c.pending[it.value] = (c.pending[it.value] || 0) + 1; setup(); msg.textContent = tr("rep.thanks"); }); }; });
+    f.onsubmit = ev => { ev.preventDefault(); const c = DATA.countries[key()];
+      sendPrice({ country: key(), item: it.value, price: +f.querySelector("[name=price]").value, location: f.querySelector("[name=location]").value,
+        supplier: "", months_ago: +f.querySelector("[name=months_ago]").value }, msg, c.currency,
+        f.querySelector("[name=price]"), j => { if (j.held) return;                 /* held for review: it does not count yet */
+          c.pending = c.pending || {}; c.pending[it.value] = (c.pending[it.value] || 0) + 1; setup(); msg.textContent = tr("rep.thanks"); }); }; });
 
   /* ---------- alerts (country pages) ---------- */
   $$(".alertbox").forEach(box => { const f = $("form", box), msg = $(".formmsg", box);
@@ -402,8 +407,7 @@
     const want = (location.hash || "").slice(1); if (DATA.report[want]) cs.value = want;
     function refresh() { const R = DATA.report[cs.value];
       it.innerHTML = R.items.map(i => `<option value="${i.code}">${i.name}</option>`).join(""); $$("[data-ccy]").forEach(x => x.textContent = R.currency);
-      unit.value = "per " + (R.items[0] || {}).unit; $$("[data-capital]", rf).forEach(x => x.textContent = R.capital || "");
-      fld("location").placeholder = R.capital ? `e.g. ${R.capital}` : ""; it.onchange = () => { const i = R.items.find(x => x.code === it.value); unit.value = "per " + (i ? i.unit : ""); };
+      unit.value = "per " + (R.items[0] || {}).unit; townOptions(fld("location"), R); it.onchange = () => { const i = R.items.find(x => x.code === it.value); unit.value = "per " + (i ? i.unit : ""); };
       /* every item of this country: its typical price, or how close it is to having one (3 people in 2 months) */
       const by = Object.fromEntries((R.crowd || []).map(r => [r.item, r])), num = v => Math.round(v).toLocaleString(T.loc || undefined);
       const live = R.items.filter(i => (by[i.code] || {}).published).length;

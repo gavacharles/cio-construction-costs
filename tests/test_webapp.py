@@ -271,8 +271,9 @@ def test_price_typo_check_and_area_prices(tmp_path, monkeypatch):
     body = {"country": "uganda", "item": "cement_50kg", "price": 350000, "location": "Gulu", "area": "other"}
     r = c.post("/api/public/price", json=body).json()
     assert r["check"] and r["usual"] == 35500 and not r["ok"]                    # queried, not saved
-    assert c.post("/api/public/price", json=dict(body, confirm=True)).json()["ok"]    # saved once confirmed
-    assert c.post("/api/public/price", json=dict(body, area="moon", confirm=True)).status_code == 400
+    r = c.post("/api/public/price", json=dict(body, confirm=True)).json()
+    assert r["ok"] and r["held"]                       # saved once confirmed, but 10x what others pay: held for review
+    assert c.post("/api/public/price", json=dict(body, location="Paris", confirm=True)).status_code == 400   # not a town in the list
 
 
 def test_visit_counting_and_pilot_report(tmp_path, monkeypatch):

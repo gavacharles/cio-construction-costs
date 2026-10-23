@@ -1,0 +1,25 @@
+# Towns people can choose when they report a price (src/market/reports.py). The first town is the main commercial
+# city (shown as "the capital" in typical prices); every other choice counts as "elsewhere". "Elsewhere in <country>"
+# is always offered too. iso2 is the country code Cloudflare reports for a visitor (reports sent from another
+# country are held for review).
+uganda:
+  iso2: UG
+  towns: [Kampala, Wakiso, Mukono, Entebbe, Jinja, Mbarara, Masaka, Mbale, Gulu, Lira, Fort Portal, Hoima, Arua, Kasese, Soroti, Kabale]
+kenya:
+  iso2: KE
+  towns: [Nairobi, Mombasa, Kisumu, Nakuru, Eldoret, Thika, Kiambu, Machakos, Nyeri, Meru, Kakamega, Kitale, Naivasha, Kisii, Malindi]
+south_africa:
+  iso2: ZA
+  towns: [Johannesburg, Pretoria, Cape Town, Durban, Gqeberha, Bloemfontein, East London, Polokwane, Mbombela, Pietermaritzburg, Rustenburg, Kimberley, George]
+rwanda:
+  iso2: RW
+  towns: [Kigali, Musanze, Huye, Rubavu, Muhanga, Nyagatare, Rusizi, Rwamagana, Karongi, Kayonza]
+tanzania:
+  iso2: TZ
+  towns: [Dar es Salaam, Dodoma, Arusha, Mwanza, Mbeya, Morogoro, Tanga, Zanzibar, Moshi, Iringa, Tabora, Kigoma, Mtwara]
+zambia:
+  iso2: ZM
+  towns: [Lusaka, Ndola, Kitwe, Livingstone, Kabwe, Chingola, Mufulira, Chipata, Kasama, Solwezi, Mansa]
+nigeria:
+  iso2: NG
+  towns: [Lagos, Abuja, Kano, Ibadan, Port Harcourt, Benin City, Kaduna, Enugu, Onitsha, Aba, Jos, Ilorin, Abeokuta, Warri, Owerri, Uyo, Calabar]

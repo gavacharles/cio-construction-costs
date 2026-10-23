@@ -127,3 +127,37 @@ def test_alerts_measure_from_today(tmp_path, monkeypatch):
     monkeypatch.setattr(alerts, "ROOT", tmp_path)
     x, _ = alerts.expected_3m("uganda", "Overall")
     assert x == pytest.approx(0.0)              # 3% already reached by today's level: no further change before 2099
+
+
+def test_reports_held_for_review(tmp_path, monkeypatch):
+    """Sent from another country, or far from what others nearby pay: saved, counted nowhere until released."""
+    monkeypatch.setenv("CIO_DB", str(tmp_path / "h.sqlite"))
+    monkeypatch.setenv("CIO_ADMIN_KEY", "k")
+    monkeypatch.setenv("CIO_SECURE_COOKIES", "0")
+    import app as webapp
+    importlib.reload(webapp)
+    from fastapi.testclient import TestClient
+    from reports import Participants
+    c = TestClient(webapp.app)
+    towns = webapp.TOWNS["uganda"]["towns"]
+    with Participants(tmp_path / "h.sqlite") as p:
+        with pytest.raises(Exception):
+            p.add_report("x", "uganda", "cement_50kg", 35000, "Nairobi", town_list=towns)        # not a Ugandan town
+        p.add_report("x", "uganda", "cement_50kg", 35000, "Jinja", town_list=towns)
+        assert p.reports("uganda").iloc[0]["area"] == "other"                                   # area follows the town
+        for h, v in (("a", 35000), ("b", 36000), ("c", 34000)):
+            p.add_report(h, "uganda", "cement_50kg", v, "Kampala", town_list=towns)
+        assert p.far_from_others("uganda", "cement_50kg", 90000, "Kampala", "z").startswith("far from others: typical 35,000 in Kampala")
+        assert p.far_from_others("uganda", "cement_50kg", 40000, "Kampala", "z") is None
+    body = {"country": "uganda", "item": "cement_50kg", "price": 36000, "location": "Kampala"}
+    assert not c.post("/api/public/price", json=body, headers={"cf-ipcountry": "UG"}).json()["held"]
+    r = c.post("/api/public/price", json=dict(body, location="elsewhere"), headers={"cf-ipcountry": "GB"}).json()
+    assert r["ok"] and r["held"]                                                                 # sent from the UK
+    p = webapp.people()
+    held = p.held_reports()
+    assert len(held) == 1 and held[0]["held"] == "sent from another country: GB" and held[0]["seen_from"] == "GB"
+    assert len(p.reports("uganda")) == 5                                                         # the held one is not counted
+    c.post("/admin/login", data={"key": "k"})
+    assert "sent from another country: GB" in c.get("/admin").text
+    c.post(f"/admin/report/{held[0]['id']}", data={"decision": "count"})
+    assert p.held_reports() == [] and len(p.reports("uganda")) == 6                             # released: now it counts

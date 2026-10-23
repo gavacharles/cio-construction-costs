@@ -51,6 +51,8 @@ MIN_REPORTERS = 3          # an item's median is published only once this many d
 WINDOW_WEEKS = 8           # typical prices pool the last 8 weeks: people report when they can, not every week
 BACKFILL_MONTHS = 6        # people may also report what they paid up to 6 months ago
 CHECK_FACTOR = 3           # a price more than 3x above or below the usual one is queried before it is saved
+FAR_FACTOR = 2             # a saved price more than 2x above or below what others nearby report is held for review
+ELSEWHERE = "elsewhere"    # the town choice "Elsewhere in <country>"
 CAPITALS = {"uganda": "Kampala", "kenya": "Nairobi", "rwanda": "Kigali", "tanzania": "Dar es Salaam", "ethiopia": "Addis Ababa",
             "south_africa": "Johannesburg", "zambia": "Lusaka", "botswana": "Gaborone", "malawi": "Lilongwe", "zimbabwe": "Harare",
             "namibia": "Windhoek", "mozambique": "Maputo", "mauritius": "Port Louis", "ghana": "Accra", "nigeria": "Lagos",
@@ -78,8 +80,13 @@ class Participants:
         self.db = sqlite3.connect(str(path), timeout=10, check_same_thread=False)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
-        if "area" not in [r[1] for r in self.db.execute("PRAGMA table_info(price_reports)")]:
+        cols = [r[1] for r in self.db.execute("PRAGMA table_info(price_reports)")]
+        if "area" not in cols:
             self.db.execute("ALTER TABLE price_reports ADD COLUMN area TEXT")      # capital / other (older rows: unknown)
+        if "held" not in cols:                      # why a report waits for the organiser before it counts (NULL: counts)
+            self.db.execute("ALTER TABLE price_reports ADD COLUMN held TEXT")
+        if "seen_from" not in cols:                 # country the report was sent from, per Cloudflare ('' if unknown)
+            self.db.execute("ALTER TABLE price_reports ADD COLUMN seen_from TEXT")
 
     def close(self) -> None:
         self.db.close()
@@ -127,7 +134,12 @@ class Participants:
     # ------------------------------------------------------------- reports --
     def add_report(self, handle: str, country: str, item: str, price: float, location: str,
                    supplier: str = "", note: str = "", items: list[str] | None = None,
-                   on: date | None = None, area: str = "") -> int:
+                   on: date | None = None, area: str = "", seen_from: str = "", town_list: list[str] | None = None,
+                   hold: str = "") -> int:
+        """Save a price. With `town_list` (config/towns.yaml) the town must be one of them or "elsewhere", and the area
+        follows from it. The report is held for review (saved, but counted nowhere until the organiser releases it)
+        for the caller's reason `hold` (e.g. sent from another country, per `seen_from`) or when it is far from what
+        other people nearby report."""
         if items is not None and item not in items:
             raise ReportError(f"unknown item {item!r}")
         if not price or price <= 0:
@@ -136,14 +148,50 @@ class Participants:
             raise ReportError("say where (town or area) the price applies")
         if area and area not in AREAS:
             raise ReportError("area must be 'capital' or 'other'")
+        held = []
+        if town_list is not None:
+            if location != ELSEWHERE and location not in town_list:
+                raise ReportError("choose the town from the list")
+            area = "capital" if town_list and location == town_list[0] else "other"
+        if hold:
+            held.append(hold)
+        far = self.far_from_others(country, item, float(price), location, handle)
+        if far:
+            held.append(far)
         on = on or date.today()
         with self.db:
             cur = self.db.execute(
-                "INSERT INTO price_reports (ts, week, handle, country, item, price, location, supplier, note, area)"
-                " VALUES (?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO price_reports (ts, week, handle, country, item, price, location, supplier, note, area, held, seen_from)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                 (datetime.now(timezone.utc).isoformat(timespec="seconds"), week_of(on), handle, country, item,
-                 float(price), location.strip(), supplier.strip(), note.strip(), area or None))
+                 float(price), location.strip(), supplier.strip(), note.strip(), area or None, "; ".join(held) or None, seen_from))
         return cur.lastrowid
+
+    def far_from_others(self, country: str, item: str, price: float, location: str, handle: str) -> str | None:
+        """A reason to hold the price when it is more than FAR_FACTOR away from the typical price other people reported
+        recently — in the same town when 3 people reported there, else in the country. None when nothing to compare."""
+        df = self.reports(country, since_weeks=WINDOW_WEEKS)
+        g = df[(df["item"] == item) & (df["handle"] != handle)]
+        for where, sub in ((location, g[g["location"] == location]), (None, g)):
+            per = sub.groupby("handle")["price"].median()
+            if len(per) >= MIN_REPORTERS:
+                typical = float(per.median())
+                if price > typical * FAR_FACTOR or price < typical / FAR_FACTOR:
+                    return f"far from others: typical {typical:,.0f}" + (f" in {where}" if where and where != ELSEWHERE else "")
+                return None
+        return None
+
+    def held_reports(self, days: int = 90) -> list[dict]:
+        since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+        return [dict(r) for r in self.db.execute("SELECT * FROM price_reports WHERE held IS NOT NULL AND ts >= ? ORDER BY ts DESC", (since,))]
+
+    def release_report(self, rid: int, keep: bool) -> None:
+        """The organiser's decision on a held report: count it, or delete it."""
+        with self.db:
+            if keep:
+                self.db.execute("UPDATE price_reports SET held = NULL WHERE id = ? AND held IS NOT NULL", (rid,))
+            else:
+                self.db.execute("DELETE FROM price_reports WHERE id = ? AND held IS NOT NULL", (rid,))
 
     def add_alert(self, country: str, series: str, threshold: float, channel: str, contact: str) -> int:
         """Ask to be told when the expected change in `series` reaches `threshold` % (either sign)."""
@@ -236,9 +284,10 @@ class Participants:
                             (datetime.now(timezone.utc).isoformat(timespec="seconds"), alert_id))
 
     def reports(self, country: str, since_weeks: int = 12) -> pd.DataFrame:
+        """Counted reports only (not held for review)."""
         since = week_of(date.today() - timedelta(weeks=since_weeks))
-        return pd.read_sql_query("SELECT * FROM price_reports WHERE country=? AND week>=? ORDER BY ts",
-                                 self.db, params=(country, since))
+        return pd.read_sql_query("SELECT * FROM price_reports WHERE country=? AND week>=? AND held IS NULL ORDER BY ts",
+                                 self.db, params=(country, since))           # held reports count nowhere
 
     def crowd_index(self, country: str, item: str, months: int = 24, area: str | None = None,
                     min_reporters: int = MIN_REPORTERS) -> list[dict]:

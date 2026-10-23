@@ -31,6 +31,7 @@ from collections import defaultdict, deque
 from pathlib import Path
 
 import numpy as np
+import yaml
 from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
@@ -55,6 +56,7 @@ SECURE = os.environ.get("CIO_SECURE_COOKIES", "1") != "0"
 app = FastAPI(title="CiO construction cost pilot", docs_url=None, redoc_url=None)
 COUNTRIES = {c: load_country(c) for c in list_countries()}
 LIVE = [c for c in pilot_report.live_countries() if c in COUNTRIES]   # countries open on the public site
+TOWNS = yaml.safe_load((ROOT / "config" / "towns.yaml").read_text(encoding="utf-8"))   # towns to report from, ISO codes
 
 
 # Connections opened while handling a request are closed when the response is done.
@@ -232,6 +234,7 @@ def admin(request: Request, err: str = ""):
     return page("Organiser", f"""<div class=card><h1>Pilot</h1><p>Live countries: {live}.
 Anyone can view the site and report prices; there are no accounts.</p><h2>Monthly pilot reports</h2><ul>{links}</ul></div>
 <div class=card><h2>Health</h2>{problems_html()}<p><a href='/admin/usage'>How people use the site →</a></p></div>
+<div class=card id=held><h2>Price reports held for review</h2>{held_html()}</div>
 <div class=card id=scout><h2>Data scout: official prices to review</h2>{scout_html()}</div>
 <div class=card><h2>CiO Costs Pro waitlist</h2>{waitlist_html()}</div>
 <div class=card><h2>Data checks</h2><p class=mut>Last run {e(checks['run'])}: {ok} ok, {len(probs)} to look at.</p>
@@ -247,6 +250,30 @@ def _bars(days: list[dict]) -> str:
                    f"<title>{e(d['day'])}: {d['visitors']} visitors, {d['views']} views</title></rect>" for i, d in enumerate(days))
     return (f"<svg viewBox='0 0 {len(days) * (w + 3)} 100' width='100%' height=120 preserveAspectRatio=none role=img "
             f"aria-label='Visitors per day'>{bars}</svg><p class=mut>{e(days[0]['day'])} → {e(days[-1]['day'])} · highest day: {top} visitors</p>")
+
+
+def held_html() -> str:
+    """Price reports held for review: they count nowhere until the organiser releases them."""
+    rows = people().held_reports()
+    if not rows:
+        return "<p class=mut>Nothing held. Reports sent from another country, or far from what others nearby report, wait here.</p>"
+    names = {c: COUNTRIES[c]["country"] for c in COUNTRIES}
+    body = "".join(
+        f"<tr><td>{e(r['ts'][:10])}</td><td>{e(names.get(r['country'], r['country']))}</td><td>{e(r['item'])}</td>"
+        f"<td><b>{r['price']:,.0f}</b></td><td>{e(r['location'])}</td><td class=err>{e(r['held'])}</td>"
+        f"<td><form method=post action=/admin/report/{r['id']} class=inline><button name=decision value=count>Count it</button> "
+        f"<button name=decision value=delete>Delete</button></form></td></tr>" for r in rows)
+    return ("<p class=mut>Saved but not counted in any typical price or index until you decide. Count honest ones "
+            "(e.g. someone abroad paying for a project at home); delete the rest.</p><div class=tw><table><tr><th>Date</th>"
+            f"<th>Country</th><th>Item</th><th>Price</th><th>Town</th><th>Why held</th><th></th></tr>{body}</table></div>")
+
+
+@app.post("/admin/report/{rid}")
+def admin_report(request: Request, rid: int, decision: str = Form(...)):
+    if not _is_admin(request):
+        return RedirectResponse("/admin", status_code=303)
+    people().release_report(rid, keep=decision == "count")
+    return RedirectResponse("/admin#held", status_code=303)
 
 
 @app.get("/admin/usage", response_class=HTMLResponse)
@@ -398,14 +425,22 @@ async def public_price(request: Request):
             usual = people().check_price(country, str(d.get("item", "")), price)
             if usual:                                    # likely a typo: ask before saving
                 return {"ok": False, "check": True, "usual": round(usual)}
+        # Where the report was sent from, per Cloudflare (absent when the site is reached directly). From another
+        # country it is kept but held for review: honest cases exist (paying from abroad, roaming, VPNs).
+        seen = request.headers.get("cf-ipcountry", "").upper()[:2]
+        own = (TOWNS.get(country) or {}).get("iso2", "")
+        hold = ("sent through Tor" if seen == "T1" else f"sent from another country: {seen}"
+                if seen and seen != "XX" and own and seen != own else "")
         rid = people().add_report(_anon(request), country, str(d.get("item", "")), float(d.get("price", 0)),
                                   str(d.get("location", ""))[:80], str(d.get("supplier", ""))[:60],
                                   note=("public; contact: " + str(d.get("contact", ""))[:80]) if d.get("contact") else "public",
-                                  items=items, area=str(d.get("area", ""))[:10], on=_paid_on(d.get("months_ago", 0)))
+                                  items=items, on=_paid_on(d.get("months_ago", 0)), seen_from=seen, hold=hold,
+                                  town_list=(TOWNS.get(country) or {}).get("towns"))
+        held = bool(people().db.execute("SELECT held FROM price_reports WHERE id=?", (rid,)).fetchone()[0])
         if request.headers.get("dnt") != "1":                  # last step of the usage funnel (no cookies, no IP kept)
             usage().record("/report.html", "price", visitor_id(SALT, _ip(request), request.headers.get("user-agent", "")),
                            country=country)
-        return {"ok": True, "id": rid}
+        return {"ok": True, "id": rid, "held": held}
     except (ReportError, ValueError, TypeError) as err:
         return JSONResponse({"ok": False, "error": str(err)}, status_code=400)
 

@@ -33,6 +33,7 @@ sys.path.insert(0, str(ROOT / "src" / "market"))
 from country import load_country, list_countries   # noqa: E402
 import yaml                                          # noqa: E402
 
+TOWNS = yaml.safe_load((ROOT / "config" / "towns.yaml").read_text(encoding="utf-8"))     # towns people report from
 SITE_CFG = yaml.safe_load((ROOT / "config" / "site.yaml").read_text(encoding="utf-8")) if (ROOT / "config" / "site.yaml").exists() else {}
 WA = str(SITE_CFG.get("whatsapp_number") or "").strip().lstrip("+")
 FEATURED = SITE_CFG.get("glance_featured") or ["uganda", "kenya", "south_africa", "nigeria", "ghana"]
@@ -418,11 +419,8 @@ QUICK = """<section class=quickrep aria-labelledby=qr-h><div class=qr-head><h2 i
  <p class=qr-progress data-qr-progress></p></div>
  <form class=qr-form><label><span data-i18n=rep.item>Item</span><select name=item></select></label>
  <label><span><span data-i18n=rep.price>Price</span> <span class=muted data-qr-ccy></span></span><input name=price type=number min=1 step=any inputmode=decimal required></label>
- <fieldset class=areapick><legend data-i18n=rep.area>Where is that?</legend>
-  <label><input type=radio name=area value=capital checked><span><span data-i18n=rep.incap>In</span> <b data-capital></b></span></label>
-  <label><input type=radio name=area value=other><span data-i18n=rep.elsewhere>Elsewhere in the country</span></label></fieldset>
+ <label><span data-i18n=rep.townpick>Town</span><select name=location required data-towns></select></label>
  {WHEN}
- <label class=qr-town hidden><span data-i18n=rep.town>Town or area</span><input name=location></label>
  <button class='btn primary big' type=submit data-i18n=rep.send>Send price</button>
  <p class='formmsg muted' role=status></p></form></section>"""
 
@@ -803,12 +801,9 @@ have a moment. Reports are anonymous: we publish typical prices from at least 3 
  <label><span data-i18n=rep.item>Item</span><select name=item required></select></label>
  <div class=row2><label><span data-i18n=rep.price>Price</span> (<span data-ccy></span>)<input name=price type=number min=1 step=any required inputmode=decimal></label>
  <label><span data-i18n=rep.unit>Unit</span><input name=unit readonly tabindex=-1></label></div>
- <div class=row2><label><span data-i18n=rep.town>Town or area</span><input name=location required placeholder="e.g. Kampala – Nakawa"></label>
+ <div class=row2><label><span data-i18n=rep.townpick>Town</span><select name=location required data-towns></select></label>
  <label><span data-i18n=rep.from>Bought from</span><select name=supplier><option>Hardware shop</option><option>Factory or depot</option><option>Quarry</option>
  <option>Fuel station</option><option>Contractor or site</option><option>Other</option></select></label></div>
- <fieldset class=areapick><legend data-i18n=rep.area>Where is that?</legend>
-  <label><input type=radio name=area value=capital checked><span><span data-i18n=rep.incap>In</span> <b data-capital></b></span></label>
-  <label><input type=radio name=area value=other><span data-i18n=rep.elsewhere>Elsewhere in the country</span></label></fieldset>
  {WHEN}
  <label><span data-i18n=rep.contact>Your phone or email</span> <span class=muted data-i18n=rep.contact.note>(optional, never published — only if you want follow-ups)</span><input name=contact></label>
  <button class='btn primary big' type=submit data-i18n=rep.send>Send price</button><p class='formmsg muted' role=status></p></form>
@@ -1233,7 +1228,9 @@ def page_privacy() -> str:
 <ul class=plain>
 <li><b>Price reports</b>: country, item, price, town or area, whether it is the main city or elsewhere, where you bought, when you paid,
 and — only if you choose to give it — a phone number or email for follow-up questions. Each reporter is identified only by a scrambled
-code derived from the connection, so the same person counts once; the connection address itself is not stored with the report.</li>
+code derived from the connection, so the same person counts once; the connection address itself is not stored with the report.
+We also keep the country the report was sent from (as our network provider, Cloudflare, sees it — not the town or address): a report
+sent from another country is checked before it counts, as is one far from what others nearby report.</li>
 <li><b>Price alerts</b>: your email and what you asked to be alerted about, with your consent.</li>
 <li><b>Pro waitlist</b>: your email, and optionally your organisation and role, with your consent.</li>
 <li><b>Visit counts</b>: the page and actions (for example "a price was reported"), language, and the website you came from. A visitor is a
@@ -1285,7 +1282,7 @@ def build() -> Path:
                            crowd={r["name"]: r["median"] for r in crowd(c["key"]) if r.get("published")},
                            pitems=[{"code": i["code"], "name": i["name"], "unit": i["unit"]} for i in load_country(c["key"]).get("price_items", [])],
                            pending={r["item"]: (r["reporters"] if r.get("published") else r.get("pending", 0)) for r in crowd(c["key"])},
-                           capital=CAPITALS.get(c["key"], "")) for c in cs}
+                           capital=CAPITALS.get(c["key"], ""), towns=(TOWNS.get(c["key"]) or {}).get("towns", [])) for c in cs}
     quiz = [{"key": c["key"], "country": c["country"], "flag": c["flag"], "cc": slim[c["key"]]["cc"], "material": m["name"], "period": p, "change": v,
              "step": c["step"]} for c in cs for m in c["materials"]
             for p, v in m.get("history", [])[-(8 if c["step"] == "quarter" else 12):] if abs(v) >= 0.2]   # recent periods only
@@ -1320,7 +1317,7 @@ def build() -> Path:
                                           desc="A daily game on real construction prices across Africa."), encoding="utf-8")
     keys = [c["key"] for c in cs if load_country(c["key"]).get("price_items")]      # the benchmark takes no price reports
     items = {c["key"]: {"country": c["country"], "flag": c["flag"], "currency": c["currency"], "cc": slim[c["key"]]["cc"],
-                        "capital": CAPITALS.get(c["key"], ""),
+                        "capital": CAPITALS.get(c["key"], ""), "towns": (TOWNS.get(c["key"]) or {}).get("towns", []),
                         "items": load_country(c["key"]).get("price_items", []), "crowd": crowd(c["key"])} for c in cs}
     (OUT / "report.html").write_text(shell("Report prices — CiO Costs", page_report(keys), dict(base, report=items),
                                            page="report", desc="Report construction input prices in 18 African countries."),

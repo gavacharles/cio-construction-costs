@@ -104,11 +104,11 @@ def build(db_path: str, month: str) -> str:
 
     # ---- price reports (anyone can contribute; typical prices pool the month, not single weeks)
     rep_rows, items_ok = [], {}
-    earlier = {r["handle"] for r in _rows(db, "SELECT DISTINCT handle FROM price_reports WHERE substr(ts,1,10) < ?", start)}
+    earlier = {r["handle"] for r in _rows(db, "SELECT DISTINCT handle FROM price_reports WHERE substr(ts,1,10) < ? AND held IS NULL", start)}
     for k in pilot:
         cfg = country_cfg(k)
         items = cfg.get("price_items", [])
-        df = _rows(db, "SELECT handle, item, area FROM price_reports WHERE country=? AND substr(ts,1,10) BETWEEN ? AND ?", k, start, end)
+        df = _rows(db, "SELECT handle, item, area FROM price_reports WHERE country=? AND substr(ts,1,10) BETWEEN ? AND ? AND held IS NULL", k, start, end)
         people = {r["handle"] for r in df}
         ok_items = 0
         for it in items[:ITEMS_GOAL]:
