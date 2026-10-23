@@ -480,3 +480,16 @@ footer{border-top:1px solid var(--rule)}.footlinks{font-size:12px}
 .cl-item:hover{border-color:var(--rule)}.cl-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.cl-top b{font-size:15px}
 .cl-price{font:600 1.35rem var(--mono);letter-spacing:-.02em}.cl-price small{font-size:.6em;color:var(--ink-3)}.cl-meta{font-size:13px;color:var(--ink-2)}
 .cl-prog{display:block;height:6px;background:var(--bar-bg)}.cl-prog i{display:block;height:100%;background:var(--accent-fill)}
+
+/* FIDIC price adjustment */
+.fd{display:flex;flex-direction:column;gap:16px;margin-top:10px}.fd-step h3{display:flex;align-items:center;gap:10px;margin:0 0 8px;font-size:1.4rem}
+.fd-n{display:inline-grid;place-items:center;width:28px;height:28px;border:1px solid var(--rule);font:600 14px var(--mono)}
+.fd-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end}.fd-row .fineprint{grid-column:1/-1;margin:0}
+.fd-row label{display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:14.5px}.fd-row select,.fd-row input{height:44px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 10px;font:15px var(--text)}
+.fd-table input,.fd-table select{height:38px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 8px;font:14px var(--text);min-width:90px;width:100%}
+.fd-table td{vertical-align:middle}.fd-man{display:flex;gap:6px;margin-top:6px}.fd-man input{min-width:70px}
+.fd-statement h3{margin:0 0 4px;font-size:1.5rem}.fd-ipcblock{border-top:1px solid var(--line);padding-top:10px;margin-top:12px}.fd-ipcblock h4{font:600 14px var(--mono);margin:0 0 6px}
+.bad{color:var(--miss);font-weight:600;font-size:13px}.fd-index{margin-top:20px}.fd-index summary{cursor:pointer;font:400 1.3rem var(--display)}
+@media (max-width:760px){.fd-row{grid-template-columns:1fr}}
+@media print{.fd-step:not(:last-child) .actions,.fd-index,.bctabs,[data-bc-pane=bid],.prose,.boq-del,.fd-step{display:none!important}.fd-statement{display:block!important;border:0}}
+.cspark{width:60px;height:20px;vertical-align:middle}.cspark polyline{fill:none;stroke:var(--teal);stroke-width:1.6}

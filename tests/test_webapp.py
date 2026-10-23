@@ -129,7 +129,7 @@ def test_rwanda_note_builds_offline(tmp_path, monkeypatch):
     import weekly_note
     monkeypatch.setattr(weekly_note, "NOTES", tmp_path)
     md = weekly_note.build("rwanda", fetch=False, db_path=tmp_path / "none.sqlite").read_text()
-    assert "# Rwanda construction material prices" in md and "What it means for your money" in md and "RWF" in md
+    assert "# Rwanda construction costs" in md and "What it means for your money" in md and "RWF" in md
     assert (tmp_path / md.splitlines()[0] if False else tmp_path).exists()
     assert any(p.suffix == ".html" for p in tmp_path.rglob("*"))
 
@@ -159,7 +159,7 @@ def test_all_country_configs_and_generic_note(tmp_path, monkeypatch):
     import weekly_note
     monkeypatch.setattr(weekly_note, "NOTES", tmp_path)
     md = weekly_note.build("nigeria", fetch=False, db_path=tmp_path / "none.sqlite").read_text()
-    assert "# Nigeria construction material prices" in md and "no official construction price index" in md and "Prices to watch" in md
+    assert "# Nigeria construction costs" in md and "no official construction price index" in md and "Prices to watch" in md
 
 
 def test_cost_pressure_indicator():
@@ -353,3 +353,20 @@ def test_bids_and_contracts_page_has_both_tools():
     assert "id=boqform" in t and "id=ci-country" in t and "data-bc-pane=bid" in t and "data-bc-pane=adjust" in t
     assert "id=calcform" in t                                                  # quick estimate kept, inside the bid tab
     assert "url=calculator.html#adjust" in (ROOT / "public" / "contract-index.html").read_text()
+
+
+
+def test_reported_price_index():
+    """A monthly index of what people pay: each person once, 3+ people, two-month pooling, 100 = first month."""
+    from reports import Participants
+    db = Participants(":memory:")
+    today = date.today().replace(day=15)
+    for k, price in enumerate([30000, 30000, 31500, 33000]):           # four months ago .. this month
+        m = today - timedelta(days=30 * (3 - k))
+        for h in ("a", "b", "c"):
+            db.add_report(h, "rwanda", "cement_50kg", price + (100 if h == "b" else 0), "Kigali", on=m, area="capital")
+    db.add_report("a", "rwanda", "cement_50kg", 99999, "Kigali", on=today)        # same person again: counts once
+    rows = db.crowd_index("rwanda", "cement_50kg")
+    assert rows[0]["v"] == 100.0 and rows[-1]["v"] > rows[0]["v"] and all(r["people"] >= 3 for r in rows)
+    assert [r["m"] for r in rows] == sorted(r["m"] for r in rows)
+    assert db.crowd_index("rwanda", "cement_50kg", min_reporters=4) == []          # never from fewer people

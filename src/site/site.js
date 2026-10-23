@@ -449,12 +449,10 @@
     const indexed = c => c.official && Object.keys(c.paths).length > 1;
     const opts = c => indexed(c)
       ? Object.keys(c.paths).map(n => `<option value="${esc(n)}">${T.mat(n)}</option>`).join("") + `<option value="">${tr("boq.fixed")}</option>`
-      : `<option value="${esc(c.head)}">${tr("boq.imported")}</option><option value="@local">${tr("boq.local")}</option>`
-        + `<option value="@labour">${tr("boq.labour")}</option><option value="">${tr("boq.fixed")}</option>`;
+      : `<option value="${esc(c.head)}">${tr("boq.imported")}</option><option value="">${tr("boq.fixed")}</option>`;
     const LOCAL = ["sand", "stone", "aggregate", "ballast", "hardcore", "murram", "block", "brick", "timber", "wood", "gravel", "quarry", "mchanga", "sable"];
     const guess = (c, desc) => { const w = words(desc).filter(t => t.length >= 3);
-      if (!indexed(c)) return w.some(t => ["labour", "labor", "kazi", "wages"].some(x => t.startsWith(x))) ? "@labour"
-        : w.some(t => LOCAL.some(x => t.startsWith(x))) ? "@local" : c.head;
+      if (!indexed(c)) return c.head;                       /* one estimate for every line; the user can mark a line fixed */
       return Object.keys(c.paths).find(n => { const nw = words(n + " " + T.mat(n)); return w.some(t => nw.some(x => x.startsWith(t) || t.startsWith(x) || (SYN[t] || []).some(y => x.startsWith(y)))); }) ?? c.head; };
     const fmt = v => Math.round(v).toLocaleString(T.loc || undefined);
     function addRow(v = {}) {
@@ -519,43 +517,92 @@
     compute();
   }
 
-  /* ---------- price adjustment index for contracts ---------- */
-  const cis = $("#ci-country");
-  if (cis && DATA.cindex) {
-    const want = new URLSearchParams(location.search).get("c") || (location.hash || "").slice(1), k0 = store.get("cio-country", null);
-    cis.value = DATA.cindex[want] ? want : (DATA.cindex[k0] ? k0 : cis.value);
-    const f = $("#ci-form"), out = $("[data-ci-out]");
-    const WDEF = { cement: 25, steel: 25, rebar: 25, reinforc: 25, sand: 10, aggregate: 10, ballast: 10, stone: 10, diesel: 10, fuel: 10, labour: 20 };
-    function ciCalc() { const X = DATA.cindex[cis.value], g = m => X.rows.find(r => r.m === m), b = g(f.elements.base.value), v = g(f.elements.val.value);
-      if (!b || !v) return; const a = Math.min(100, Math.max(0, +f.elements.fixed.value || 0)) / 100, amt = +f.elements.amount.value || 0;
-      let factor = a + (1 - a) * v.v / b.v, prov = b.s === "provisional" || v.s === "provisional";
-      const multi = f.querySelector("[name=mode]:checked") && f.querySelector("[name=mode]:checked").value === "multi" && X.mats && Object.keys(X.mats).length;
-      if (multi) { const ws = $$("[data-w]", f).map(i => [i.dataset.w, Math.max(0, +i.value || 0)]).filter(([, w]) => w > 0), tot = ws.reduce((s, [, w]) => s + w, 0) || 1;
-        let sum = 0, miss = [];
-        ws.forEach(([n, w]) => { const S = X.mats[n], r0 = S.find(r => r.m === f.elements.base.value), r1 = S.find(r => r.m === f.elements.val.value);
-          if (!r0 || !r1) { miss.push(T.mat(n)); return; } prov = prov || r0.s === "provisional" || r1.s === "provisional"; sum += (w / tot) * r1.v / r0.v; });
-        if (miss.length) { out.innerHTML = `<p>${tr("ci.nomonth", { m: miss.join(", ") })}</p>`; return; }
-        factor = a + (1 - a) * sum; }
-      const adj = amt * factor;
-      out.innerHTML = `<p class=pct>${apct((factor - 1) * 100)}</p><p class=pct-l>${tr("ci.res", { i0: b.v.toFixed(2), i1: v.v.toFixed(2) })}</p>
-        <p class=calcmoney>${tr("ci.adj", { v: `<b>${Math.round(adj).toLocaleString(T.loc || undefined)} ${X.currency}</b>`, d: Math.round(adj - amt).toLocaleString(T.loc || undefined) })}</p>
-        ${prov ? `<p class=fineprint>${tr("ci.prov")}</p>` : ""}${multi ? `<p class=fineprint>${tr("ci.multif")}</p>` : ""}`; }
-    function ciShow() { const X = DATA.cindex[cis.value], rows = X.rows;
-      $("[data-ci-what]").innerHTML = X.official ? tr("ci.what.off", { o: esc(X.office) }) : tr("ci.what.est");
+  /* ---------- price adjustment for an IPC, the FIDIC way (Sub-Clause 13.7 / 13.8) ---------- */
+  const cis = $("#ci-country"), fd = $("#fd-form");
+  if (cis && fd && DATA.cindex) {
+    const want = new URLSearchParams(location.search).get("c") || store.get("cio-country", null);
+    if (DATA.cindex[want]) cis.value = want;
+    const X = () => DATA.cindex[cis.value], ymd = d => d.toISOString().slice(0, 10), num = v => Math.round(v).toLocaleString(T.loc || undefined);
+    /* index sources for this country: the headline index, each material's official index, or values typed in */
+    const sources = x => [["overall", x.official ? tr("fd.overall") : tr("fd.estimate")], ...Object.keys(x.mats || {}).map(n => ["mat:" + n, T.mat(n)]),
+      ...Object.keys(x.crowd || {}).map(n => ["crowd:" + n, tr("fd.crowd", { i: T.mat(n) })]), ["manual", tr("fd.manual")]];
+    const series = (x, src) => src === "overall" ? x.rows : src.startsWith("mat:") ? (x.mats || {})[src.slice(4)]
+      : src.startsWith("crowd:") ? (x.crowd || {})[src.slice(6)] : null;
+    const periodOf = (x, date) => { const y = date.slice(0, 4), m = +date.slice(5, 7);
+      return x.step === "quarter" ? `${y}-${String(3 * Math.floor((m - 1) / 3) + 1).padStart(2, "0")}` : `${y}-${String(m).padStart(2, "0")}`; };
+    /* index value for a date: that month (quarter); later than the latest published -> the latest, flagged */
+    function look(rows, x, date) { if (!rows || !rows.length || !date) return null; const p = periodOf(x, date), r = rows.find(z => z.m === p);
+      if (r) return { v: r.v, m: r.m, s: r.s };
+      if (p > rows[rows.length - 1].m) { const l = rows[rows.length - 1]; return { v: l.v, m: l.m, s: "latest" }; }
+      return null; }
+    /* steel first: "reinforcement" contains the letters "cement" */
+    const DEF = [["steel", 0.20], ["reinforc", 0.20], ["rebar", 0.20], ["cement", 0.20], ["labour", 0.15], ["diesel", 0.10], ["fuel", 0.10], ["sand", 0.05], ["aggregate", 0.05], ["ballast", 0.05]];
+    function defaults(x) { const el = [{ el: tr("fd.fixed"), coef: 0.15, src: "fixed" }]; let left = 0.85; const used = new Set();
+      Object.keys(x.mats || {}).forEach(n => { const k = DEF.find(([w]) => n.toLowerCase().includes(w)); if (!k || used.has(k[0].slice(0, 4)) || left - k[1] < 0.05) return;
+        used.add(k[0].slice(0, 4)); el.push({ el: T.mat(n), coef: k[1], src: "mat:" + n }); left -= k[1]; });
+      el.push({ el: x.official ? tr("fd.othermat") : tr("fd.imported"), coef: +left.toFixed(2), src: "overall" }); return el; }
+    let st = store.get("cio-fidic", null);
+    function fresh() { const x = X(), b = new Date(); b.setMonth(b.getMonth() - 12);
+      const ipc = [3, 6, 9].map((k, i) => { const d = new Date(b); d.setMonth(d.getMonth() + k); return { no: i + 1, end: ymd(new Date(d.getFullYear(), d.getMonth() + 1, 0)), value: 250000000 }; });
+      return { country: cis.value, base: ymd(b), sched: defaults(x), ipcs: ipc }; }
+    if (!st || st.country !== cis.value) st = fresh();
+    const sched = $("#fd-sched"), ipcs = $("#fd-ipcs"), out = $("[data-fd-detail]");
+    function drawSched() { const x = X(), so = sources(x);
+      sched.innerHTML = st.sched.map((r, i) => `<tr data-i=${i}><td>${r.src === "fixed" ? `<b>a</b> · ${esc(r.el)}` : `<input data-f=el value="${esc(r.el)}">`}</td>
+        <td><input data-f=coef type=number step=0.01 min=0 max=1 value="${r.coef}"></td>
+        <td>${r.src === "fixed" ? `<span class=muted>${tr("fd.notadj")}</span>` : `<select data-f=src>${so.map(([v, l]) => `<option value="${esc(v)}"${v === r.src ? " selected" : ""}>${esc(l)}</option>`).join("")}</select>
+          ${r.src === "manual" ? `<span class=fd-man><input data-f=io type=number step=any placeholder="I₀" value="${r.io ?? ""}"><input data-f=in type=number step=any placeholder="Iₙ" value="${r.in ?? ""}"></span>` : ""}`}</td>
+        <td>${r.src === "fixed" ? "" : `<button type=button class=boq-del data-del aria-label="${esc(tr("boq.del"))}">✕</button>`}</td></tr>`).join(""); }
+    function drawIpcs() { ipcs.innerHTML = st.ipcs.map((r, i) => `<tr data-i=${i}><td>${r.no}</td><td><input data-f=end type=date value="${r.end}"></td>
+        <td><input data-f=value type=number min=0 step=any value="${r.value}"></td><td data-o=idate></td><td data-o=pn></td><td data-o=adj></td>
+        <td><button type=button class=boq-del data-del aria-label="${esc(tr("boq.del"))}">✕</button></td></tr>`).join(""); }
+    function compute() {
+      const x = X(), sum = st.sched.reduce((a, r) => a + (+r.coef || 0), 0); $$("[data-ci-ccy]").forEach(e => e.textContent = x.currency);
+      $("[data-fd-sum]").innerHTML = `${sum.toFixed(2)}${Math.abs(sum - 1) > 0.005 ? ` <span class=bad>${tr("fd.sumwarn")}</span>` : " ✓"}`;
+      let total = 0; const blocks = [];
+      st.ipcs.forEach((p, i) => { const row = $$("tr", ipcs)[i]; if (!row) return;
+        const idx = new Date(p.end); idx.setDate(idx.getDate() - 49); const idate = isNaN(idx) ? "" : ymd(idx);
+        $("[data-o=idate]", row).textContent = idate ? qlabel(periodOf(x, idate), x.step) : "–";
+        let Pn = 0, ok = true, flags = new Set(); const lines = [];
+        st.sched.forEach(r => { const c = +r.coef || 0;
+          if (r.src === "fixed") { Pn += c; lines.push([r.el, c, "", "", "", c]); return; }
+          let io, inn;
+          if (r.src === "manual") { io = { v: +r.io }; inn = { v: +r.in }; if (!(io.v > 0 && inn.v > 0)) { ok = false; flags.add("manual"); } }
+          else { const S = series(x, r.src); io = look(S, x, st.base); inn = look(S, x, idate);
+            if (!io || !inn) { ok = false; flags.add("missing"); }
+            else { if (io.s === "provisional" || inn.s === "provisional") flags.add("provisional"); if (inn.s === "latest") flags.add("latest"); } }
+          if (io && inn && io.v > 0) { const w = c * inn.v / io.v; Pn += w; lines.push([r.el, c, io.v, inn.v, inn.v / io.v, w, io.m, inn.m]); } });
+        const adj = ok ? (Pn - 1) * (+p.value || 0) : null; if (adj != null) total += adj;
+        $("[data-o=pn]", row).textContent = ok ? Pn.toFixed(4) : "–"; $("[data-o=adj]", row).innerHTML = adj == null ? "–" : `${adj < 0 ? "−" : ""}${num(Math.abs(adj))}`;
+        blocks.push(`<div class=fd-ipcblock><h4>IPC ${p.no} · ${tr("fd.end")} ${p.end} · ${tr("fd.idate")} ${idate ? qlabel(periodOf(x, idate), x.step) : "–"}</h4>
+          <table class=glance><thead><tr><th>${tr("fd.el")}</th><th>${tr("fd.coef")}</th><th>I₀</th><th>Iₙ</th><th>Iₙ / I₀</th><th>${tr("fd.weighted")}</th></tr></thead><tbody>
+          ${lines.map(l => `<tr><td>${esc(l[0])}</td><td>${(+l[1]).toFixed(2)}</td><td>${l[2] === "" ? "–" : (+l[2]).toFixed(2)}</td><td>${l[3] === "" ? "–" : (+l[3]).toFixed(2)}</td>
+            <td>${l[4] === "" ? "–" : (+l[4]).toFixed(4)}</td><td>${(+l[5]).toFixed(4)}</td></tr>`).join("")}</tbody>
+          <tfoot><tr><th colspan=5>P<sub>n</sub></th><th>${ok ? Pn.toFixed(4) : "–"}</th></tr></tfoot></table>
+          <p>${ok ? tr("fd.line", { v: num(+p.value || 0), p: Pn.toFixed(4), a: `<b>${adj < 0 ? "−" : ""}${num(Math.abs(adj))} ${x.currency}</b>` }) : tr("fd.cannot")}</p>
+          ${[...flags].map(fl => `<p class=fineprint>${tr("fd.flag." + fl)}</p>`).join("")}</div>`); });
+      $("[data-fd-total]").innerHTML = `<b>${total < 0 ? "−" : ""}${num(Math.abs(total))}</b>`;
+      out.innerHTML = `<h3>${tr("fd.statement")}</h3><p class=muted>${x.flag} ${cname(DATA.countries[cis.value] || { country: x.country, cc: x.cc })} · ${tr("fd.base")} ${st.base}</p>${blocks.join("")}
+        <p class=fineprint>${tr("fd.formula")}</p>`;
+      store.set("cio-fidic", st); }
+    function showIndex() { const x = X(), rows = x.rows;
+      $("[data-ci-what]").innerHTML = x.official ? tr("ci.what.off", { o: esc(x.office) }) : tr("ci.what.est");
       $("#ci-rows").innerHTML = rows.slice().reverse().map((r, i, arr) => { const p = arr[i + 1], ch = p ? (r.v / p.v - 1) * 100 : null;
-        return `<tr><td>${qlabel(r.m, X.step)}</td><td>${r.v.toFixed(2)}</td><td>${ch == null ? "–" : apct(ch)}</td><td><span class="cist ${r.s}">${tr("ci.st." + r.s)}</span></td></tr>`; }).join("");
-      $("[data-ci-csv]").href = rel + `data/contract_index_${cis.value}.csv`; $("[data-ci-csv]").setAttribute("download", `contract_index_${cis.value}.csv`);
-      $("[data-ci-ccy]").textContent = X.currency;
-      const o = rows.map(r => `<option value=${r.m}>${qlabel(r.m, X.step)}${r.s === "provisional" ? " *" : ""}</option>`).join("");
-      f.elements.base.innerHTML = o; f.elements.val.innerHTML = o;
-      f.elements.base.value = rows[Math.max(0, rows.length - (X.step === "quarter" ? 5 : 13))].m; f.elements.val.value = rows[rows.length - 1].m;
-      const has = X.mats && Object.keys(X.mats).length; $("[data-ci-modebox]", f).hidden = !has;
-      if (!has) { const one = f.querySelector("[name=mode][value=one]"); if (one) one.checked = true; }
-      $("[data-ci-weights]", f).innerHTML = has ? `<p class=fineprint>${tr("ci.wnote")}</p>` + Object.keys(X.mats).map(n => { const k = Object.keys(WDEF).find(w => n.toLowerCase().includes(w));
-        return `<label class=mixrow><span>${T.mat(n)}</span><input type=number min=0 max=100 data-w="${esc(n)}" value=${k ? WDEF[k] : 0}></label>`; }).join("") : "";
-      $("[data-ci-weights]", f).hidden = !(has && f.querySelector("[name=mode]:checked").value === "multi"); ciCalc(); }
-    cis.onchange = ciShow; f.oninput = ev => { if (ev.target.name === "mode") $("[data-ci-weights]", f).hidden = ev.target.value !== "multi"; ciCalc(); };
-    f.onchange = f.oninput; ciShow();
+        return `<tr><td>${qlabel(r.m, x.step)}</td><td>${r.v.toFixed(2)}</td><td>${ch == null ? "–" : apct(ch)}</td><td><span class="cist ${r.s}">${tr("ci.st." + r.s)}</span></td></tr>`; }).join("");
+      $("[data-ci-csv]").href = rel + `data/contract_index_${cis.value}.csv`; $("[data-ci-csv]").setAttribute("download", `contract_index_${cis.value}.csv`); }
+    function all() { fd.elements.base.value = st.base; drawSched(); drawIpcs(); showIndex(); compute(); }
+    cis.onchange = () => { st = fresh(); all(); };
+    fd.elements.base.onchange = () => { st.base = fd.elements.base.value; compute(); };
+    sched.addEventListener("input", ev => { const tr_ = ev.target.closest("tr"), r = st.sched[+tr_.dataset.i], f = ev.target.dataset.f; if (!f) return;
+      r[f] = f === "coef" || f === "io" || f === "in" ? +ev.target.value : ev.target.value; if (f === "src") { drawSched(); } compute(); });
+    sched.addEventListener("change", ev => { if (ev.target.dataset.f === "src") { const r = st.sched[+ev.target.closest("tr").dataset.i]; r.src = ev.target.value; drawSched(); compute(); } });
+    sched.addEventListener("click", ev => { if (ev.target.matches("[data-del]")) { st.sched.splice(+ev.target.closest("tr").dataset.i, 1); drawSched(); compute(); } });
+    ipcs.addEventListener("input", ev => { const r = st.ipcs[+ev.target.closest("tr").dataset.i], f = ev.target.dataset.f; if (!f) return; r[f] = f === "value" ? +ev.target.value : ev.target.value; compute(); });
+    ipcs.addEventListener("click", ev => { if (ev.target.matches("[data-del]")) { st.ipcs.splice(+ev.target.closest("tr").dataset.i, 1); st.ipcs.forEach((p, i) => p.no = i + 1); drawIpcs(); compute(); } });
+    $("[data-fd-addel]").onclick = () => { st.sched.push({ el: tr("fd.newel"), coef: 0, src: "overall" }); drawSched(); compute(); };
+    $("[data-fd-addipc]").onclick = () => { if (st.ipcs.length >= 12) return; const last = st.ipcs[st.ipcs.length - 1], d = last ? new Date(last.end) : new Date();
+      const e = new Date(d.getFullYear(), d.getMonth() + 2, 0); st.ipcs.push({ no: st.ipcs.length + 1, end: ymd(e), value: last ? last.value : 0 }); drawIpcs(); compute(); };
+    all();
   }
 
   /* ---------- embed widget ---------- */
@@ -624,7 +671,7 @@
   function finish() { const score = st.answers.filter(Boolean).length, grid = st.answers.map(a => a ? "🟩" : "🟥").join("");
     if (stats.last !== today) { const y = ymd(new Date(Date.now() - 864e5));
       track("game"); stats.played++; stats.wins += score; stats.dist = stats.dist || [0, 0, 0, 0, 0, 0]; stats.dist[score]++; stats.streak = (stats.last === y ? stats.streak : 0) + 1; stats.best = Math.max(stats.best, stats.streak); stats.last = today; store.set("cio-call-stats", stats); }
-    statsRow(); const text = `CiO Cost Call ${today}\n${grid} ${score}/5\nWill building costs rise? Play: CiO Costs`;
+    statsRow(); const text = `CiO Cost Call ${today}\n${grid} ${score}/5\nWill construction costs rise? Play: CiO Costs`;
     game.innerHTML = `<div class=qcard>${progress()}<h2>${tr("gm.score", { n: score })}</h2><div class=result-grid>${grid}</div>
       <p class=muted>${tr("gm.newcalls", { s: stats.streak })}</p>
       <div class=actions style="justify-content:center"><button class="btn primary" id=share>${tr("gm.share")}</button><button class=btn id=showres>${tr("res.h")}</button><a class=btn href="report.html">${tr("gm.report")}</a></div></div>`;

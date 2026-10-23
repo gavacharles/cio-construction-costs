@@ -129,6 +129,19 @@ def crowd(key: str) -> list[dict]:
         return []
 
 
+def crowd_series(key: str) -> dict:
+    """Reported-price index per item (name -> monthly rows), from the live database."""
+    db = ROOT / "data" / "live" / "exchange.sqlite"
+    if not db.exists():
+        return {}
+    try:
+        from reports import Participants
+        with Participants(db) as p:
+            return {i["name"]: r for i in load_country(key).get("price_items", []) if (r := p.crowd_index(key, i["code"]))}
+    except Exception:
+        return {}
+
+
 def weeks_ahead(n: int = 8) -> list[str]:
     """Mondays of the next n weeks, as YYYY-MM-DD."""
     from datetime import timedelta
@@ -263,11 +276,9 @@ def _home(cs, months, default, feat, tab_html, cards):
         f"<span data-i18n=bench.c3>3 months</span><span data-i18n=bench.cb>Beats “no change”</span></div>{rows}</div></section>")
     body = f"""
 <section class=hero><div><p class=eyebrow data-i18n=home.eyebrow>Construction cost outlook · 7 African countries</p>
- <h1 data-i18n=home.h1>Will construction material prices rise where you work?</h1>
- <p class=lede data-i18n=home.lede>Choose your country and a date. See whether building material prices are likely to go up, by how much,
- and what that means for the price you pay — updated every few hours.</p>
- <p class=whatis data-i18n=whatis>CiO Costs is a forecasting tool. It estimates how building material prices are likely to move, with a range.
- It is not an official statistic, a price list or financial advice.</p></div>
+ <h1 data-i18n=home.h1>Will construction costs rise where you work?</h1>
+ <p class=lede data-i18n=home.lede>Choose your country and a date. See whether construction costs — the prices of materials, fuel and labour — are likely to go up, by how much, and what that means for the price you pay. Updated every few hours.</p>
+ <p class=whatis data-i18n=whatis>CiO Costs is a forecasting tool. It estimates how construction costs (materials, fuel and labour) are likely to move, with a range. It is not an official statistic, a price list or financial advice.</p></div>
  <div class=hero-side><label class="when-box country-pick"><span data-i18n=pick.country>Your country</span><select id=mycountry aria-label="Your country">
  {country_options(cs)}</select></label>
  {picker(months, default)}</div></section>
@@ -431,11 +442,21 @@ Prices reported by participants (below) fill the gap, material by material.</p><
         v = r.get(a)
         return f"{v:,.0f}" if v is not None and v == v else f"<span class=muted>{r.get(a + '_n', 0) or 0} of 3</span>"
     cap = CAPITALS.get(c["key"], "capital")
+    cidx = crowd_series(c["key"])
+    def trend(r):
+        rows = cidx.get(r["name"]) or []
+        if len(rows) < 2:
+            return "<span class=muted>–</span>"
+        v = [x["v"] for x in rows[-12:]]
+        lo, hi = min(v), max(v)
+        pts = " ".join(f"{i * 60 / (len(v) - 1):.1f},{18 - (x - lo) * 16 / ((hi - lo) or 1):.1f}" for i, x in enumerate(v))
+        return (f"<svg class=cspark viewBox='0 0 60 20' aria-hidden=true><polyline points='{pts}'/></svg> "
+                f"<span title='{len(rows)} months'>{rows[-1]['v']:.1f}</span>")
     crowd_html = "".join(f"<tr><th scope=row>{e(r['name'])}</th><td>{price(r)}</td><td>{area(r, 'capital')}</td><td>{area(r, 'other')}</td>"
-                         f"<td>{r['reporters'] if r.get('published') else '–'}</td><td>{ch(r)}</td></tr>" for r in crowd_rows)
+                         f"<td>{r['reporters'] if r.get('published') else '–'}</td><td>{ch(r)}</td><td>{trend(r)}</td></tr>" for r in crowd_rows)
     crowd_sec = (f"<div class=tablewrap><table class=glance><thead><tr><th data-i18n=th.item>Item</th><th data-i18n=th.typical>Typical price</th>"
                  f"<th>{e(cap)}</th><th data-i18n=th.elsewhere>Elsewhere</th><th data-i18n=th.reporters>Reporters</th>"
-                 f"<th data-i18n=th.vsprev>vs previous 2 months</th></tr></thead><tbody>{crowd_html}</tbody></table></div>"
+                 f"<th data-i18n=th.vsprev>vs previous 2 months</th><th data-i18n=th.cidx>Price index</th></tr></thead><tbody>{crowd_html}</tbody></table></div>"
                  f"<p class=muted data-i18n=crowd.areas2>Typical prices pool the last 2 months, so people can report whenever they buy. Area prices appear once 3 people report from that area.</p>") if crowd_rows else (
         f"<div class=tile><p><b>0 of 3</b> people have reported prices for {e(c['country'])} in the last 2 months. Prices appear here once 3 people report "
         f"what they pay for an item ({e(', '.join(c['items'][:4]).lower())}…). "
@@ -630,7 +651,7 @@ def page_report(keys: list[str]) -> str:
     opts = country_options([{"key": k, "flag": flag(load_country(k)["iso3"]), "country": load_country(k)["country"]} for k in keys])
     return f"""
 <section class=prose><p class=eyebrow data-i18n=nav.report>Report prices</p><h1 data-i18n=rep.h1>What did you pay?</h1>
-<p class=lede data-i18n=rep.lede2>Tell us a price you paid or were quoted for a building material — today or up to 6 months ago, whenever you
+<p class=lede data-i18n=rep.lede2>Tell us a price you paid or were quoted for a construction material — today or up to 6 months ago, whenever you
 have a moment. Reports are anonymous: we publish typical prices from at least 3 people — never names, numbers or single reports.</p></section>
 <section class=reportgrid><form id=reportform class=panel>
  <label><span data-i18n=th.country>Country</span><select name=country required>{opts}</select></label>
@@ -759,36 +780,47 @@ def material_series(c: dict) -> dict:
 
 
 def page_contract_index(cs: list[dict]) -> str:
+    """Price adjustment for an Interim Payment Certificate, the way FIDIC contracts do it (Sub-Clause 13.7 of the
+    2017 books, 13.8 of 1999): Schedule of cost indexation, Base Date indices, current indices 49 days before the end
+    of each IPC period, Pn = a + sum(coefficient x In / Io), adjustment = (Pn - 1) x value of work certified."""
     opts = country_options([c for c in cs if not c.get("bench")])
     return f"""
-<section class=prose><h2 data-i18n=ci.h1>A price adjustment index for contracts</h2>
-<p class=lede data-i18n=ci.lede>Many construction contracts adjust payments when input prices move (price adjustment or fluctuation clauses).
-They need an index both sides can look up. Here is one for each pilot country, month by month, with a calculator.</p></section>
-<section class=reportgrid><div class=panel>
- <label><span data-i18n=th.country>Country</span><select id=ci-country>{opts}</select></label>
- <p class=ci-what data-ci-what></p>
+<section class=prose><h2 data-i18n=fd.h>Price adjustment for an Interim Payment Certificate</h2>
+<p class=lede data-i18n=fd.lede>The FIDIC way (Sub-Clause 13.7 of the 2017 books, 13.8 of 1999): enter the Schedule of cost indexation from your
+Contract Data, the Base Date and the value of work in each IPC. CiO Costs looks up the indices and works out each adjustment.</p></section>
+<form id=fd-form class=fd autocomplete=off>
+ <div class="panel fd-step"><h3><span class=fd-n>1</span> <span data-i18n=fd.s1>Contract</span></h3>
+  <div class=fd-row><label><span data-i18n=th.country>Country</span><select id=ci-country>{opts}</select></label>
+  <label><span data-i18n=fd.base>Base Date</span><input type=date name=base required></label>
+  <p class=fineprint data-i18n=fd.basehelp>Base Date = 28 days before the latest date for submitting the Tender (as stated in the contract).</p></div>
+  <p class=ci-what data-ci-what></p></div>
+ <div class="panel fd-step"><h3><span class=fd-n>2</span> <span data-i18n=fd.s2>Schedule of cost indexation</span></h3>
+  <p class=muted data-i18n=fd.s2d>Copy it from the Contract Data. The coefficients, including the fixed part, must add up to 1.00.</p>
+  <div class=tablewrap><table class="glance fd-table"><thead><tr><th data-i18n=fd.el>Element</th><th data-i18n=fd.coef>Coefficient</th>
+  <th data-i18n=fd.src>Index</th><th><span class=sr-only>Remove</span></th></tr></thead><tbody id=fd-sched></tbody>
+  <tfoot><tr><th data-i18n=boq.total>Total</th><th data-fd-sum></th><th colspan=2></th></tr></tfoot></table></div>
+  <p class=actions><button type=button class=btn data-fd-addel data-i18n=fd.addel>Add an element</button></p></div>
+ <div class="panel fd-step"><h3><span class=fd-n>3</span> <span data-i18n=fd.s3>Interim Payment Certificates</span></h3>
+  <p class=muted data-i18n=fd.s3d>Value of work certified in each period, without items valued at current prices, dayworks and provisional sums.</p>
+  <div class=tablewrap><table class="glance fd-table"><thead><tr><th>IPC</th><th data-i18n=fd.end>Period ends</th>
+  <th><span data-i18n=fd.value>Value of work</span> (<span data-ci-ccy></span>)</th><th data-i18n=fd.idate>Index date (−49 days)</th>
+  <th>P<sub>n</sub></th><th data-i18n=fd.adj>Adjustment</th><th><span class=sr-only>Remove</span></th></tr></thead><tbody id=fd-ipcs></tbody>
+  <tfoot><tr><th colspan=5 data-i18n=fd.total>Total price adjustment</th><th data-fd-total></th><th></th></tr></tfoot></table></div>
+  <p class=actions><button type=button class=btn data-fd-addipc data-i18n=fd.addipc>Add an IPC</button>
+  <button type=button class="btn primary" onclick="window.print()" data-i18n=fd.print>Print price adjustment statement</button>
+  <a class=btn data-ci-csv download data-i18n=fd.csv>Download the index (CSV)</a></p></div>
+ <div class="panel fd-statement" data-fd-detail aria-live=polite></div>
+</form>
+<details class=fd-index><summary data-i18n=fd.seeidx>See the headline index month by month</summary>
  <div class=tablewrap><table class=glance><thead><tr><th data-i18n=ci.month>Month</th><th data-i18n=ci.index>Index</th><th data-i18n=ci.chg>Change</th>
- <th data-i18n=ci.status>Status</th></tr></thead><tbody id=ci-rows></tbody></table></div>
- <p><a class=btn data-ci-csv download data-i18n=boq.csv>Download CSV</a></p></div>
-<aside class=panel><h2 data-i18n=ci.calc>Adjust a payment</h2>
- <form id=ci-form>
- <label><span data-i18n=ci.amount>Amount to adjust</span> (<span data-ci-ccy></span>)<input name=amount type=number min=0 step=any value=100000000 inputmode=decimal></label>
- <div class=row2><label><span data-i18n=ci.base>Base month (tender)</span><select name=base></select></label>
- <label><span data-i18n=ci.val>Valuation month</span><select name=val></select></label></div>
- <label><span data-i18n=ci.fixed>Fixed part, not adjusted (%)</span><input name=fixed type=number min=0 max=100 value=15></label>
- <fieldset class=ci-mode data-ci-modebox hidden><legend data-i18n=ci.mode>Index</legend>
-  <label><input type=radio name=mode value=one checked><span data-i18n=ci.one>One overall index</span></label>
-  <label><input type=radio name=mode value=multi><span data-i18n=ci.multi>One index per material</span></label></fieldset>
- <div class=ci-weights data-ci-weights hidden></div>
- </form>
- <div data-ci-out aria-live=polite></div>
- <p class=fineprint data-i18n=ci.formula>Formula: adjusted amount = amount × (a + b × I₁ / I₀), where a is the fixed part, b = 1 − a, I₀ the index in the
- base month and I₁ in the valuation month — the one-index form of standard price adjustment clauses.</p></aside></section>
+ <th data-i18n=ci.status>Status</th></tr></thead><tbody id=ci-rows></tbody></table></div></details>
 <section class=prose><h2 data-i18n=ci.how>How to use it — and its limits</h2><ul class=plain>
+<li data-i18n=fd.l1>Indices: the month of the Base Date gives I₀; the month 49 days before the end of each IPC period gives Iₙ (quarterly indices:
+that quarter). If an index is not yet published, the latest one is used and the line is marked, so it can be revised later as FIDIC allows.</li>
 <li data-i18n=ci.l1>Official months come straight from the statistics office (UBOS, KNBS, Stats SA). Provisional months are our forecast, used only until
 the official figure is published; agree in the contract that provisional values are replaced.</li>
-<li data-i18n=ci.l2>Countries without an official construction index (Nigeria, Rwanda, Tanzania, Zambia) show our import-cost index from oil and the
-exchange rate. It does not cover local materials or labour, so use it with care and say so in the contract.</li>
+<li data-i18n=fd.l2>Countries without official indices (Nigeria, Rwanda, Tanzania, Zambia): use the CiO import-cost estimate for imported inputs, or type in
+the values of whatever index your contract names (for example a national CPI for labour).</li>
 <li data-i18n=ci.l3>This is free during the pilot. Indices by material and city, long history, monthly certificates and a data feed are planned for
 CiO Costs Pro.</li></ul></section>
 """
@@ -957,7 +989,7 @@ def build() -> Path:
     (OUT / "assets" / "cio.js").write_text((SITE / "i18n.js").read_text(encoding="utf-8") + "\n"
                                            + (SITE / "site.js").read_text(encoding="utf-8"), encoding="utf-8")
 
-    (OUT / "index.html").write_text(shell("CiO Costs — will construction material prices rise?", page_index(cs, months, default), base,
+    (OUT / "index.html").write_text(shell("CiO Costs — will construction costs rise?", page_index(cs, months, default), base,
                                            page="home"), encoding="utf-8")
     (OUT / "glance.html").write_text(shell("Costs at a glance — CiO Costs", page_glance(cs, months, default), base, page="glance"),
                                       encoding="utf-8")
@@ -974,8 +1006,19 @@ def build() -> Path:
                                      encoding="utf-8")
     cindex = {c["key"]: {"country": c["country"], "flag": c["flag"], "cc": slim[c["key"]]["cc"], "currency": c["currency"],
                          "official": c["official"], "office": load_country(c["key"])["settlement"].get("statistics_office", ""),
-                         "step": c["step"], "rows": contract_series(c), "mats": mats_series.get(c["key"], {})} for c in cs if not c.get("bench")}
+                         "step": c["step"], "rows": contract_series(c), "mats": mats_series.get(c["key"], {}),
+                         "crowd": {n: r for n, r in crowd_series(c["key"]).items() if len(r) >= 6}} for c in cs if not c.get("bench")}
     (OUT / "data").mkdir(exist_ok=True)
+    import csv as _csv
+    for old in (OUT / "data").glob("crowd_index_*.csv"):     # never leave a file from an earlier build behind
+        old.unlink()
+    for c in cs:                                      # reported-price indices, free download
+        cser = crowd_series(c["key"])
+        if cser:
+            with open(OUT / "data" / f"crowd_index_{c['key']}.csv", "w", newline="", encoding="utf-8") as fh:
+                w = _csv.writer(fh)
+                w.writerow(["item", "month", "typical_price", "people", "index"])
+                w.writerows([n, r["m"], r["price"], r["people"], r["v"]] for n, rows in cser.items() for r in rows)
     for k, v in cindex.items():                       # free CSV downloads
         (OUT / "data" / f"contract_index_{k}.csv").write_text(
             "month,index,status\n" + "".join(f"{r['m']},{r['v']},{r['s']}\n" for r in v["rows"]), encoding="utf-8")

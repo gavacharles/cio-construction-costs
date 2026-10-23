@@ -208,7 +208,7 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
     else:
         offl = f"{country} has no official construction price index yet. This is an estimate from oil and currency moves."
 
-    title = f"{country} construction material prices — week of {today.day} {MONTHS[today.month - 1]} {today.year}"
+    title = f"{country} construction costs — week of {today.day} {MONTHS[today.month - 1]} {today.year}"
     md = "\n".join([
         f"# {title}", "",
         "## In one line", "", line, "",
@@ -229,7 +229,7 @@ def plain_note(d: dict, cfg: dict, crowd_rows: list[dict], today: date, site_url
         "_CiO Costs · free weekly note · CiO Lab_", ""])
 
     txt = "\n".join([
-        f"🏗️ *{country} construction material prices* — week of {today.day} {MONTHS[today.month - 1][:3]}",
+        f"🏗️ *{country} construction costs* — week of {today.day} {MONTHS[today.month - 1][:3]}",
         "", line, "",
         f"💰 {k:,} {ccy} of materials today ≈ {r1000(med)} {ccy} in {when}.",
         "", *[w.replace("**", "*") for w in watch[:3]], "",

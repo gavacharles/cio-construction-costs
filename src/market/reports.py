@@ -161,6 +161,29 @@ class Participants:
         return pd.read_sql_query("SELECT * FROM price_reports WHERE country=? AND week>=? ORDER BY ts",
                                  self.db, params=(country, since))
 
+    def crowd_index(self, country: str, item: str, months: int = 24, area: str | None = None,
+                    min_reporters: int = MIN_REPORTERS) -> list[dict]:
+        """Monthly index of what people pay for one item. Each month's typical price pools that month and the one
+        before (people report when they can), counts each person once (their own median) and is published only from
+        `min_reporters` different people. Index = 100 x price / the first published month's price."""
+        df = self.reports(country, since_weeks=months * 5)
+        g = df[df["item"] == item]
+        if area:
+            g = g[g["area"] == area]
+        if g.empty:
+            return []
+        g = g.assign(month=pd.to_datetime(g["week"]).dt.to_period("M"))
+        rows, first = [], None
+        for m in pd.period_range(g["month"].min(), pd.Timestamp(date.today()).to_period("M"), freq="M"):
+            w = g[(g["month"] >= m - 1) & (g["month"] <= m)]
+            per = w.groupby("handle")["price"].median()
+            if len(per) < min_reporters:
+                continue
+            price = float(per.median())
+            first = first or price
+            rows.append({"m": str(m), "price": round(price, 2), "people": int(len(per)), "v": round(100 * price / first, 2), "s": "reported"})
+        return rows[-months:]
+
     def usual_price(self, country: str, item: str, weeks: int = 30, min_reporters: int = MIN_REPORTERS) -> float | None:
         """The usual price of an item: median of each person's median over recent weeks, once enough people reported."""
         df = self.reports(country, since_weeks=weeks)
