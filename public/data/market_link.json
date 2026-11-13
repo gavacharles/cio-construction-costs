@@ -1,6 +1,6 @@
 {
  "source": "CiO Construction Cost Platform (gavacharles/cio-construction-costs)",
- "generated": "2026-11-13 11:01 UTC",
+ "generated": "2026-11-13 11:11 UTC",
  "note": "Changes are % on the base period; fx_13w_pct > 0 means the local currency weakened against the US dollar over 13 weeks.",
  "countries": {
   "austria": {
@@ -25,7 +25,9 @@
    "oil_4w_pct": -22.8,
    "fx": 0.9028,
    "fx_13w_pct": 4.1,
-   "movers": []
+   "movers": [],
+   "flags": [],
+   "fx_spread_note": null
   },
   "botswana": {
    "country": "Botswana",
@@ -49,7 +51,11 @@
    "oil_4w_pct": -22.8,
    "fx": 13.8251,
    "fx_13w_pct": 2.9,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": "Public exchange-rate feeds differ: CiO's rate is -2.5% from an independent feed."
   },
   "brazil": {
    "country": "Brazil",
@@ -73,7 +79,9 @@
    "oil_4w_pct": -22.8,
    "fx": 5.5839,
    "fx_13w_pct": 7.5,
-   "movers": []
+   "movers": [],
+   "flags": [],
+   "fx_spread_note": null
   },
   "egypt": {
    "country": "Egypt",
@@ -97,7 +105,11 @@
    "oil_4w_pct": -22.8,
    "fx": 53.5523,
    "fx_13w_pct": 6.7,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "ethiopia": {
    "country": "Ethiopia",
@@ -121,7 +133,11 @@
    "oil_4w_pct": -22.8,
    "fx": 164.2873,
    "fx_13w_pct": 1.8,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": "Public exchange-rate feeds differ: CiO's rate is +1.8% from an independent feed."
   },
   "ghana": {
    "country": "Ghana",
@@ -145,7 +161,11 @@
    "oil_4w_pct": -22.8,
    "fx": 11.7252,
    "fx_13w_pct": 7.0,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "hong_kong": {
    "country": "Hong Kong",
@@ -182,7 +202,9 @@
      "name": "Aggregates",
      "change_year": 6.5
     }
-   ]
+   ],
+   "flags": [],
+   "fx_spread_note": null
   },
   "kenya": {
    "country": "Kenya",
@@ -219,7 +241,11 @@
      "name": "Paint",
      "change_year": 7.8
     }
-   ]
+   ],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "malawi": {
    "country": "Malawi",
@@ -243,7 +269,11 @@
    "oil_4w_pct": -22.8,
    "fx": 1747.9247,
    "fx_13w_pct": 0.8,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "mauritius": {
    "country": "Mauritius",
@@ -267,7 +297,11 @@
    "oil_4w_pct": -22.8,
    "fx": 47.4676,
    "fx_13w_pct": 0.7,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "morocco": {
    "country": "Morocco",
@@ -291,7 +325,11 @@
    "oil_4w_pct": -22.8,
    "fx": 9.8258,
    "fx_13w_pct": 5.6,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "mozambique": {
    "country": "Mozambique",
@@ -315,7 +353,11 @@
    "oil_4w_pct": -22.8,
    "fx": 63.8786,
    "fx_13w_pct": 0.2,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "namibia": {
    "country": "Namibia",
@@ -339,7 +381,11 @@
    "oil_4w_pct": -22.8,
    "fx": 16.625,
    "fx_13w_pct": 2.6,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "nigeria": {
    "country": "Nigeria",
@@ -363,7 +409,11 @@
    "oil_4w_pct": -22.8,
    "fx": 1345.8531,
    "fx_13w_pct": -1.1,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "philippines": {
    "country": "Philippines",
@@ -400,7 +450,9 @@
      "name": "Cement",
      "change_year": 3.2
     }
-   ]
+   ],
+   "flags": [],
+   "fx_spread_note": null
   },
   "rwanda": {
    "country": "Rwanda",
@@ -424,7 +476,11 @@
    "oil_4w_pct": -22.8,
    "fx": 1487.9595,
    "fx_13w_pct": 1.2,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "senegal": {
    "country": "Senegal",
@@ -448,7 +504,11 @@
    "oil_4w_pct": -22.8,
    "fx": 592.1671,
    "fx_13w_pct": 4.1,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "south_africa": {
    "country": "South Africa",
@@ -482,7 +542,11 @@
      "name": "Sand",
      "change_year": -8.7
     }
-   ]
+   ],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "tanzania": {
    "country": "Tanzania",
@@ -506,7 +570,11 @@
    "oil_4w_pct": -22.8,
    "fx": 2651.2992,
    "fx_13w_pct": 0.3,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "uganda": {
    "country": "Uganda",
@@ -543,7 +611,12 @@
      "name": "Cement",
      "change_year": 2.6
     }
-   ]
+   ],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices.",
+    "Observed diesel prices (2026-10) are +35% on the base month against a forecast of +13% (price guide citing Daily Monitor; indicative (checked 2026-11-04)): the forecast is missing part of the move."
+   ],
+   "fx_spread_note": "Public exchange-rate feeds differ: CiO's rate is +1.9% from an independent feed."
   },
   "united_kingdom": {
    "country": "United Kingdom",
@@ -576,7 +649,9 @@
      "name": "Materials for new housing",
      "change_year": 5.4
     }
-   ]
+   ],
+   "flags": [],
+   "fx_spread_note": null
   },
   "united_states": {
    "country": "United States",
@@ -613,7 +688,9 @@
      "name": "Lumber",
      "change_year": 8.7
     }
-   ]
+   ],
+   "flags": [],
+   "fx_spread_note": null
   },
   "zambia": {
    "country": "Zambia",
@@ -637,7 +714,11 @@
    "oil_4w_pct": -22.8,
    "fx": 20.4499,
    "fx_13w_pct": 9.0,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   },
   "zimbabwe": {
    "country": "Zimbabwe",
@@ -661,7 +742,11 @@
    "oil_4w_pct": -22.8,
    "fx": 26.6985,
    "fx_13w_pct": 0.4,
-   "movers": []
+   "movers": [],
+   "flags": [
+    "Oil has moved -22.8% in 4 weeks: forecasts made before the move may be off; re-run with the latest prices."
+   ],
+   "fx_spread_note": null
   }
  }
 }

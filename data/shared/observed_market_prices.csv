@@ -1,0 +1,3 @@
+country,item,month,price_low,price_high,unit,source,quality
+uganda,diesel,2026-04,5049,5350,UGX per litre (pump; 17 Kampala stations),https://www.monitor.co.ug/uganda/news/national/fuel-price-snapshot-kampala-pump-prices-vary-5426166,press spot check (Daily Monitor)
+uganda,diesel,2026-10,6700,7300,UGX per litre (pump; Kampala; many stations at 7290),https://www.manyaguide.com/utilities/fuel-prices-in-uganda/,price guide citing Daily Monitor; indicative (checked 2026-11-04)

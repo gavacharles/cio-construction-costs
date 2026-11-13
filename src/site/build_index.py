@@ -518,6 +518,24 @@ def single_items(c: dict) -> str:
             f"<th data-i18n=si.chg>Change on month</th><th data-i18n=si.trend>12 months</th><th data-i18n=si.src>Source</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div></section>")
 
 
+def shock_banner(key: str) -> str:
+    """Flags from src/forecast/shock_watch.py: big oil or currency moves, observed prices off the forecast,
+    disagreement between exchange-rate feeds. Shown at the top of the country page so readers weigh the outlook."""
+    f = ROOT / "data" / "shared" / "driver_shocks.json"
+    if not f.exists():
+        return ""
+    try:
+        c = json.loads(f.read_text()).get("countries", {}).get(key) or {}
+    except Exception:  # noqa: BLE001
+        return ""
+    items = list(c.get("flags") or []) + ([c["spread_note"]] if c.get("spread_note") else [])
+    if not items:
+        return ""
+    return ("<section class=alertbox role=note><div><h2>Read this outlook with care</h2><ul>"
+            + "".join(f"<li>{e(x)}</li>" for x in items) + "</ul><p class=fineprint>Forecasts re-run every few hours with the latest oil and "
+            "exchange rates. Observed prices are from press and price guides, unverified.</p></div></section>")
+
+
 def weather_sec(key: str) -> str:
     """Site weather for this country (from the site weather service, saved by src/ops/market_link.py):
     working time the weather allows in the week ahead and what it took last week, per trade."""
@@ -615,6 +633,7 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <a class=btn href="../../calculator.html?c={c['key']}#adjust" data-i18n=bc.useindex>Use as contract index</a>
  <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div>{src}</div>
 </section>
+{shock_banner(c['key'])}
 {mat_html}
 {weather_sec(c['key'])}
 <section><div class=section-h><h2 data-i18n=sec.drivers>What is driving costs</h2></div><div class=howto>

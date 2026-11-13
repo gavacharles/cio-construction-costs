@@ -69,7 +69,30 @@ def brent_daily() -> pd.Series:
         raw = pd.read_csv(io.BytesIO(_get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILBRENTEU")))
         s = pd.to_numeric(raw.set_index(raw.columns[0])[raw.columns[1]], errors="coerce")
     s.index = pd.to_datetime(s.index)
-    return s.dropna().astype(float).rename("brent_usd")
+    s = s.dropna().astype(float)
+    return extend_brent(s).rename("brent_usd")
+
+
+def extend_brent(s: pd.Series) -> pd.Series:
+    """Second source: EIA and FRED publish Brent with a lag of a few days, so the latest days come from the
+    ICE Brent front-month futures settlement (Yahoo Finance BZ=F) until the official series catches up."""
+    import json
+    if len(s) and s.index.max() >= pd.Timestamp.today().normalize():
+        return s
+    try:
+        req = Request("https://query1.finance.yahoo.com/v8/finance/chart/BZ=F?range=1mo&interval=1d",
+                      headers={"User-Agent": "Mozilla/5.0"})                         # refuses clients without one
+        with urlopen(req, timeout=60) as resp:  # nosec B310
+            js = json.loads(resp.read())
+        r = js["chart"]["result"][0]
+        f = pd.Series(r["indicators"]["quote"][0]["close"], index=pd.to_datetime(r["timestamp"], unit="s").normalize()).dropna()
+        add = f[f.index > s.index.max()]
+        if len(add):
+            print(f"brent: {len(add)} recent day(s) from the futures settlement (official series ends {s.index.max():%Y-%m-%d})")
+        return pd.concat([s, add]).sort_index()
+    except Exception as err:  # noqa: BLE001
+        print(f"brent second source: {err}")
+        return s
 
 
 def fx_weekly(cached: pd.DataFrame | None, backfill: bool = False) -> pd.DataFrame:

@@ -12,6 +12,8 @@
    country as data/shared/site_weather/<country>.json for the country pages (src/site/build_index.py).
 Run from the weekly cycle (src/market/cycle.py). Failures are reported and never stop the cycle.
 """
+from __future__ import annotations
+
 import argparse
 import json
 import subprocess
@@ -40,6 +42,8 @@ def oil_4w() -> float | None:
 def cost_signal() -> dict:
     out = {}
     o4 = oil_4w()
+    sf = ROOT / "data" / "shared" / "driver_shocks.json"
+    shocks = json.loads(sf.read_text()).get("countries", {}) if sf.exists() else {}
     for f in sorted((ROOT / "countries").glob("*/outputs/forecast_latest.json")):
         try:
             d = json.loads(f.read_text())
@@ -61,7 +65,9 @@ def cost_signal() -> dict:
             next=(dict(period=same[1]["period"], median=round(same[1]["median"], 2)) if len(same) > 1 else None),
             oil_13w_pct=round(dr["brent_13w_pct"], 1) if dr.get("brent_13w_pct") is not None else None, oil_4w_pct=o4,
             fx=dr.get("fx"), fx_13w_pct=round(dr["fx_13w_pct"], 1) if dr.get("fx_13w_pct") is not None else None,
-            movers=[dict(name=m["name"], change_year=round(m["change_year"], 1)) for m in movers])
+            movers=[dict(name=m["name"], change_year=round(m["change_year"], 1)) for m in movers],
+            flags=(shocks.get(d.get("key", f.parent.parent.name)) or {}).get("flags", []),
+            fx_spread_note=(shocks.get(d.get("key", f.parent.parent.name)) or {}).get("spread_note"))
     return dict(source="CiO Construction Cost Platform (gavacharles/cio-construction-costs)",
                 generated=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
                 note="Changes are % on the base period; fx_13w_pct > 0 means the local currency weakened against the US dollar over 13 weeks.",
