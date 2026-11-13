@@ -26,8 +26,20 @@ WEATHER_URL = "https://gavacharles.github.io/kampala-heat-atlas/site-weather/mar
 WEATHER_DIR = ROOT / "data" / "shared" / "site_weather"
 
 
+def oil_4w() -> float | None:
+    """Brent's change over the last 4 weeks, % (from data/shared/weekly_drivers.csv): fast moves make forecasts stale."""
+    try:
+        import pandas as pd
+        d = pd.read_csv(ROOT / "data" / "shared" / "weekly_drivers.csv", parse_dates=["date"]).set_index("date").brent_usd.dropna()
+        then = d[d.index <= d.index[-1] - pd.Timedelta(weeks=4)]
+        return round((d.iloc[-1] / then.iloc[-1] - 1) * 100, 1) if len(then) else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def cost_signal() -> dict:
     out = {}
+    o4 = oil_4w()
     for f in sorted((ROOT / "countries").glob("*/outputs/forecast_latest.json")):
         try:
             d = json.loads(f.read_text())
@@ -47,7 +59,7 @@ def cost_signal() -> dict:
             near=dict(period=same[0]["period"], median=round(same[0]["median"], 2), lo=round(same[0].get("lo", same[0]["median"]), 2),
                       hi=round(same[0].get("hi", same[0]["median"]), 2)),
             next=(dict(period=same[1]["period"], median=round(same[1]["median"], 2)) if len(same) > 1 else None),
-            oil_13w_pct=round(dr["brent_13w_pct"], 1) if dr.get("brent_13w_pct") is not None else None,
+            oil_13w_pct=round(dr["brent_13w_pct"], 1) if dr.get("brent_13w_pct") is not None else None, oil_4w_pct=o4,
             fx=dr.get("fx"), fx_13w_pct=round(dr["fx_13w_pct"], 1) if dr.get("fx_13w_pct") is not None else None,
             movers=[dict(name=m["name"], change_year=round(m["change_year"], 1)) for m in movers])
     return dict(source="CiO Construction Cost Platform (gavacharles/cio-construction-costs)",
