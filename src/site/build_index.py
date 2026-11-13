@@ -518,6 +518,30 @@ def single_items(c: dict) -> str:
             f"<th data-i18n=si.chg>Change on month</th><th data-i18n=si.trend>12 months</th><th data-i18n=si.src>Source</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div></section>")
 
 
+def weather_sec(key: str) -> str:
+    """Site weather for this country (from the site weather service, saved by src/ops/market_link.py):
+    working time the weather allows in the week ahead and what it took last week, per trade."""
+    f = ROOT / "data" / "shared" / "site_weather" / f"{key}.json"
+    if not f.exists():
+        return ""
+    try:
+        w = json.loads(f.read_text())
+    except Exception:  # noqa: BLE001
+        return ""
+    rows = "".join(f"<tr><th scope=row>{e(t['trade'])}</th><td>{t['go_days_ahead']} of {w['days_ahead']}</td>"
+                   f"<td>{t['go_hours_per_day_ahead']:.1f} of {w['hours_per_day']}</td><td>{t['lost_hours_last_7']:.0f}</td></tr>"
+                   for t in w.get("trades", []))
+    towns = ", ".join(f"<a href='{e(x['url'])}'>{e(x['name'])}</a>" for x in w.get("towns", []))
+    return f"""<section><div class=section-h><h2>Site weather: working time this week</h2>
+<span class=muted>Averaged over {towns} · updated {e(w.get('generated', ''))}</span></div>
+<div class=tile><p>{e(w.get('headline', ''))}</p></div>
+<div class=tablewrap><table class=glance><thead><tr><th scope=col>Trade</th><th scope=col>Days with a go window, next {w['days_ahead']}</th>
+<th scope=col>Go hours per working day, next {w['days_ahead']}</th><th scope=col>Hours lost to weather, last 7 days</th></tr></thead><tbody>{rows}</tbody></table></div>
+<p class=fineprint>From the <a href='{e(w.get('page', ''))}'>site weather service</a> (forecast: Open-Meteo, ECMWF). Screening guidance;
+contract limits and the site H&amp;S plan come first. Weather sets the time; the costs above set the money. Together: the
+<a href='{e(w.get('brief', ''))}'>weekly site and market brief</a>.</p></section>"""
+
+
 def page_country(c: dict, months: list[str], default: str, crowd_rows: list[dict]) -> str:
     def yr(m):
         return "–" if m["change_year"] is None else arrow(m["change_year"]) + " " + format(m["change_year"], "+.1f") + "%"
@@ -592,6 +616,7 @@ Prices reported by participants (below) fill the gap, material by material.</p><
  <button class='btn share' type=button data-share><svg viewBox="0 0 24 24" width=16 height=16 aria-hidden=true fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"/></svg> <span data-i18n=share>Share</span></button></div>{src}</div>
 </section>
 {mat_html}
+{weather_sec(c['key'])}
 <section><div class=section-h><h2 data-i18n=sec.drivers>What is driving costs</h2></div><div class=howto>
  <div class=tile><b>Oil</b><p>Brent crude: <b>{dr.get('brent_usd', 0):,.0f} USD</b> a barrel ({'+' if (dr.get('brent_13w_pct') or 0) > 0 else ''}{(dr.get('brent_13w_pct') or 0):.1f}% in 13 weeks).
  Oil feeds diesel, transport, bitumen and plastics.</p></div>

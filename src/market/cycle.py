@@ -168,6 +168,7 @@ def weekly(db: str | None) -> None:
     run("rainfall", "src/ingest/build_rainfall_block.py")
     run("fx history", "src/ingest/build_fx_history.py")
     run("weekly notes", "src/forecast/weekly_note.py", "--country", "all", db=db)
+    run("market link", "src/ops/market_link.py", "--push")     # cost signal out, site weather in (gavacharles/kampala-heat-atlas)
     run("data checks", "src/forecast/data_checks.py")
     publish("front page")
 
