@@ -1,6 +1,6 @@
 {
  "source": "CiO Construction Cost Platform (gavacharles/cio-construction-costs)",
- "generated": "2026-11-13 10:55 UTC",
+ "generated": "2026-11-13 11:01 UTC",
  "note": "Changes are % on the base period; fx_13w_pct > 0 means the local currency weakened against the US dollar over 13 weeks.",
  "countries": {
   "austria": {
@@ -22,6 +22,7 @@
     "median": 0.43
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 0.9028,
    "fx_13w_pct": 4.1,
    "movers": []
@@ -45,6 +46,7 @@
     "median": 0.99
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 13.8251,
    "fx_13w_pct": 2.9,
    "movers": []
@@ -68,6 +70,7 @@
     "median": 0.81
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 5.5839,
    "fx_13w_pct": 7.5,
    "movers": []
@@ -91,6 +94,7 @@
     "median": 4.42
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 53.5523,
    "fx_13w_pct": 6.7,
    "movers": []
@@ -114,6 +118,7 @@
     "median": 3.43
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 164.2873,
    "fx_13w_pct": 1.8,
    "movers": []
@@ -137,6 +142,7 @@
     "median": 4.37
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 11.7252,
    "fx_13w_pct": 7.0,
    "movers": []
@@ -160,6 +166,7 @@
     "median": 0.94
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 7.8422,
    "fx_13w_pct": -0.1,
    "movers": [
@@ -196,6 +203,7 @@
     "median": 2.24
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 129.9458,
    "fx_13w_pct": 0.5,
    "movers": [
@@ -232,6 +240,7 @@
     "median": 2.05
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 1747.9247,
    "fx_13w_pct": 0.8,
    "movers": []
@@ -255,6 +264,7 @@
     "median": 0.54
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 47.4676,
    "fx_13w_pct": 0.7,
    "movers": []
@@ -278,6 +288,7 @@
     "median": 0.3
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 9.8258,
    "fx_13w_pct": 5.6,
    "movers": []
@@ -301,6 +312,7 @@
     "median": -0.16
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 63.8786,
    "fx_13w_pct": 0.2,
    "movers": []
@@ -324,6 +336,7 @@
     "median": 0.33
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 16.625,
    "fx_13w_pct": 2.6,
    "movers": []
@@ -347,6 +360,7 @@
     "median": 2.49
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 1345.8531,
    "fx_13w_pct": -1.1,
    "movers": []
@@ -370,6 +384,7 @@
     "median": 0.32
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 63.6354,
    "fx_13w_pct": 3.7,
    "movers": [
@@ -406,6 +421,7 @@
     "median": 1.99
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 1487.9595,
    "fx_13w_pct": 1.2,
    "movers": []
@@ -429,6 +445,7 @@
     "median": 0.16
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 592.1671,
    "fx_13w_pct": 4.1,
    "movers": []
@@ -449,6 +466,7 @@
    },
    "next": null,
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 16.625,
    "fx_13w_pct": 2.6,
    "movers": [
@@ -485,6 +503,7 @@
     "median": 0.67
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 2651.2992,
    "fx_13w_pct": 0.3,
    "movers": []
@@ -508,6 +527,7 @@
     "median": 5.51
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 4100.4298,
    "fx_13w_pct": 10.5,
    "movers": [
@@ -544,6 +564,7 @@
     "median": 1.03
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 0.7543,
    "fx_13w_pct": 1.8,
    "movers": [
@@ -576,6 +597,7 @@
     "median": 2.23
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 121.8803,
    "fx_13w_pct": 2.5,
    "movers": [
@@ -612,6 +634,7 @@
     "median": 0.8
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 20.4499,
    "fx_13w_pct": 9.0,
    "movers": []
@@ -635,6 +658,7 @@
     "median": -0.17
    },
    "oil_13w_pct": 0.1,
+   "oil_4w_pct": -22.8,
    "fx": 26.6985,
    "fx_13w_pct": 0.4,
    "movers": []
