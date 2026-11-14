@@ -1,0 +1,45 @@
+# The market agent (src/ai/market_agent.py): where Claude may look when the shock watch flags a country, and what for.
+# Only the listed sites are searched and read: the regulator and finance ministry first, then established newspapers.
+# Every proposal waits for the organiser in /admin; nothing changes a forecast until it is approved.
+items: [diesel, petrol, cement, reinforcement steel, bitumen, timber, iron sheets]
+countries:
+  uganda:
+    sites: [ura.go.ug, finance.go.ug, bou.or.ug, ubos.org, monitor.co.ug, newvision.co.ug, observer.ug]
+    currency: UGX
+    where: Kampala
+  kenya:
+    sites: [epra.go.ke, treasury.go.ke, knbs.or.ke, nation.africa, businessdailyafrica.com, the-star.co.ke]
+    currency: KES
+    where: Nairobi
+  tanzania:
+    sites: [ewura.go.tz, mof.go.tz, nbs.go.tz, thecitizen.co.tz, dailynews.co.tz]
+    currency: TZS
+    where: Dar es Salaam
+  rwanda:
+    sites: [rura.rw, minecofin.gov.rw, statistics.gov.rw, newtimes.co.rw]
+    currency: RWF
+    where: Kigali
+  nigeria:
+    sites: [nigerianstat.gov.ng, nmdpra.gov.ng, punchng.com, premiumtimesng.com, businessday.ng]
+    currency: NGN
+    where: Lagos
+  ghana:
+    sites: [npa.gov.gh, statsghana.gov.gh, mofep.gov.gh, graphic.com.gh, myjoyonline.com]
+    currency: GHS
+    where: Accra
+  south_africa:
+    sites: [energy.gov.za, statssa.gov.za, treasury.gov.za, businesslive.co.za, news24.com, iol.co.za]
+    currency: ZAR
+    where: Gauteng (inland)
+  zambia:
+    sites: [erb.org.zm, zamstats.gov.zm, mofnp.gov.zm, lusakatimes.com, znbc.co.zm]
+    currency: ZMW
+    where: Lusaka
+  mozambique:
+    sites: [are.gov.mz, ine.gov.mz, clubofmozambique.com]
+    currency: MZN
+    where: Maputo
+  botswana:
+    sites: [bera.co.bw, statsbots.org.bw, mmegi.bw, sundaystandard.info]
+    currency: BWP
+    where: Gaborone

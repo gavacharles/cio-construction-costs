@@ -211,6 +211,43 @@ def scout_html() -> str:
                    f"<th>Checks</th><th></th></tr>{body}</table></div>")
 
 
+def agent_html() -> str:
+    """What the market agent proposes after a shock: observed prices, policy events, explanations."""
+    import market_agent
+    rows = market_agent.pending()
+    head = ("<p class=mut>When the shock watch flags a country, the market agent reads its regulator, ministry and main newspapers "
+            "and proposes changes. Approving applies them: observed prices to the comparison with the forecast, policy events to "
+            "the forecast itself at the next refresh, explanations to the country page. Open the source and find the quote first.</p>")
+    if not rows:
+        return head + "<p class=mut>Nothing waiting.</p>"
+    def what(r):
+        x = r["payload"]
+        if r["kind"] == "observed_price":
+            v = f"{x['price_low']:g}" if x["price_low"] == x["price_high"] else f"{x['price_low']:g}-{x['price_high']:g}"
+            return f"<b>{e(x['item'])}</b> {e(x['month'])}: {v} {e(x['unit'])}"
+        if r["kind"] == "policy_event":
+            return (f"<b>{e(x['measure'])}</b> from {e(x['date'])} ({e(x['status'])}); items: {e(', '.join(x['items']))}; "
+                    f"size: {'unknown' if x.get('pct') is None else format(x['pct'], '+g') + '%'}")
+        return e(x["text"])
+    body = "".join(
+        f"<tr><td>{e(r['country'])}</td><td>{e(r['kind'].replace('_', ' '))}</td><td>{what(r)}</td>"
+        f"<td>“{e(r['quote'])}”<br><a href='{e(r['source'])}' target=_blank rel=noopener>open the source</a></td>"
+        f"<td class={'ok' if r['checks'].startswith('quote found') and ';' not in r['checks'] else 'err'}>{e(r['checks'])}</td>"
+        f"<td><form method=post action=/admin/agent/{r['id']} class=inline><button name=decision value=approve>Approve</button> "
+        f"<button name=decision value=reject>Reject</button></form></td></tr>" for r in rows)
+    return head + (f"<div class=tw><table><tr><th>Country</th><th>Kind</th><th>Proposal</th><th>Quote</th><th>Checks</th><th></th></tr>"
+                   f"{body}</table></div>")
+
+
+@app.post("/admin/agent/{pid}")
+def admin_agent(request: Request, pid: int, decision: str = Form(...)):
+    if not _is_admin(request):
+        return RedirectResponse("/admin", status_code=303)
+    import market_agent
+    market_agent.decide(pid, decision == "approve")
+    return RedirectResponse("/admin#agent", status_code=303)
+
+
 @app.get("/admin", response_class=HTMLResponse)
 def admin(request: Request, err: str = ""):
     if not _admin_token():
@@ -236,6 +273,7 @@ Anyone can view the site and report prices; there are no accounts.</p><h2>Monthl
 <div class=card><h2>Health</h2>{problems_html()}<p><a href='/admin/usage'>How people use the site →</a></p></div>
 <div class=card id=held><h2>Price reports held for review</h2>{held_html()}</div>
 <div class=card id=scout><h2>Data scout: official prices to review</h2>{scout_html()}</div>
+<div class=card id=agent><h2>Market agent: changes to review</h2>{agent_html()}</div>
 <div class=card><h2>CiO Costs Pro waitlist</h2>{waitlist_html()}</div>
 <div class=card><h2>Data checks</h2><p class=mut>Last run {e(checks['run'])}: {ok} ok, {len(probs)} to look at.</p>
 <div class=tw><table><tr><th>Status</th><th>Country</th><th>Check</th><th>Detail</th></tr>{rows}</table></div></div>""")

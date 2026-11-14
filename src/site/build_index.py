@@ -529,8 +529,12 @@ def shock_banner(key: str) -> str:
     except Exception:  # noqa: BLE001
         return ""
     items = list(c.get("flags") or []) + ([c["spread_note"]] if c.get("spread_note") else [])
-    if not items:
+    nf = ROOT / "data" / "shared" / "agent_notes.json"          # approved explanation from the market agent
+    note = (json.loads(nf.read_text()).get(key) if nf.exists() else None) or None
+    if not items and not note:
         return ""
+    if note:
+        items.insert(0, f"What changed: {note['text']} (source: {note['source']})")
     return ("<section class=alertbox role=note><div><h2>Read this outlook with care</h2><ul>"
             + "".join(f"<li>{e(x)}</li>" for x in items) + "</ul><p class=fineprint>Forecasts re-run every few hours with the latest oil and "
             "exchange rates. Observed prices are from press and price guides, unverified.</p></div></section>")

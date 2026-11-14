@@ -66,8 +66,13 @@ def brent_daily() -> pd.Series:
                             sheet_name="Data 1", skiprows=2)
         s = raw.set_index(raw.columns[0])[raw.columns[1]]
     except Exception:
-        raw = pd.read_csv(io.BytesIO(_get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILBRENTEU")))
-        s = pd.to_numeric(raw.set_index(raw.columns[0])[raw.columns[1]], errors="coerce")
+        try:
+            raw = pd.read_csv(io.BytesIO(_get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILBRENTEU")))
+            s = pd.to_numeric(raw.set_index(raw.columns[0])[raw.columns[1]], errors="coerce")
+        except Exception as err:                 # both official feeds down (network): last saved prices, then futures
+            print(f"brent: EIA and FRED unavailable ({str(err)[:60]}); using saved prices plus the futures settlement")
+            c = pd.read_csv(WEEKLY, parse_dates=["date"]).set_index("date")["brent_usd"]
+            s = c[~c.index.duplicated()]
     s.index = pd.to_datetime(s.index)
     s = s.dropna().astype(float)
     return extend_brent(s).rename("brent_usd")
